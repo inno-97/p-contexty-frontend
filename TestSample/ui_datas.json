@@ -1,0 +1,649 @@
+[
+    {
+        "id": 0,
+        "text": "시작",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스트"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 1,
+        "text": "지금은 평소보다 많은 분들이 동시에 서비스를 쓰고 있어 정보를 빠르게 불러올 수 없어요.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "금융"
+            },
+            "service": {
+                "id": 1,
+                "name": "토스"
+            },
+            "events": [
+                {"id": 1, "name": "로그인"}
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "text": "퍼블리 멤버십을 알차게 쓰실 수 있도록 이용 루틴을 만들어 드릴게요! 김범석 님을 귀찮게 하지 않을게요 :) 5초만 투자해 루틴을 설정해보세요.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "퍼블리"
+            },
+            "events": [
+                {"id": 1, "name": "에러"}
+            ]
+        }
+    },
+    {
+        "id": 3,
+        "text": "확인했어요",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "왓섭"
+            },
+            "events": [
+                {"id": 1, "name": "확인"}
+            ]
+        }
+    },
+    {
+        "id": 4,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 6,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 5,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 7,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 8,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 9,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 10,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 11,
+        "text": "텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 12,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 13,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 14,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 15,
+        "text": "일반적인 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 16,
+        "text": "텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다. 텍스트가 긴 테스트 데이터 입니다.",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 17,
+        "text": "확인 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 18,
+        "text": "취소 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 19,
+        "text": "수정 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 20,
+        "text": "삭제 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 21,
+        "text": "오픈 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 22,
+        "text": "데이터 완료",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 23,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 24,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 25,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 26,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 27,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 28,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 29,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 30,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 31,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 32,
+        "text": "인피니티 스크롤",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    },
+    {
+        "id": 33,
+        "text": "끝",
+        "copyCount": 0,
+        "timestamp": 1659556877000,
+        "tags": {
+            "category": {
+                "id": 1,
+                "name": "카테고리"
+            },
+            "service": {
+                "id": 1,
+                "name": "컨텍스티"
+            },
+            "events": [
+                {"id": 1, "name": "테스트"}
+            ]
+        }
+    }
+    
+]

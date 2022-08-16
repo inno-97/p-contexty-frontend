@@ -1,0 +1,30 @@
+[
+    {
+        "name": "최유진",
+        "links": [
+            { "name": "brunch", "link": "https://brunch.co.kr/@eugeen" },
+            { "name": "notion", "link": "https://www.notion.so/4a91a47821a140e0981dc229012a0247" },
+            { "name": "instagram", "link": "https://www.instagram.com/choe.eugeen" }
+        ]
+    },
+    {
+        "name": "김범석",
+        "links": [
+            { "name": "brunch", "link": "https://brunch.co.kr/@besigner" },
+            { "name": "notion", "link": "https://www.besigner.me" }
+        ]
+    },
+    {
+        "name": "김예지",
+        "links": [
+            { "name": "brunch", "link": "https://brunch.co.kr/@designeryeji" },
+            { "name": "instagram", "link": "https://www.instagram.com/hodadadac" }
+        ]
+    },
+    {
+        "name": "이규민",
+        "links": [
+            { "name": "github", "link": "https://github.com/inno-97" }
+        ]
+    }
+]
