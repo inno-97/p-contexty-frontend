@@ -1,0 +1,41 @@
+.ctt_bold {
+	font-weight: 800;
+}
+
+.ctt_medium {
+	font-weight: 600;
+}
+
+.ctt_regular {
+	font-weight: 400;
+}
+
+.ctt_text_40 {
+	font-size: 40px;
+	line-height: 50px;
+}
+
+.ctt_text_22 {
+	font-size: 22px;
+	line-height: 30px;
+}
+
+.ctt_text_18 {
+	font-size: 18px;
+	line-height: 27px;
+}
+
+.ctt_text_16 {
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.ctt_text_14 {
+	font-size: 14px;
+	line-height: 21px;
+}
+
+.ctt_text_12 {
+	font-size: 12px;
+	line-height: 18px;
+}
