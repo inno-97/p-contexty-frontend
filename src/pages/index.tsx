@@ -210,7 +210,7 @@ const Home: TNextPageWithLayout = () => {
 										key={item.id}
 										in={checked}
 										style={{ transformOrigin: '0 0 0' }}
-										{...(checked ? { timeout: 200 + 450 * (idx % 3) } : {})}
+										{...(checked ? { timeout: 200 + (idx / 3) * 450 } : {})}
 									>
 										<Grid item xs={12} sm={6} md={4}>
 											<Card
