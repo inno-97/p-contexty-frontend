@@ -29,6 +29,7 @@ export interface IContentsCard extends PropsWithChildren {
 
 export interface IWritingDefault extends PropsWithChildren {
 	className?: string;
+	textAlign?: 'center' | 'end' | 'justify' | 'left' | 'match-parent' | 'right' | 'start';
 	lineSpacing?: number;
 	size?: string;
 	weight?: string;

@@ -55,7 +55,7 @@ export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onHeader
 		>
 			<Box sx={{ width: '100%' }}>
 				{onHeader === true && (
-					<HeaderBox className="ctt_text_14 ctt_medium" mb={3}>
+					<HeaderBox className="ctt_text_14 ctt_medium" mb={2}>
 						<Stack
 							direction="row"
 							justifyContent="space-between"
