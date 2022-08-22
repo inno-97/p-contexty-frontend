@@ -12,7 +12,7 @@ import { SubContentsLayer } from 'src/components/CustomLayer';
 import Contents from 'src/components/Contents';
 import { Writing, Paragraph } from 'src/components/Contents/Writing';
 
-import BottomCharacter from '/public/characters/character2.svg';
+import BottomCharacter from '/public/characters/about.png';
 import Brunch from '/public/service/brunch.svg';
 import Notion from '/public/service/notion.svg';
 import Instagram from '/public/service/instagram.svg';
@@ -20,7 +20,6 @@ import Github from '/public/service/github.svg';
 
 const BottomImage = styled(Image)(({ theme }) => {
 	return {
-		opacity: 0.3,
 		color: theme.palette.grey[400],
 	};
 });

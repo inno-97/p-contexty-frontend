@@ -8,7 +8,7 @@ import { SubContentsLayer } from 'src/components/CustomLayer';
 import { Writing, Paragraph } from 'src/components/Contents/Writing';
 
 import Forbidden from '/public/forbidden.svg';
-import ErrorCharacter from '/public/characters/404.svg';
+import ErrorCharacter from '/public/characters/404.png';
 
 const ERROR404: TNextPageWithLayout = () => {
 	return (
@@ -26,10 +26,13 @@ const ERROR404: TNextPageWithLayout = () => {
 							position: 'relative',
 							height: '222px',
 							width: '322px',
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'center',
 						}}
 					>
 						<Image layout="fill" alt="forbidden image" src={Forbidden.src} />
-						<Image layout="fill" alt="404 Error Character" src={ErrorCharacter.src} />
+						<Image layout="intrinsic" alt="404 Error Character" {...ErrorCharacter} />
 					</Box>
 					<Writing className="ctt_text_14 ctt_regular" textAlign="center">
 						<Paragraph className="ctt_text_18 ctt_bold" mb={8}>
