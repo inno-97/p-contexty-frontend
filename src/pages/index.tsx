@@ -22,6 +22,7 @@ import {
 
 import { Close, Search } from '@mui/icons-material';
 
+import BannerCharacter from '/public/characters/banner.png';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
@@ -39,15 +40,36 @@ const SearchBox = styled(Paper)({
 	height: '240px',
 	display: 'flex',
 	justifyContent: 'center',
+	flexDirection: 'column',
+	alignItems: 'center',
+	backgroundColor: '#EFEAE3',
 });
 
-const SearchTextField = styled(TextField)({
-	'& .MuiOutlinedInput-root': {
-		height: '80px',
-	},
-	maxWidth: '580px',
-	height: '80px',
-	marginTop: '60px',
+const SearchTextField = styled(TextField)(({ theme }) => {
+	return {
+		zIndex: 1,
+		'& .MuiOutlinedInput-root': {
+			height: '72px',
+			backgroundColor: '#ffffff',
+			border: 'none',
+			borderRadius: '16px',
+			paddingLeft: '27px',
+			paddingRight: '27px',
+		},
+		'& .MuiInputAdornment-root': {
+			color: theme.palette.grey[200],
+		},
+		fieldset: {
+			border: 'none',
+		},
+		input: {
+			'&::placeholder': {
+				fontWeight: 600,
+				color: theme.palette.grey[200],
+				opacity: 1,
+			},
+		},
+	};
 });
 
 const FilterIcon = styled(Image)(({ theme }) => {
@@ -141,17 +163,55 @@ const Home: TNextPageWithLayout = () => {
 			<Box>
 				{/* Search Box */}
 				<SearchBox elevation={0}>
-					<SearchTextField
-						fullWidth
-						placeholder="서비스, 상황을 검색해보세요"
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<Search />
-								</InputAdornment>
-							),
+					<Box
+						sx={{
+							position: 'relative',
+							width: '580px',
+							textAlign: 'center',
 						}}
-					/>
+					>
+						<Box
+							sx={{
+								position: 'absolute',
+								top: '-18px',
+								left: '62px',
+								width: '196px',
+								height: '196px',
+								zIndex: 1,
+							}}
+						>
+							<Image alt="Banner Character" {...BannerCharacter} />
+						</Box>
+						<Typography
+							sx={{
+								position: 'relative',
+								borderRadius: '16px',
+								display: 'inline-block',
+								backgroundColor: '#DDD7CF',
+								color: '#928A7F',
+								padding: '16px 20px',
+								fontWeight: 600,
+								fontSize: '20px',
+								lineHeight: '24px',
+								letterSpacing: '-1px',
+								marginBottom: '30px',
+								zIndex: 0,
+							}}
+						>
+							흠...뭐라고 쓰지?
+						</Typography>
+						<SearchTextField
+							fullWidth
+							placeholder="서비스, 상황을 검색해보세요"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<Search />
+									</InputAdornment>
+								),
+							}}
+						/>
+					</Box>
 				</SearchBox>
 				{/* Contents Box */}
 				<ContentsLayer>
