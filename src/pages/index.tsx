@@ -220,13 +220,38 @@ const Home: TNextPageWithLayout = () => {
 					{/* Filters */}
 					<Box sx={{ margin: '48px 0' }}>
 						<Stack direction="row" spacing={2}>
+							{/* SelectBox UI TAG */}
 							<SelectFilter
 								id="AppCategoryFilter"
-								options={tags.categorys}
-								inputValue={tag}
+								options={tags.categorys.filter((tag) => tag.selected !== true)}
 								label="앱 카테고리"
-								onInputChange={(event, newInputValue) => {
-									setTag(newInputValue);
+								onOptionClick={(event) => {
+									const targetValue: string | null =
+										event.currentTarget.getAttribute('value') || null;
+
+									if (
+										typeof targetValue === 'string' &&
+										!Number.isNaN(targetValue)
+									) {
+										const tagId = parseInt(targetValue);
+
+										setTags((preTags) => {
+											const newTags = preTags.categorys.map((item) => {
+												if (item.id === tagId) {
+													return {
+														...item,
+														selected: true,
+													};
+												}
+												return item;
+											});
+
+											return {
+												...preTags,
+												categorys: newTags,
+											};
+										});
+									}
 								}}
 								StartIcon={
 									<FilterIcon alt="App Category Filter" {...filter_category} />
@@ -234,11 +259,37 @@ const Home: TNextPageWithLayout = () => {
 							/>
 							<SelectFilter
 								id="AppCategoryFilter"
-								options={tags.services}
-								inputValue={tag}
+								options={tags.services.filter(
+									(tag) => tag.selected === undefined || tag.selected === false
+								)}
 								label="서비스 명"
-								onInputChange={(event, newInputValue) => {
-									setTag(newInputValue);
+								onOptionClick={(event) => {
+									const targetValue: string | null =
+										event.currentTarget.getAttribute('value') || null;
+
+									if (
+										typeof targetValue === 'string' &&
+										!Number.isNaN(targetValue)
+									) {
+										const tagId = parseInt(targetValue);
+
+										setTags((preTags) => {
+											const newTags = preTags.services.map((item) => {
+												if (item.id === tagId) {
+													return {
+														...item,
+														selected: true,
+													};
+												}
+												return item;
+											});
+
+											return {
+												...preTags,
+												services: newTags,
+											};
+										});
+									}
 								}}
 								StartIcon={
 									<FilterIcon alt="Service Name Filter" {...filter_service} />
@@ -246,11 +297,37 @@ const Home: TNextPageWithLayout = () => {
 							/>
 							<SelectFilter
 								id="AppCategoryFilter"
-								options={tags.events}
-								inputValue={tag}
+								options={tags.events.filter(
+									(tag) => tag.selected === undefined || tag.selected === false
+								)}
 								label="상황"
-								onInputChange={(event, newInputValue) => {
-									setTag(newInputValue);
+								onOptionClick={(event) => {
+									const targetValue: string | null =
+										event.currentTarget.getAttribute('value') || null;
+
+									if (
+										typeof targetValue === 'string' &&
+										!Number.isNaN(targetValue)
+									) {
+										const tagId = parseInt(targetValue);
+
+										setTags((preTags) => {
+											const newTags = preTags.events.map((item) => {
+												if (item.id === tagId) {
+													return {
+														...item,
+														selected: true,
+													};
+												}
+												return item;
+											});
+
+											return {
+												...preTags,
+												events: newTags,
+											};
+										});
+									}
 								}}
 								StartIcon={
 									<FilterIcon alt="Situation Filter" {...filter_situation} />

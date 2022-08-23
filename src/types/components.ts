@@ -60,8 +60,8 @@ export interface ISelectFilter {
 	StartIcon?: ReactElement;
 	label?: string;
 	options: { label: string | number }[];
-	inputValue: string | number | null;
-	onInputChange: (event: SyntheticEvent, value: string) => void;
+	inputValue?: string | number | null;
+	onOptionClick?: (event: SyntheticEvent) => void;
 }
 
 export interface IUITextComponent {
@@ -73,6 +73,7 @@ export interface IUITextComponent {
 export interface IUITagsItem extends TUITag {
 	label: string;
 	value: number;
+	selected?: boolean;
 }
 
 export interface IUITagCoponents {

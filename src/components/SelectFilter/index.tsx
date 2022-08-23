@@ -42,17 +42,57 @@ const CustomArrowDownIcon = styled(KeyboardArrowDownIcon)(({ theme }) => {
 	};
 });
 
+const CustomList = styled('li')(({ theme }) => {
+	return {
+		color: theme.palette.grey[400],
+	};
+});
+
+const hasTagItem = (opt: unknown): opt is { value: string | number; label: string } => {
+	return typeof opt === 'object' && opt !== null && 'value' in opt && 'label' in opt;
+};
+
 export const SelectFilter: FC<ISelectFilter> = ({
 	id,
 	options,
-	onInputChange,
+	onOptionClick,
 	label,
 	StartIcon,
 }) => (
 	<CustomAutoComplete
 		id={id}
 		options={options}
-		onInputChange={onInputChange}
+		renderOption={(props, option) => {
+			if (hasTagItem(option)) {
+				return (
+					<CustomList
+						{...props}
+						onClick={onOptionClick}
+						className={`ctt_text_14 ctt_regular ${props.className}`}
+						style={{
+							padding: '12px 16px',
+						}}
+						value={option.value}
+					>
+						{option.label}
+					</CustomList>
+				);
+			}
+		}}
+		componentsProps={{
+			paper: {
+				style: {
+					borderRadius: '32px',
+					background: '#ffffff',
+					boxShadow: '0px 12px 32px rgba(0, 0, 0, 0.16)',
+				},
+			},
+		}}
+		ListboxProps={{
+			style: {
+				padding: '8px',
+			},
+		}}
 		popupIcon={<CustomArrowDownIcon />}
 		renderInput={(params) => (
 			<TextField
