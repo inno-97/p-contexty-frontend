@@ -1,5 +1,5 @@
-import type { TypographyProps, ChipProps } from '@mui/material';
-import type { TNextPageWithLayout, IUITagCoponents } from 'src/types/components';
+import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
+import type { TNextPageWithLayout, IUITagCoponents, IUITagsItem } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useEffect, Fragment } from 'react';
@@ -11,6 +11,7 @@ import {
 	Paper,
 	Stack,
 	TextField,
+	Button,
 	IconButton,
 	InputAdornment,
 	Typography,
@@ -20,7 +21,7 @@ import {
 	Grow,
 } from '@mui/material';
 
-import { Close, Search } from '@mui/icons-material';
+import { Close, Search, Refresh } from '@mui/icons-material';
 
 import BannerCharacter from '/public/characters/banner.png';
 import filter_category from '/public/filter/category.svg';
@@ -80,6 +81,55 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
+const FilterClearButton = styled(({ ...props }: ButtonProps) => (
+	<Button
+		{...props}
+		endIcon={<Refresh />}
+		className={props.className + ' ctt_text_14 ctt_medium'}
+	/>
+))(({ theme }) => {
+	return {
+		color: theme.palette.grey[300],
+		padding: '6px 2px',
+		'& .MuiButton-endIcon': {
+			marginLeft: '4.67px',
+			marginRight: '4.67px',
+		},
+	};
+});
+
+const TagChip = styled(({ ...props }: ChipProps) => (
+	<Chip
+		{...props}
+		// size="small"
+		className={props.className + ' ctt_text_14 ctt_bold'}
+		deleteIcon={<Close />}
+	/>
+))({
+	marginRight: '8px',
+	padding: '8px 16px',
+	height: 'auto',
+	borderRadius: '100px',
+	'& .MuiSvgIcon-root': {
+		fontSize: '16px',
+		color: 'inherit',
+		margin: '4px 0',
+	},
+	'& .MuiChip-label': {
+		padding: 0,
+		paddingRight: '8px',
+	},
+});
+
+const TagsDivider = styled(({ ...props }: DividerProps) => (
+	<Divider {...props} orientation="vertical" flexItem />
+))({
+	height: 16,
+	display: 'inline-block',
+	marginRight: '8px',
+	verticalAlign: 'middle',
+});
+
 const ViewImage = styled(Paper)({
 	width: '270px',
 	height: '586px',
@@ -104,15 +154,100 @@ const ViewDetail = styled(Stack)({
 	width: '488px',
 });
 
-// const ViewReferenceText = styled(({ ...props }: TypographyProps) => (
-// 	<Typography {...props} className={props.className + ' ctt_text_16 ctt_bold'} />
-// ))(({ theme }) => {
-// 	return {
-// 		color: theme.palette.grey[300],
-// 		marginTop: '8px',
-// 		marginBottom: '16px',
-// 	};
-// });
+const SelectedTags = (tags: IUITagCoponents, clearEvent: (idx: 'all' | IUITagsItem) => void) => {
+	const selCategorys = tags.categorys.filter((item) => item.selected === true);
+	const selServices = tags.services.filter((item) => item.selected === true);
+	const selEvents = tags.events.filter((item) => item.selected === true);
+
+	if (selCategorys.length + selServices.length + selEvents.length === 0) {
+		return null;
+	}
+
+	return (
+		<Stack direction={{ xs: 'column', sm: 'row' }} alignItems="baseline" spacing={2}>
+			<FilterClearButton
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+
+					clearEvent('all');
+				}}
+			>
+				초기화
+			</FilterClearButton>
+			<Box lineHeight={3} maxWidth="1146px">
+				{/* categores */}
+				{selCategorys.map((tag, idx) => {
+					return (
+						<Fragment key={tag.id}>
+							<TagChip
+								sx={{
+									backgroundColor: '#ECF6FE',
+									color: '#2196F3',
+								}}
+								label={tag.label}
+								onDelete={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+
+									clearEvent(tag);
+								}}
+							/>
+							{selCategorys.length - 1 === idx &&
+								selServices.length + selEvents.length !== 0 && <TagsDivider />}
+						</Fragment>
+					);
+				})}
+
+				{/* services */}
+				{selServices.map((tag, idx) => {
+					return (
+						<Fragment key={tag.id}>
+							<TagChip
+								sx={{
+									backgroundColor: '#E6F9EA',
+									color: '#3BD569',
+								}}
+								label={tag.label}
+								onDelete={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+
+									clearEvent(tag);
+								}}
+							/>
+							{selServices.length - 1 === idx && selEvents.length !== 0 && (
+								// <div>
+								<TagsDivider />
+								// </div>
+							)}
+						</Fragment>
+					);
+				})}
+
+				{/* events */}
+				{selEvents.map((tag) => {
+					return (
+						<TagChip
+							key={tag.id}
+							sx={{
+								backgroundColor: '#FEF3E0',
+								color: '#FB9600',
+							}}
+							label={tag.label}
+							onDelete={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+
+								clearEvent(tag);
+							}}
+						/>
+					);
+				})}
+			</Box>
+		</Stack>
+	);
+};
 
 const getData = async (id: number) => {
 	const res = await fetch(`/api/ui-datas/${id}`);
@@ -129,7 +264,6 @@ const Home: TNextPageWithLayout = () => {
 		events: [],
 	});
 
-	const [tag, setTag] = useState('');
 	const [open, setOpen] = useState(false);
 	const [checked, setChecked] = useState(false);
 
@@ -218,7 +352,7 @@ const Home: TNextPageWithLayout = () => {
 					{/* Search Result */}
 					{/* <Box>Search Result</Box> */}
 					{/* Filters */}
-					<Box sx={{ margin: '48px 0' }}>
+					<Box marginTop="48px">
 						<Stack direction="row" spacing={2}>
 							{/* SelectBox UI TAG */}
 							<SelectFilter
@@ -336,9 +470,55 @@ const Home: TNextPageWithLayout = () => {
 						</Stack>
 					</Box>
 					{/* Display Current Filters */}
-					{/* <Box>Display Filter</Box> */}
+					<Box marginTop="24px">
+						{SelectedTags(tags, (target) => {
+							if (target === 'all') {
+								setTags((preTags) => {
+									return {
+										categorys: preTags.categorys.map((item) => {
+											if (item.selected === true) {
+												item.selected = false;
+											}
+											return item;
+										}),
+										services: preTags.services.map((item) => {
+											if (item.selected === true) {
+												item.selected = false;
+											}
+											return item;
+										}),
+										events: preTags.events.map((item) => {
+											if (item.selected === true) {
+												item.selected = false;
+											}
+											return item;
+										}),
+									};
+								});
+							} else {
+								const tagType: string = target.type + 's';
+
+								setTags((preTags) => {
+									const newTags = preTags[tagType].map((item) => {
+										if (item.id === target.id) {
+											return {
+												...item,
+												selected: false,
+											};
+										}
+										return item;
+									});
+
+									return {
+										...preTags,
+										[tagType]: newTags,
+									};
+								});
+							}
+						})}
+					</Box>
 					{/* Contents */}
-					<Box sx={{ margin: '56px 0' }}>
+					<Box margin="56px 0">
 						<Grid container spacing={2}>
 							{contents.datas.map((item, idx) => {
 								return (

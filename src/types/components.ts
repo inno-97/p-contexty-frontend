@@ -77,6 +77,7 @@ export interface IUITagsItem extends TUITag {
 }
 
 export interface IUITagCoponents {
+	[key: string]: IUITagsItem[];
 	categorys: IUITagsItem[];
 	services: IUITagsItem[];
 	events: IUITagsItem[];
