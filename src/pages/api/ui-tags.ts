@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { IUITagCoponents } from 'src/types/components';
+import type { IUITagComponents } from 'src/types/components';
 import type { TUITag } from 'src/types/ui-data';
 
 import sampleData from 'TestSample/ui_tags.json';
 
 export const UITags = (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req;
-	const tags = <IUITagCoponents>{
+	const tags = <IUITagComponents>{
 		categorys: [],
 		services: [],
 		events: [],
