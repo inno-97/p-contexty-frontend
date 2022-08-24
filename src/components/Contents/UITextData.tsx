@@ -97,7 +97,16 @@ export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onTags =
 					justifyContent="space-between"
 					alignItems="center"
 				>
-					<CopyButton>Copy</CopyButton>
+					<CopyButton
+						onClick={async (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+
+							await navigator.clipboard.writeText(item.text);
+						}}
+					>
+						Copy
+					</CopyButton>
 					{onTags === true && (
 						<TagsBox className="ctt_text_14 ctt_medium">
 							{item.tags?.category.name}
