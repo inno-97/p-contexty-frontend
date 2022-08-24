@@ -76,7 +76,7 @@ export interface IUITagsItem extends TUITag {
 	selected?: boolean;
 }
 
-export interface IUITagCoponents {
+export interface IUITagComponents {
 	[key: string]: IUITagsItem[];
 	categorys: IUITagsItem[];
 	services: IUITagsItem[];

@@ -1,5 +1,5 @@
 import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
-import type { TNextPageWithLayout, IUITagCoponents, IUITagsItem } from 'src/types/components';
+import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useEffect, Fragment } from 'react';
@@ -154,7 +154,7 @@ const ViewDetail = styled(Stack)({
 	width: '488px',
 });
 
-const SelectedTags = (tags: IUITagCoponents, clearEvent: (idx: 'all' | IUITagsItem) => void) => {
+const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsItem) => void) => {
 	const selCategorys = tags.categorys.filter((item) => item.selected === true);
 	const selServices = tags.services.filter((item) => item.selected === true);
 	const selEvents = tags.events.filter((item) => item.selected === true);
@@ -258,7 +258,7 @@ const getData = async (id: number) => {
 const Home: TNextPageWithLayout = () => {
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
-	const [tags, setTags] = useState<IUITagCoponents>({
+	const [tags, setTags] = useState<IUITagComponents>({
 		categorys: [],
 		services: [],
 		events: [],
