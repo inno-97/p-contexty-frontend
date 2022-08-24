@@ -612,7 +612,7 @@ const Home: TNextPageWithLayout = () => {
 									minHeight: '200px',
 								}}
 							>
-								<UITextData item={viewContent} onHeader={false} />
+								<UITextData item={viewContent} onTags={false} />
 							</Card>
 							{/* Reference */}
 							{/* 서비스 오픈 후 예정 */}

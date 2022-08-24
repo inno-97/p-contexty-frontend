@@ -67,7 +67,7 @@ export interface ISelectFilter {
 export interface IUITextComponent {
 	item: IUITextData;
 	onCopy?: boolean;
-	onHeader?: boolean;
+	onTags?: boolean;
 }
 
 export interface IUITagsItem extends TUITag {
