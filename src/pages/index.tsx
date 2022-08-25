@@ -24,6 +24,7 @@ import {
 import { Close, Search, Refresh } from '@mui/icons-material';
 
 import BannerCharacter from '/public/characters/banner.png';
+import NoResultCharacter from '/public/characters/noResult.png';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
@@ -32,6 +33,7 @@ import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { ContentsLayer } from 'src/components/CustomLayer';
 import { Card, ReferenceCard } from 'src/components/Contents/Card';
 import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
+import { Writing } from 'src/components/Contents/Writing';
 import Dialog from 'src/components/Dialog';
 import SelectFilter from 'src/components/SelectFilter';
 
@@ -70,6 +72,21 @@ const SearchTextField = styled(TextField)(({ theme }) => {
 				opacity: 1,
 			},
 		},
+	};
+});
+
+const SearchResultBox = styled(Box)(({ theme }) => {
+	return {
+		color: theme.palette.grey[300],
+		margin: '32px 0',
+	};
+});
+
+const SearchResultText = styled(Typography)(({ theme }) => {
+	return {
+		display: 'inline-block',
+		fontWeight: '700',
+		color: theme.palette.grey[400],
 	};
 });
 
@@ -249,15 +266,52 @@ const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsI
 	);
 };
 
+const getQueryString = (page: string | null, word: string | null) => {
+	const query = [];
+
+	if (typeof page === 'string') {
+		query.push(`p=${page}`);
+	}
+
+	if (typeof word === 'string' && word !== '') {
+		query.push(`q=${word}`);
+	}
+
+	return query.join('&');
+};
+
 const getData = async (id: number) => {
 	const res = await fetch(`/api/ui-datas/${id}`);
 	const data = await res.json();
 	return data;
 };
 
+const getTextUIDatas = async (q: string | null = null) => {
+	try {
+		const res = await fetch('/api/ui-datas' + (q === null ? '' : '?' + q)).then((data) =>
+			data.json()
+		);
+
+		return res;
+	} catch (e) {
+		console.error(e);
+		return [];
+	}
+};
+
 const Home: TNextPageWithLayout = () => {
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
+
+	const [search, setSearch] = useState<{
+		current: string;
+		request: string;
+		noResult: boolean;
+	}>({
+		current: '',
+		request: '',
+		noResult: false,
+	});
 	const [tags, setTags] = useState<IUITagComponents>({
 		categorys: [],
 		services: [],
@@ -275,14 +329,19 @@ const Home: TNextPageWithLayout = () => {
 			setTags(tagsData);
 		};
 		fetchUITags();
+	}, []);
 
+	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await fetch('/api/ui-datas');
-			setContents({ ...contents, datas: await res.json() });
-			setChecked(true);
+			const res: IUITextData[] = await getTextUIDatas(getQueryString(null, search.request));
+			setContents({ datas: res });
+			setSearch({ ...search, noResult: res.length === 0 });
+			if (res.length !== 0) {
+				setChecked(true);
+			}
 		};
 		fetchUIData();
-	}, []);
+	}, [search.request]);
 
 	const handleDialogClose = () => {
 		setOpen(false);
@@ -335,6 +394,21 @@ const Home: TNextPageWithLayout = () => {
 							흠...뭐라고 쓰지?
 						</Typography>
 						<SearchTextField
+							value={search.current}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter') {
+									setSearch({
+										...search,
+										request: search.current,
+									});
+								}
+							}}
+							onChange={(e) => {
+								setSearch({
+									...search,
+									current: e.target.value,
+								});
+							}}
 							fullWidth
 							placeholder="서비스, 상황을 검색해보세요"
 							InputProps={{
@@ -350,13 +424,21 @@ const Home: TNextPageWithLayout = () => {
 				{/* Contents Box */}
 				<ContentsLayer>
 					{/* Search Result */}
-					{/* <Box>Search Result</Box> */}
+					<Box height="48px">
+						{search.request && (
+							<SearchResultBox className="ctt_text_16 ctt_regular">
+								<SearchResultText>{search.request}</SearchResultText> 검색 결과{' '}
+								<SearchResultText>{contents.datas.length}</SearchResultText>건
+							</SearchResultBox>
+						)}
+					</Box>
 					{/* Filters */}
-					<Box marginTop="48px">
+					<Box>
 						<Stack direction="row" spacing={2}>
 							{/* SelectBox UI TAG */}
 							<SelectFilter
 								id="AppCategoryFilter"
+								disabled={search.noResult}
 								options={tags.categorys.filter((tag) => tag.selected !== true)}
 								label="앱 카테고리"
 								onOptionClick={(event) => {
@@ -393,6 +475,7 @@ const Home: TNextPageWithLayout = () => {
 							/>
 							<SelectFilter
 								id="AppCategoryFilter"
+								disabled={search.noResult}
 								options={tags.services.filter(
 									(tag) => tag.selected === undefined || tag.selected === false
 								)}
@@ -431,6 +514,7 @@ const Home: TNextPageWithLayout = () => {
 							/>
 							<SelectFilter
 								id="AppCategoryFilter"
+								disabled={search.noResult}
 								options={tags.events.filter(
 									(tag) => tag.selected === undefined || tag.selected === false
 								)}
@@ -519,36 +603,46 @@ const Home: TNextPageWithLayout = () => {
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0">
-						<Grid container spacing={2}>
-							{contents.datas.map((item, idx) => {
-								return (
-									// 나중에 검색시 기본적으로 Grow Transition을 사용하여 Rendering 하도록 변경하자.
-									<Grow
-										key={item.id}
-										in={checked}
-										style={{ transformOrigin: '0 0 0' }}
-										{...(checked ? { timeout: 200 + (idx / 3) * 450 } : {})}
-									>
-										<Grid item xs={12} sm={6} md={4}>
-											<Card
-												sx={{
-													padding: '32px',
-													height: '100%',
-													cursor: 'pointer',
-												}}
-												onClick={async () => {
-													const contentsData = await getData(item.id);
-													setViewContent(contentsData);
-													handleDialogOpen();
-												}}
-											>
-												<UITextData item={item} />
-											</Card>
-										</Grid>
-									</Grow>
-								);
-							})}
-						</Grid>
+						{(search.noResult && (
+							<Box textAlign="center">
+								<Image alt="noReulst Character" {...NoResultCharacter} />
+								<Writing className="ctt_text_16 ctt_medium" mb={120}>
+									따혹, 검색 결과가 없어요! <br />
+									다른 키워드로 검색해 보세요.
+								</Writing>
+							</Box>
+						)) || (
+							<Grid container spacing={2}>
+								{contents.datas.map((item, idx) => {
+									return (
+										// 나중에 검색시 기본적으로 Grow Transition을 사용하여 Rendering 하도록 변경하자.
+										<Grow
+											key={item.id}
+											in={checked}
+											style={{ transformOrigin: '0 0 0' }}
+											{...(checked ? { timeout: 200 + (idx / 3) * 450 } : {})}
+										>
+											<Grid item xs={12} sm={6} md={4}>
+												<Card
+													sx={{
+														padding: '32px',
+														height: '100%',
+														cursor: 'pointer',
+													}}
+													onClick={async () => {
+														const contentsData = await getData(item.id);
+														setViewContent(contentsData);
+														handleDialogOpen();
+													}}
+												>
+													<UITextData item={item} />
+												</Card>
+											</Grid>
+										</Grow>
+									);
+								})}
+							</Grid>
+						)}
 					</Box>
 				</ContentsLayer>
 			</Box>

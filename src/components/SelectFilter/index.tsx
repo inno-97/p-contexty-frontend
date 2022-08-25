@@ -9,6 +9,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 	return {
+		'& .Mui-disabled': {
+			background: '#F8F9FA',
+		},
 		width: '240px',
 		input: {
 			'&::placeholder': {
@@ -16,6 +19,7 @@ const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 				opacity: 1,
 			},
 		},
+
 		'& .MuiOutlinedInput-root': {
 			borderRadius: '100px',
 			color: theme.palette.grey[300],
@@ -28,6 +32,9 @@ const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 			'&.Mui-focused fieldset': {
 				borderColor: theme.palette.grey[100],
 				borderWidth: '1px',
+			},
+			'&.Mui-disabled fieldset': {
+				borderColor: '#F8F9FA',
 			},
 		},
 		'& .MuiOutlinedInput-root > .MuiInputAdornment-root': {
@@ -56,6 +63,7 @@ const hasTagItem = (opt: unknown): opt is { value: string | number; label: strin
 
 export const SelectFilter: FC<ISelectFilter> = ({
 	id,
+	disabled,
 	options,
 	onOptionClick,
 	label,
@@ -65,6 +73,7 @@ export const SelectFilter: FC<ISelectFilter> = ({
 	return (
 		<CustomAutoComplete
 			id={id}
+			disabled={disabled}
 			options={options}
 			open={open}
 			onOpen={() => {

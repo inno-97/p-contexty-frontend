@@ -56,6 +56,7 @@ export interface IDialog {
 
 export interface ISelectFilter {
 	id: string;
+	disabled?: boolean;
 	sx?: SxProps;
 	StartIcon?: ReactElement;
 	label?: string;
