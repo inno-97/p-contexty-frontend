@@ -102,7 +102,39 @@ export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onTags =
 							e.preventDefault();
 							e.stopPropagation();
 
-							await navigator.clipboard.writeText(item.text);
+							if (typeof navigator.clipboard == 'undefined') {
+								const textArea = document.createElement('textarea');
+								textArea.value = item.text;
+								textArea.style.position = 'fixed'; //avoid scrolling to bottom
+								document.body.appendChild(textArea);
+								textArea.focus();
+								textArea.select();
+
+								try {
+									const successful = document.execCommand('copy');
+									if (successful) {
+										// success
+									} else {
+										// failed
+										console.log('Failed to copy text');
+									}
+								} catch (err) {
+									console.error('Was not possible to copy te text: ', err);
+								}
+
+								document.body.removeChild(textArea);
+								return;
+							}
+
+							navigator.clipboard.writeText(item.text).then(
+								function () {
+									// success
+								},
+								function () {
+									// failed
+									console.log('Failed to copy text');
+								}
+							);
 						}}
 					>
 						Copy
