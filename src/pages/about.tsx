@@ -134,8 +134,14 @@ const About: TNextPageWithLayout = () => {
 											<Avatar
 												alt={item.name}
 												sx={{ width: 32, height: 32 }}
+												src={item.image}
 											/>
-											<Typography className="ctt_text_14 ctt_bold">
+											<Typography
+												className="ctt_text_14 ctt_bold"
+												sx={{
+													marginLeft: '4px !important',
+												}}
+											>
 												{item.name}
 											</Typography>
 											{item.links.map((link) => {

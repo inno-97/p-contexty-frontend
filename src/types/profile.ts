@@ -7,6 +7,7 @@ export type TLink = {
 /* Interface */
 export interface IProfile {
 	name: string;
+	image?: string;
 	links: TLink[];
 }
 
