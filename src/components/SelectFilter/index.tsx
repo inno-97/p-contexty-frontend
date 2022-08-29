@@ -107,7 +107,7 @@ export const SelectFilter: FC<ISelectFilter> = ({
 			componentsProps={{
 				paper: {
 					style: {
-						borderRadius: '32px',
+						borderRadius: '16px',
 						background: '#ffffff',
 						boxShadow: '0px 12px 32px rgba(0, 0, 0, 0.16)',
 					},
