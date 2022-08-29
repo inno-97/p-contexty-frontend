@@ -356,43 +356,41 @@ const Home: TNextPageWithLayout = () => {
 			<Box>
 				{/* Search Box */}
 				<SearchBox elevation={0}>
-					<Box
-						sx={{
-							position: 'relative',
-							width: '580px',
-							textAlign: 'center',
-						}}
-					>
-						<Box
-							sx={{
-								position: 'absolute',
-								top: '-18px',
-								left: '62px',
-								width: '196px',
-								height: '196px',
-								zIndex: 1,
-							}}
-						>
-							<Image alt="Banner Character" {...BannerCharacter} />
+					<Box position="absolute" width={580} textAlign="center">
+						<Box display="inline-block" position="relative" width={269} height={196}>
+							<Box
+								display="inline-block"
+								width={196}
+								height={196}
+								zIndex={1}
+								position="absolute"
+								left="-43px"
+							>
+								<Image alt="Banner Character" {...BannerCharacter} />
+							</Box>
+							<Typography
+								sx={{
+									position: 'absolute',
+									right: 0,
+									top: '18px',
+									borderRadius: '16px',
+									width: '166px',
+									display: 'inline-block',
+									backgroundColor: '#DDD7CF',
+									color: '#928A7F',
+									padding: '16px 20px',
+									fontWeight: 600,
+									fontSize: '20px',
+									lineHeight: '24px',
+									letterSpacing: '-1px',
+									zIndex: 0,
+								}}
+							>
+								흠...뭐라고 쓰지?
+							</Typography>
 						</Box>
-						<Typography
-							sx={{
-								position: 'relative',
-								borderRadius: '16px',
-								display: 'inline-block',
-								backgroundColor: '#DDD7CF',
-								color: '#928A7F',
-								padding: '16px 20px',
-								fontWeight: 600,
-								fontSize: '20px',
-								lineHeight: '24px',
-								letterSpacing: '-1px',
-								marginBottom: '30px',
-								zIndex: 0,
-							}}
-						>
-							흠...뭐라고 쓰지?
-						</Typography>
+					</Box>
+					<Box width={580} textAlign="center" mt="80px">
 						<SearchTextField
 							value={search.current}
 							onKeyDown={(e) => {
