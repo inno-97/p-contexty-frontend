@@ -32,7 +32,13 @@ const ERROR404: TNextPageWithLayout = () => {
 						}}
 					>
 						<Image layout="fill" alt="forbidden image" src={Forbidden.src} />
-						<Image layout="intrinsic" alt="404 Error Character" {...ErrorCharacter} />
+						<Image
+							layout="intrinsic"
+							alt="404 Error Character"
+							{...ErrorCharacter}
+							width={322}
+							height={130}
+						/>
 					</Box>
 					<Writing className="ctt_text_14 ctt_regular" textAlign="center">
 						<Paragraph className="ctt_text_18 ctt_bold" mb={8}>

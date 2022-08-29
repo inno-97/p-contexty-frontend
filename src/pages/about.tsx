@@ -151,7 +151,12 @@ const About: TNextPageWithLayout = () => {
 
 					{/* Bottom Image */}
 					<Box sx={{ mt: '80px' }}>
-						<BottomImage alt="About Page Character" {...BottomCharacter} />
+						<BottomImage
+							alt="About Page Character"
+							{...BottomCharacter}
+							width={149}
+							height={130}
+						/>
 					</Box>
 				</Contents>
 			</SubContentsLayer>

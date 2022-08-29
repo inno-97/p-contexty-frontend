@@ -605,7 +605,12 @@ const Home: TNextPageWithLayout = () => {
 					<Box margin="56px 0">
 						{(search.noResult && (
 							<Box textAlign="center">
-								<Image alt="noReulst Character" {...NoResultCharacter} />
+								<Image
+									alt="noReulst Character"
+									{...NoResultCharacter}
+									width={210}
+									height={170}
+								/>
 								<Writing className="ctt_text_16 ctt_medium" mb={120}>
 									따혹, 검색 결과가 없어요! <br />
 									다른 키워드로 검색해 보세요.
