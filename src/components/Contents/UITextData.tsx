@@ -5,7 +5,9 @@ import type { IUITextComponent } from 'src/types/components';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 
-import { Stack, Box, Button, Divider } from '@mui/material';
+import { Stack, Box, Button, Divider, Typography } from '@mui/material';
+
+import { abbreviate } from 'src/utils/numberFomatter';
 
 import CopySvg from '/public/copy.svg';
 
@@ -46,6 +48,10 @@ const CopyButton = styled(({ ...props }: ButtonProps) => (
 		padding: '6px 12px 6px 10px',
 		'& .MuiButton-startIcon': {
 			marginRight: '4px',
+		},
+		'& > .MuiTypography-root': {
+			color: theme.palette.grey[200],
+			marginLeft: '4px',
 		},
 	};
 });
@@ -138,6 +144,9 @@ export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onTags =
 						}}
 					>
 						Copy
+						<Typography component="p" className="ctt_text_14 ctt_regular">
+							{abbreviate(item.copyCount === 0 ? undefined : item.copyCount)}
+						</Typography>
 					</CopyButton>
 					{onTags === true && (
 						<TagsBox className="ctt_text_14 ctt_medium">
