@@ -2,10 +2,13 @@ import type { FC } from 'react';
 import type { ButtonProps, DividerProps } from '@mui/material';
 import type { IUITextComponent } from 'src/types/components';
 
+import { Fragment, useState } from 'react';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 
-import { Stack, Box, Button, Divider, Typography } from '@mui/material';
+import { Stack, Box, Button, Divider, Typography, ClickAwayListener } from '@mui/material';
+
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
 import { abbreviate } from 'src/utils/numberFomatter';
 
@@ -56,6 +59,30 @@ const CopyButton = styled(({ ...props }: ButtonProps) => (
 	};
 });
 
+const BootstrapTooltip = styled(({ className, ...props }: TooltipProps) => (
+	<Tooltip
+		{...props}
+		PopperProps={{
+			disablePortal: true,
+		}}
+		disableFocusListener
+		disableHoverListener
+		disableTouchListener
+		arrow
+		placement="top"
+		classes={{ popper: className, tooltip: 'ctt_text_14 ctt_medium' }}
+	/>
+))(({ theme }) => ({
+	[`& .${tooltipClasses.arrow}`]: {
+		color: theme.palette.grey[400],
+	},
+	[`& .${tooltipClasses.tooltip}`]: {
+		color: '#F8F9FA',
+		backgroundColor: theme.palette.grey[400],
+		padding: '8px 12px',
+	},
+}));
+
 const TagsDivider = styled(({ ...props }: DividerProps) => (
 	<Divider {...props} orientation="vertical" flexItem />
 ))({
@@ -66,7 +93,34 @@ const TagsDivider = styled(({ ...props }: DividerProps) => (
 	borderColor: '#D9D9D9',
 });
 
-export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onTags = true }) => {
+export const UITextData: FC<IUITextComponent> = ({
+	item,
+	onCopy = true,
+	onTags = true,
+	handleCopy,
+}) => {
+	const [open, setOpen] = useState(false);
+
+	const [message, setMessage] = useState('🎉 첫 번째로 복사했어요!');
+
+	const successCopy = () => {
+		if ((item.copied ?? false) === false) {
+			handleCopy(item.id);
+
+			if (item.copyCount === 0) {
+				setOpen(true);
+
+				window.setTimeout(() => {
+					setOpen(false);
+				}, 2500);
+			}
+		}
+	};
+
+	const handleCloseTooltip = () => {
+		setOpen(false);
+	};
+
 	return (
 		<Stack
 			sx={{ height: '100%' }}
@@ -103,51 +157,63 @@ export const UITextData: FC<IUITextComponent> = ({ item, onCopy = true, onTags =
 					justifyContent="space-between"
 					alignItems="center"
 				>
-					<CopyButton
-						onClick={async (e) => {
-							e.preventDefault();
-							e.stopPropagation();
+					<ClickAwayListener onClickAway={handleCloseTooltip}>
+						<div>
+							<BootstrapTooltip title={<Fragment>{message}</Fragment>} open={open}>
+								<div>
+									<CopyButton
+										onClick={async (e) => {
+											e.preventDefault();
+											e.stopPropagation();
 
-							if (typeof navigator.clipboard == 'undefined') {
-								const textArea = document.createElement('textarea');
-								textArea.value = item.text;
-								textArea.style.position = 'fixed'; //avoid scrolling to bottom
-								document.body.appendChild(textArea);
-								textArea.focus();
-								textArea.select();
+											if (typeof navigator.clipboard == 'undefined') {
+												const textArea = document.createElement('textarea');
+												textArea.value = item.text;
+												textArea.style.position = 'fixed'; //avoid scrolling to bottom
+												document.body.appendChild(textArea);
+												textArea.focus();
+												textArea.select();
 
-								try {
-									const successful = document.execCommand('copy');
-									if (successful) {
-										// success
-									} else {
-										// failed
-										console.log('Failed to copy text');
-									}
-								} catch (err) {
-									console.error('Was not possible to copy te text: ', err);
-								}
+												try {
+													const successful = document.execCommand('copy');
+													if (successful) {
+														// success
+														successCopy();
+													} else {
+														// failed
+														console.log('Failed to copy text');
+													}
+												} catch (err) {
+													console.error(
+														'Was not possible to copy te text: ',
+														err
+													);
+												}
 
-								document.body.removeChild(textArea);
-								return;
-							}
+												document.body.removeChild(textArea);
+												return;
+											}
 
-							navigator.clipboard.writeText(item.text).then(
-								function () {
-									// success
-								},
-								function () {
-									// failed
-									console.log('Failed to copy text');
-								}
-							);
-						}}
-					>
-						Copy
-						<Typography component="p" className="ctt_text_14 ctt_regular">
-							{abbreviate(item.copyCount === 0 ? undefined : item.copyCount)}
-						</Typography>
-					</CopyButton>
+											navigator.clipboard
+												.writeText(item.text)
+												.then(successCopy, function () {
+													// failed
+													console.log('Failed to copy text');
+												});
+										}}
+									>
+										Copy
+										<Typography
+											component="p"
+											className="ctt_text_14 ctt_regular"
+										>
+											{abbreviate(item.copyCount || undefined)}
+										</Typography>
+									</CopyButton>
+								</div>
+							</BootstrapTooltip>
+						</div>
+					</ClickAwayListener>
 					{onTags === true && (
 						<TagsBox className="ctt_text_14 ctt_medium">
 							{item.tags?.category.name}

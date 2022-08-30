@@ -8,7 +8,7 @@ export type TUITag = {
 
 export type TUIData = {
 	id: number;
-	copyCount?: number;
+	copyCount: number;
 	timestamp: number;
 	tags?: {
 		category: TUITag;
@@ -21,6 +21,7 @@ export type TUIData = {
 /* Interface */
 export interface IUITextData extends TUIData {
 	text: string;
+	copied?: boolean;
 }
 
 export interface IUIDatas {

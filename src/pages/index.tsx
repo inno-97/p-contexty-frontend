@@ -402,6 +402,24 @@ const Home: TNextPageWithLayout = () => {
 		threshold: 1,
 	});
 
+	const handleCopy = useCallback((id: number) => {
+		setContents((prev) => {
+			const newDatas = [...prev.datas];
+			const targetData = newDatas[id];
+
+			newDatas[id] = {
+				...targetData,
+				copied: true,
+				copyCount: targetData.copyCount + 1,
+			};
+
+			return {
+				...prev,
+				datas: newDatas,
+			};
+		});
+	}, []);
+
 	const [open, setOpen] = useState(false);
 	const [checked, setChecked] = useState(false);
 
@@ -666,7 +684,10 @@ const Home: TNextPageWithLayout = () => {
 														handleDialogOpen();
 													}}
 												>
-													<UITextData item={item} />
+													<UITextData
+														item={item}
+														handleCopy={handleCopy}
+													/>
 												</Card>
 											</Grid>
 										</Grow>
@@ -748,7 +769,11 @@ const Home: TNextPageWithLayout = () => {
 									minHeight: '200px',
 								}}
 							>
-								<UITextData item={viewContent} onTags={false} />
+								<UITextData
+									item={viewContent}
+									onTags={false}
+									handleCopy={handleCopy}
+								/>
 							</Card>
 							{/* Reference */}
 							{/* 서비스 오픈 후 예정 */}
