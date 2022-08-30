@@ -1,4 +1,3 @@
-import type { SyntheticEvent } from 'react';
 import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
 import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
