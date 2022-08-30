@@ -30,6 +30,7 @@ import NoResultCharacter from '/public/characters/noResult.png';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
+import NoImage from '/public/noImage.svg';
 
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { ContentsLayer } from 'src/components/CustomLayer';
@@ -153,6 +154,8 @@ const ViewImage = styled(Paper)({
 	width: '270px',
 	height: '586px',
 	borderRadius: '8px',
+	display: 'flex',
+	justifyContent: 'center',
 });
 
 const ViewHeaderChip = styled(({ ...props }: ChipProps) => (
@@ -698,7 +701,15 @@ const Home: TNextPageWithLayout = () => {
 				) : (
 					<Stack direction="row" spacing={4}>
 						{/* Image Box */}
-						<ViewImage elevation={0}>image</ViewImage>
+						<ViewImage elevation={0}>
+							{(typeof viewContent.image === 'string' && (
+								<Image
+									alt="Text UI Data Image"
+									layout="fill"
+									src={viewContent.image}
+								/>
+							)) || <Image alt="No Image" {...NoImage} />}
+						</ViewImage>
 						{/* Detail Box */}
 						<ViewDetail spacing={3}>
 							{/* Header */}
