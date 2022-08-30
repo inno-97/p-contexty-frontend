@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from 'react';
 import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
 import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
@@ -351,6 +352,36 @@ const Home: TNextPageWithLayout = () => {
 		});
 	}, []);
 
+	const handleSetTag = useCallback(
+		(target: string | number | null, type: string, selected: boolean) => {
+			let tagId = target;
+
+			if (typeof target === 'string' && !Number.isNaN(target)) {
+				tagId = parseInt(target);
+			}
+
+			if (tagId !== null) {
+				setTags((preTags) => {
+					const newTags = preTags[type].map((item) => {
+						if (item.id === tagId) {
+							return {
+								...item,
+								selected: selected,
+							};
+						}
+						return item;
+					});
+
+					return {
+						...preTags,
+						[type]: newTags,
+					};
+				});
+			}
+		},
+		[]
+	);
+
 	const handleIntersect = useCallback(() => {
 		if (loading === false) {
 			setPage((prev) => {
@@ -521,150 +552,64 @@ const Home: TNextPageWithLayout = () => {
 						)}
 					</Box>
 					{/* Filters */}
-					<Box>
-						<Stack direction="row" spacing={2}>
-							{/* SelectBox UI TAG */}
-							<SelectFilter
-								id="AppCategoryFilter"
-								disabled={search.noResult}
-								options={tags.categorys.filter((tag) => tag.selected !== true)}
-								label="앱 카테고리"
-								onOptionClick={(event) => {
-									const targetValue: string | null =
-										event.currentTarget.getAttribute('value') || null;
-
-									if (
-										typeof targetValue === 'string' &&
-										!Number.isNaN(targetValue)
-									) {
-										const tagId = parseInt(targetValue);
-
-										setTags((preTags) => {
-											const newTags = preTags.categorys.map((item) => {
-												if (item.id === tagId) {
-													return {
-														...item,
-														selected: true,
-													};
-												}
-												return item;
-											});
-
-											return {
-												...preTags,
-												categorys: newTags,
-											};
-										});
-									}
-								}}
-								StartIcon={
-									<FilterIcon alt="App Category Filter" {...filter_category} />
-								}
-							/>
-							<SelectFilter
-								id="AppCategoryFilter"
-								disabled={search.noResult}
-								options={tags.services.filter(
-									(tag) => tag.selected === undefined || tag.selected === false
-								)}
-								label="서비스 명"
-								onOptionClick={(event) => {
-									const targetValue: string | null =
-										event.currentTarget.getAttribute('value') || null;
-
-									if (
-										typeof targetValue === 'string' &&
-										!Number.isNaN(targetValue)
-									) {
-										const tagId = parseInt(targetValue);
-
-										setTags((preTags) => {
-											const newTags = preTags.services.map((item) => {
-												if (item.id === tagId) {
-													return {
-														...item,
-														selected: true,
-													};
-												}
-												return item;
-											});
-
-											return {
-												...preTags,
-												services: newTags,
-											};
-										});
-									}
-								}}
-								StartIcon={
-									<FilterIcon alt="Service Name Filter" {...filter_service} />
-								}
-							/>
-							<SelectFilter
-								id="AppCategoryFilter"
-								disabled={search.noResult}
-								options={tags.events.filter(
-									(tag) => tag.selected === undefined || tag.selected === false
-								)}
-								label="상황"
-								onOptionClick={(event) => {
-									const targetValue: string | null =
-										event.currentTarget.getAttribute('value') || null;
-
-									if (
-										typeof targetValue === 'string' &&
-										!Number.isNaN(targetValue)
-									) {
-										const tagId = parseInt(targetValue);
-
-										setTags((preTags) => {
-											const newTags = preTags.events.map((item) => {
-												if (item.id === tagId) {
-													return {
-														...item,
-														selected: true,
-													};
-												}
-												return item;
-											});
-
-											return {
-												...preTags,
-												events: newTags,
-											};
-										});
-									}
-								}}
-								StartIcon={
-									<FilterIcon alt="Situation Filter" {...filter_situation} />
-								}
-							/>
-						</Stack>
-					</Box>
+					<Stack direction="row" spacing={2}>
+						{/* SelectBox UI TAG */}
+						<SelectFilter
+							id="AppCategoryFilter"
+							disabled={search.noResult}
+							options={tags.categorys.filter((tag) => tag.selected !== true)}
+							label="앱 카테고리"
+							onOptionClick={(event) =>
+								handleSetTag(
+									event.currentTarget.getAttribute('value'),
+									'categorys',
+									true
+								)
+							}
+							StartIcon={
+								<FilterIcon alt="App Category Filter" {...filter_category} />
+							}
+						/>
+						<SelectFilter
+							id="AppCategoryFilter"
+							disabled={search.noResult}
+							options={tags.services.filter(
+								(tag) => tag.selected === undefined || tag.selected === false
+							)}
+							label="서비스 명"
+							onOptionClick={(event) =>
+								handleSetTag(
+									event.currentTarget.getAttribute('value'),
+									'services',
+									true
+								)
+							}
+							StartIcon={<FilterIcon alt="Service Name Filter" {...filter_service} />}
+						/>
+						<SelectFilter
+							id="AppCategoryFilter"
+							disabled={search.noResult}
+							options={tags.events.filter(
+								(tag) => tag.selected === undefined || tag.selected === false
+							)}
+							label="상황"
+							onOptionClick={(event) =>
+								handleSetTag(
+									event.currentTarget.getAttribute('value'),
+									'events',
+									true
+								)
+							}
+							StartIcon={<FilterIcon alt="Situation Filter" {...filter_situation} />}
+						/>
+					</Stack>
 					{/* Display Current Filters */}
 					<Box marginTop="24px">
 						{SelectedTags(tags, (target) => {
 							if (target === 'all') {
 								handleClearTags();
 							} else {
-								const tagType: string = target.type + 's';
-
-								setTags((preTags) => {
-									const newTags = preTags[tagType].map((item) => {
-										if (item.id === target.id) {
-											return {
-												...item,
-												selected: false,
-											};
-										}
-										return item;
-									});
-
-									return {
-										...preTags,
-										[tagType]: newTags,
-									};
-								});
+								handleSetTag(target.id, target.type + 's', false);
 							}
 						})}
 					</Box>
