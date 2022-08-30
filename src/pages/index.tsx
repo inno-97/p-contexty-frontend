@@ -19,6 +19,7 @@ import {
 	Avatar,
 	Chip,
 	Grow,
+	CircularProgress,
 } from '@mui/material';
 
 import { Close, Search, Refresh } from '@mui/icons-material';
@@ -300,6 +301,7 @@ const getTextUIDatas = async (q: string | null = null) => {
 };
 
 const Home: TNextPageWithLayout = () => {
+	const [loading, setLoading] = useState(true);
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
@@ -321,6 +323,14 @@ const Home: TNextPageWithLayout = () => {
 	const [open, setOpen] = useState(false);
 	const [checked, setChecked] = useState(false);
 
+	const handleDialogClose = () => {
+		setOpen(false);
+	};
+
+	const handleDialogOpen = () => {
+		setOpen(true);
+	};
+
 	useEffect(() => {
 		const fetchUITags = async () => {
 			const res = await fetch('/api/ui-tags');
@@ -332,8 +342,11 @@ const Home: TNextPageWithLayout = () => {
 	}, []);
 
 	useEffect(() => {
+		setLoading(true);
+
 		const fetchUIData = async () => {
 			const res: IUITextData[] = await getTextUIDatas(getQueryString(null, search.request));
+			setLoading(false);
 			setContents({ datas: res });
 			setSearch({ ...search, noResult: res.length === 0 });
 			if (res.length !== 0) {
@@ -342,14 +355,6 @@ const Home: TNextPageWithLayout = () => {
 		};
 		fetchUIData();
 	}, [search.request]);
-
-	const handleDialogClose = () => {
-		setOpen(false);
-	};
-
-	const handleDialogOpen = () => {
-		setOpen(true);
-	};
 
 	return (
 		<Fragment>
@@ -600,7 +605,7 @@ const Home: TNextPageWithLayout = () => {
 						})}
 					</Box>
 					{/* Contents */}
-					<Box margin="56px 0">
+					<Box margin="56px 0" minHeight={430}>
 						{(search.noResult && (
 							<Box textAlign="center">
 								<Image
@@ -646,6 +651,9 @@ const Home: TNextPageWithLayout = () => {
 								})}
 							</Grid>
 						)}
+						<Box textAlign="center" mt={2} display={loading ? 'block' : 'none'}>
+							<CircularProgress size={100} thickness={7} sx={{ color: '#F1F3F5' }} />
+						</Box>
 					</Box>
 				</ContentsLayer>
 			</Box>

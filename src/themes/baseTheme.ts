@@ -70,5 +70,12 @@ export const baseTheme: ThemeOptions = {
 				},
 			},
 		},
+		MuiCircularProgress: {
+			styleOverrides: {
+				circle: {
+					strokeLinecap: 'round',
+				},
+			},
+		},
 	},
 };
