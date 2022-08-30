@@ -16,14 +16,18 @@ export const UIDatas = (req: NextApiRequest, res: NextApiResponse) => {
 		resultData = resultData.filter((item) => item.text.includes(q));
 	}
 
-	if (typeof p === 'number') {
+	if (typeof p === 'string') {
 		page = parseInt(p) - 1;
 	}
 
-	const test = resultData.splice(page * limit, limit);
+	const totalPage = Math.ceil(resultData.length / limit);
+	const datas = resultData.splice(page * limit, limit);
 
 	if (method === 'GET') {
-		res.status(200).json(test);
+		res.status(200).json({
+			totalPage: totalPage,
+			datas: datas,
+		});
 	}
 };
 

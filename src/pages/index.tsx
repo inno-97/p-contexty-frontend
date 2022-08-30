@@ -2,7 +2,8 @@ import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui
 import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useCallback, useEffect, Fragment } from 'react';
+import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import {
@@ -267,10 +268,10 @@ const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsI
 	);
 };
 
-const getQueryString = (page: string | null, word: string | null) => {
+const getQueryString = (page: number | null, word: string | null) => {
 	const query = [];
 
-	if (typeof page === 'string') {
+	if (typeof page === 'number') {
 		query.push(`p=${page}`);
 	}
 
@@ -320,6 +321,54 @@ const Home: TNextPageWithLayout = () => {
 		events: [],
 	});
 
+	const [page, setPage] = useState({
+		cur: 0,
+		total: 1,
+	});
+
+	const handleClearTags = useCallback(() => {
+		setTags((preTags) => {
+			return {
+				categorys: preTags.categorys.map((item) => {
+					if (item.selected === true) {
+						item.selected = false;
+					}
+					return item;
+				}),
+				services: preTags.services.map((item) => {
+					if (item.selected === true) {
+						item.selected = false;
+					}
+					return item;
+				}),
+				events: preTags.events.map((item) => {
+					if (item.selected === true) {
+						item.selected = false;
+					}
+					return item;
+				}),
+			};
+		});
+	}, []);
+
+	const handleIntersect = useCallback(() => {
+		if (loading === false) {
+			setPage((prev) => {
+				if (prev.total > prev.cur) {
+					return {
+						...prev,
+						cur: prev.cur + 1,
+					};
+				}
+				return prev;
+			});
+		}
+	}, [loading]);
+
+	const [setTarget] = useInfiniteScroll(handleIntersect, {
+		threshold: 1,
+	});
+
 	const [open, setOpen] = useState(false);
 	const [checked, setChecked] = useState(false);
 
@@ -339,22 +388,48 @@ const Home: TNextPageWithLayout = () => {
 			setTags(tagsData);
 		};
 		fetchUITags();
+
+		setPage((prev) => {
+			return {
+				...prev,
+				cur: 1,
+			};
+		});
 	}, []);
 
 	useEffect(() => {
-		setLoading(true);
-
 		const fetchUIData = async () => {
-			const res: IUITextData[] = await getTextUIDatas(getQueryString(null, search.request));
+			const res = await getTextUIDatas(getQueryString(page.cur, search.request));
+			const datas: IUITextData[] = res.datas;
+
+			if (res.totalPage !== page.total) {
+				setPage((prev) => {
+					return {
+						...prev,
+						total: res.totalPage,
+					};
+				});
+			}
+
 			setLoading(false);
-			setContents({ datas: res });
-			setSearch({ ...search, noResult: res.length === 0 });
+
+			if (datas.length !== 0) {
+				setContents((prev) => {
+					return { ...prev, datas: [...prev.datas, ...datas] };
+				});
+			}
+
+			setSearch({ ...search, noResult: datas.length === 0 });
 			if (res.length !== 0) {
 				setChecked(true);
 			}
 		};
-		fetchUIData();
-	}, [search.request]);
+
+		if (page.cur !== 0) {
+			setLoading(true);
+			fetchUIData();
+		}
+	}, [search.request, page.cur]);
 
 	return (
 		<Fragment>
@@ -560,28 +635,7 @@ const Home: TNextPageWithLayout = () => {
 					<Box marginTop="24px">
 						{SelectedTags(tags, (target) => {
 							if (target === 'all') {
-								setTags((preTags) => {
-									return {
-										categorys: preTags.categorys.map((item) => {
-											if (item.selected === true) {
-												item.selected = false;
-											}
-											return item;
-										}),
-										services: preTags.services.map((item) => {
-											if (item.selected === true) {
-												item.selected = false;
-											}
-											return item;
-										}),
-										events: preTags.events.map((item) => {
-											if (item.selected === true) {
-												item.selected = false;
-											}
-											return item;
-										}),
-									};
-								});
+								handleClearTags();
 							} else {
 								const tagType: string = target.type + 's';
 
@@ -606,7 +660,7 @@ const Home: TNextPageWithLayout = () => {
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0" minHeight={430}>
-						{(search.noResult && (
+						{(search.noResult && !loading && (
 							<Box textAlign="center">
 								<Image
 									alt="noReulst Character"
@@ -628,9 +682,21 @@ const Home: TNextPageWithLayout = () => {
 											key={item.id}
 											in={checked}
 											style={{ transformOrigin: '0 0 0' }}
-											{...(checked ? { timeout: 200 + (idx / 3) * 450 } : {})}
+											{...(checked && page.cur === 1
+												? { timeout: 200 + (idx / 3) * 250 }
+												: {})}
 										>
-											<Grid item xs={12} sm={6} md={4}>
+											<Grid
+												item
+												xs={12}
+												sm={6}
+												md={4}
+												ref={
+													contents.datas.length - 1 === idx
+														? setTarget
+														: null
+												}
+											>
 												<Card
 													sx={{
 														padding: '32px',
