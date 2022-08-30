@@ -478,6 +478,16 @@ const Home: TNextPageWithLayout = () => {
 									setSearch({
 										...search,
 										request: search.current,
+										noResult: false,
+									});
+
+									handleClearTags();
+
+									setContents({ datas: [] });
+
+									setPage({
+										cur: 1,
+										total: 1,
 									});
 								}
 							}}
