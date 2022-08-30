@@ -718,7 +718,7 @@ const Home: TNextPageWithLayout = () => {
 							</Grid>
 						)}
 						<Box textAlign="center" mt={2} display={loading ? 'block' : 'none'}>
-							<CircularProgress size={100} thickness={7} sx={{ color: '#F1F3F5' }} />
+							<CircularProgress size={48} thickness={7} sx={{ color: '#F1F3F5' }} />
 						</Box>
 					</Box>
 				</ContentsLayer>
