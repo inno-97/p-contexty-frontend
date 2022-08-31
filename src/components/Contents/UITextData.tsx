@@ -80,6 +80,7 @@ const BootstrapTooltip = styled(({ className, ...props }: TooltipProps) => (
 		color: '#F8F9FA',
 		backgroundColor: theme.palette.grey[400],
 		padding: '8px 12px',
+		borderRadius: '8px',
 	},
 }));
 
