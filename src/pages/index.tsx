@@ -286,16 +286,16 @@ const getQueryString = (page: number | null, word: string | null) => {
 };
 
 const getData = async (id: number) => {
-	const res = await fetch(`/api/ui-datas/${id}`);
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
 	const data = await res.json();
 	return data;
 };
 
 const getTextUIDatas = async (q: string | null = null) => {
 	try {
-		const res = await fetch('/api/ui-datas' + (q === null ? '' : '?' + q)).then((data) =>
-			data.json()
-		);
+		const res = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
+		).then((data) => data.json());
 
 		return res;
 	} catch (e) {
@@ -433,7 +433,7 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUITags = async () => {
-			const res = await fetch('/api/ui-tags');
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
 			const tagsData = await res.json();
 
 			setTags(tagsData);
