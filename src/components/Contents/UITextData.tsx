@@ -103,20 +103,23 @@ export const UITextData: FC<IUITextComponent> = ({
 }) => {
 	const [open, setOpen] = useState(false);
 
-	const [message, setMessage] = useState('🎉 첫 번째로 복사했어요!');
+	const [message, setMessage] = useState('복사 했어요!');
 
 	const successCopy = () => {
-		if ((item.copied ?? false) === false) {
-			handleCopy(item.id);
+		// if ((item.copied ?? false) === false) {
+		handleCopy(item.id);
 
-			if (item.copyCount === 0) {
-				setOpen(true);
-
-				window.setTimeout(() => {
-					setOpen(false);
-				}, 2500);
-			}
+		if (item.copyCount === 0) {
+			setMessage('🎉 첫 번째로 복사했어요!');
+		} else {
+			setMessage('복사 했어요!');
 		}
+		setOpen(true);
+
+		window.setTimeout(() => {
+			setOpen(false);
+		}, 2500);
+		// }
 	};
 
 	const handleCloseTooltip = () => {
