@@ -404,14 +404,17 @@ const Home: TNextPageWithLayout = () => {
 
 	const handleCopy = useCallback((id: number) => {
 		setContents((prev) => {
-			const newDatas = [...prev.datas];
-			const targetData = newDatas[id];
+			const newDatas = prev.datas.map((item) => {
+				if (item.id !== id) {
+					return item;
+				}
 
-			newDatas[id] = {
-				...targetData,
-				copied: true,
-				copyCount: targetData.copyCount + 1,
-			};
+				return {
+					...item,
+					copied: true,
+					copyCount: item.copyCount + 1,
+				};
+			});
 
 			return {
 				...prev,
