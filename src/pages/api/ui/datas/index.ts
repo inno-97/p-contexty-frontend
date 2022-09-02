@@ -21,11 +21,13 @@ export const UIDatas = (req: NextApiRequest, res: NextApiResponse) => {
 	}
 
 	const totalPage = Math.ceil(resultData.length / limit);
+	const totalCount = resultData.length;
 	const datas = resultData.splice(page * limit, limit);
 
 	if (method === 'GET') {
 		res.status(200).json({
 			totalPage: totalPage,
+			totalCount: totalCount,
 			datas: datas,
 		});
 	}
