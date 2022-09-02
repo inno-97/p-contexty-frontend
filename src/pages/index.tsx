@@ -316,15 +316,6 @@ const Home: TNextPageWithLayout = () => {
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
-	const [search, setSearch] = useState<{
-		current: string;
-		request: string;
-		noResult: boolean;
-	}>({
-		current: '',
-		request: '',
-		noResult: false,
-	});
 	const [tags, setTags] = useState<IUITagComponents>({
 		categorys: [],
 		services: [],
@@ -335,6 +326,38 @@ const Home: TNextPageWithLayout = () => {
 		cur: 0, // 개발환경에서 맨 처음 useEffect에서 두번씩 조회해서 페이지 첫 로딩시에는 0으로 셋팅
 		totalPage: 1,
 		totalCount: 0,
+	});
+
+	const [search, setSearch] = useState<{
+		current: string;
+		request: string;
+		noResult: boolean;
+	}>({
+		current: '',
+		request: '',
+		noResult: false,
+	});
+
+	const handleIntersect = useCallback(() => {
+		if (loading === false) {
+			setLoading(true);
+
+			setPage((prev) => {
+				if (prev.totalPage > prev.cur) {
+					return {
+						...prev,
+						cur: prev.cur + 1,
+					};
+				}
+
+				setLoading(false);
+				return prev;
+			});
+		}
+	}, [loading]);
+
+	const [setTarget] = useInfiniteScroll(handleIntersect, {
+		threshold: 1,
 	});
 
 	const handleClearTags = useCallback(() => {
@@ -391,24 +414,6 @@ const Home: TNextPageWithLayout = () => {
 		},
 		[]
 	);
-
-	const handleIntersect = useCallback(() => {
-		if (loading === false) {
-			setPage((prev) => {
-				if (prev.totalPage > prev.cur) {
-					return {
-						...prev,
-						cur: prev.cur + 1,
-					};
-				}
-				return prev;
-			});
-		}
-	}, [loading]);
-
-	const [setTarget] = useInfiniteScroll(handleIntersect, {
-		threshold: 1,
-	});
 
 	const handleCopy = useCallback((id: number) => {
 		setContents((prev) => {
