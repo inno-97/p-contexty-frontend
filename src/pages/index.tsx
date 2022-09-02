@@ -791,8 +791,15 @@ const Home: TNextPageWithLayout = () => {
 							{(typeof viewContent.image === 'string' && (
 								<Image
 									alt="Text UI Data Image"
-									layout="fill"
-									src={viewContent.image}
+									width="270px"
+									height="586px"
+									onError={(e) => {
+										setViewContent({
+											...viewContent,
+											image: undefined,
+										});
+									}}
+									src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
 								/>
 							)) || <Image alt="No Image" {...NoImage} />}
 						</ViewImage>
