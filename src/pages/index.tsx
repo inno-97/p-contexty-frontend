@@ -301,8 +301,7 @@ const getData = async (id: number) => {
 const getTextUIDatas = async (q: string | null = null) => {
 	try {
 		const res = await fetch(
-			//`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
-			`https://api.contexty.kr/ui/datas${q === null ? '' : '?' + q}`
+			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
 		).then((data) => data.json());
 
 		return res;
@@ -445,8 +444,7 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUITags = async () => {
-			//const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
-			const res = await fetch(`https://api.contexty.kr/ui/tags`);
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
 			const tagsData = await res.json();
 
 			setTags(tagsData);
