@@ -271,7 +271,12 @@ const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsI
 	);
 };
 
-const getQueryString = (page: number | null, word: string | null, datas: IUITextData[]) => {
+const getQueryString = (
+	page: number | null,
+	word: string | null,
+	tags: string | null,
+	datas: IUITextData[]
+) => {
 	const query = [];
 	let default_mode = true;
 
@@ -281,6 +286,11 @@ const getQueryString = (page: number | null, word: string | null, datas: IUIText
 
 	if (typeof word === 'string' && word !== '') {
 		query.push(`q=${word}`);
+		default_mode = false;
+	}
+
+	if (typeof tags === 'string' && tags !== '') {
+		query.push(`t=${tags.slice(0, -1)}`);
 		default_mode = false;
 	}
 
@@ -338,6 +348,8 @@ const Home: TNextPageWithLayout = () => {
 		noResult: false,
 	});
 
+	const [tagQuery, setTagQuery] = useState('');
+
 	const handleIntersect = useCallback(() => {
 		if (loading === false) {
 			setLoading(true);
@@ -383,6 +395,15 @@ const Home: TNextPageWithLayout = () => {
 				}),
 			};
 		});
+
+		setContents({ datas: [] });
+		setPage({
+			cur: 1,
+			totalPage: 1,
+			totalCount: 0,
+		});
+
+		setTagQuery('');
 	}, []);
 
 	const handleSetTag = useCallback(
@@ -409,6 +430,19 @@ const Home: TNextPageWithLayout = () => {
 						...preTags,
 						[type]: newTags,
 					};
+				});
+
+				setContents({ datas: [] });
+				setPage({
+					cur: 1,
+					totalPage: 1,
+					totalCount: 0,
+				});
+
+				setTagQuery((preQuery) => {
+					const t = `${type[0]}:${tagId},`;
+					const newQuery = selected ? preQuery + t : preQuery.replace(t, '');
+					return newQuery;
 				});
 			}
 		},
@@ -467,7 +501,7 @@ const Home: TNextPageWithLayout = () => {
 	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await getTextUIDatas(
-				getQueryString(page.cur, search.request, contents.datas)
+				getQueryString(page.cur, search.request, tagQuery, contents.datas)
 			);
 			const datas: IUITextData[] = res.datas;
 
@@ -508,7 +542,7 @@ const Home: TNextPageWithLayout = () => {
 			setLoading(true);
 			fetchUIData();
 		}
-	}, [search.request, page.cur]);
+	}, [page.cur, tagQuery, search.request]);
 
 	return (
 		<Fragment>
