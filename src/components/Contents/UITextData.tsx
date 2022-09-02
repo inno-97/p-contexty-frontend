@@ -29,6 +29,7 @@ const TagsBox = styled(Box)(({ theme }) => {
 const TextBox = styled(Box)(({ theme }) => {
 	return {
 		color: theme.palette.grey[400],
+		whiteSpace: 'pre-line',
 	};
 });
 
