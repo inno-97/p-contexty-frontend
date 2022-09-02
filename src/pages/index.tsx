@@ -396,7 +396,6 @@ const Home: TNextPageWithLayout = () => {
 			};
 		});
 
-		setContents({ datas: [] });
 		setPage({
 			cur: 1,
 			totalPage: 1,
@@ -432,7 +431,6 @@ const Home: TNextPageWithLayout = () => {
 					};
 				});
 
-				setContents({ datas: [] });
 				setPage({
 					cur: 1,
 					totalPage: 1,
@@ -526,7 +524,9 @@ const Home: TNextPageWithLayout = () => {
 
 			setLoading(false);
 
-			if (datas.length !== 0) {
+			if (page.cur === 1) {
+				setContents({ datas: datas });
+			} else {
 				setContents((prev) => {
 					return { ...prev, datas: [...prev.datas, ...datas] };
 				});
