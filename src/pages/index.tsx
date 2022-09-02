@@ -271,8 +271,9 @@ const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsI
 	);
 };
 
-const getQueryString = (page: number | null, word: string | null) => {
+const getQueryString = (page: number | null, word: string | null, datas: IUITextData[]) => {
 	const query = [];
+	let default_mode = true;
 
 	if (typeof page === 'number') {
 		query.push(`p=${page}`);
@@ -280,6 +281,12 @@ const getQueryString = (page: number | null, word: string | null) => {
 
 	if (typeof word === 'string' && word !== '') {
 		query.push(`q=${word}`);
+		default_mode = false;
+	}
+
+	if (default_mode) {
+		const did = datas.map((item) => item.id);
+		query.push(`ri=${did.join()}`);
 	}
 
 	return query.join('&');
@@ -294,7 +301,8 @@ const getData = async (id: number) => {
 const getTextUIDatas = async (q: string | null = null) => {
 	try {
 		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
+			//`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
+			`https://api.contexty.kr/ui/datas${q === null ? '' : '?' + q}`
 		).then((data) => data.json());
 
 		return res;
@@ -325,8 +333,9 @@ const Home: TNextPageWithLayout = () => {
 	});
 
 	const [page, setPage] = useState({
-		cur: 0,
-		total: 1,
+		cur: 0, // 개발환경에서 맨 처음 useEffect에서 두번씩 조회해서 페이지 첫 로딩시에는 0으로 셋팅
+		totalPage: 1,
+		totalCount: 0,
 	});
 
 	const handleClearTags = useCallback(() => {
@@ -387,7 +396,7 @@ const Home: TNextPageWithLayout = () => {
 	const handleIntersect = useCallback(() => {
 		if (loading === false) {
 			setPage((prev) => {
-				if (prev.total > prev.cur) {
+				if (prev.totalPage > prev.cur) {
 					return {
 						...prev,
 						cur: prev.cur + 1,
@@ -436,7 +445,8 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUITags = async () => {
-			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
+			//const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
+			const res = await fetch(`https://api.contexty.kr/ui/tags`);
 			const tagsData = await res.json();
 
 			setTags(tagsData);
@@ -453,14 +463,26 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await getTextUIDatas(getQueryString(page.cur, search.request));
+			const res = await getTextUIDatas(
+				getQueryString(page.cur, search.request, contents.datas)
+			);
 			const datas: IUITextData[] = res.datas;
 
-			if (res.totalPage !== page.total) {
+			if (res.totalPage !== page.totalPage) {
 				setPage((prev) => {
 					return {
 						...prev,
-						total: res.totalPage,
+						totalPage: res.totalPage,
+					};
+				});
+			}
+
+			// 단어 검색시 검색 건수를 표출
+			if (search.request !== '' && page.cur === 1) {
+				setPage((prev) => {
+					return {
+						...prev,
+						totalCount: res.totalCount,
 					};
 				});
 			}
@@ -541,7 +563,8 @@ const Home: TNextPageWithLayout = () => {
 
 									setPage({
 										cur: 1,
-										total: 1,
+										totalPage: 1,
+										totalCount: 0,
 									});
 								}
 							}}
@@ -570,7 +593,7 @@ const Home: TNextPageWithLayout = () => {
 						{search.request && (
 							<SearchResultBox className="ctt_text_16 ctt_regular">
 								<SearchResultText>{search.request}</SearchResultText> 검색 결과{' '}
-								<SearchResultText>{contents.datas.length}</SearchResultText>건
+								<SearchResultText>{page.totalCount}</SearchResultText>건
 							</SearchResultBox>
 						)}
 					</Box>
