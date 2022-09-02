@@ -588,21 +588,23 @@ const Home: TNextPageWithLayout = () => {
 							value={search.current}
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') {
-									setSearch({
-										...search,
-										request: search.current,
-										noResult: false,
-									});
+									if (search.current !== search.request) {
+										setSearch({
+											...search,
+											request: search.current,
+											noResult: false,
+										});
 
-									handleClearTags();
+										handleClearTags();
 
-									setContents({ datas: [] });
+										setContents({ datas: [] });
 
-									setPage({
-										cur: 1,
-										totalPage: 1,
-										totalCount: 0,
-									});
+										setPage({
+											cur: 1,
+											totalPage: 1,
+											totalCount: 0,
+										});
+									}
 								}
 							}}
 							onChange={(e) => {
