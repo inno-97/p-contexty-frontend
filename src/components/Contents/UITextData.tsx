@@ -112,7 +112,7 @@ export const UITextData: FC<IUITextComponent> = ({
 		if (item.copyCount === 0) {
 			setMessage('🎉 첫 번째로 복사했어요!');
 		} else {
-			setMessage('복사 했어요!');
+			setMessage('복사했어요!');
 		}
 		setOpen(true);
 
