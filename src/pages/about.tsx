@@ -103,7 +103,7 @@ const About: TNextPageWithLayout = () => {
 						</Paragraph>
 					</Writing>
 					{/* Contributors */}
-					<Box>
+					<Box height="77px">
 						<Paragraph mb={24} className="ctt_text_14 ctt_bold">
 							만든 사람들
 						</Paragraph>
@@ -134,7 +134,7 @@ const About: TNextPageWithLayout = () => {
 											<Avatar
 												alt={item.name}
 												sx={{ width: 32, height: 32 }}
-												src={item.image}
+												src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/profiles/${item.uuid}.png`}
 											/>
 											<Typography
 												className="ctt_text_14 ctt_bold"
