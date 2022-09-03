@@ -103,7 +103,7 @@ export const UITextData: FC<IUITextComponent> = ({
 }) => {
 	const [open, setOpen] = useState(false);
 
-	const [message, setMessage] = useState('복사 했어요!');
+	const [message, setMessage] = useState('복사했어요!');
 
 	const successCopy = () => {
 		// if ((item.copied ?? false) === false) {
