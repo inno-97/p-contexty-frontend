@@ -447,26 +447,67 @@ const Home: TNextPageWithLayout = () => {
 		[]
 	);
 
-	const handleCopy = useCallback((id: number) => {
-		setContents((prev) => {
-			const newDatas = prev.datas.map((item) => {
-				if (item.id !== id) {
-					return item;
-				}
-
-				return {
-					...item,
-					copied: true,
-					copyCount: item.copyCount + 1,
-				};
+	const handleCopy = useCallback(
+		async (id: number, tooltip: (message: string) => void) => {
+			// Copy 검증
+			const checkCopy = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/copy/ui-data`, {
+				method: 'PUT',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					did: id,
+					increased: 1,
+				}),
 			});
 
-			return {
-				...prev,
-				datas: newDatas,
-			};
-		});
-	}, []);
+			if (checkCopy.status === 200) {
+				const result = await checkCopy.json();
+
+				setContents((prev) => {
+					const newDatas = prev.datas.map((item) => {
+						if (item.id !== id) {
+							return item;
+						}
+
+						let tooltioMessage = '복사했어요!';
+
+						if (result.first === true) {
+							tooltioMessage = '🎉 첫 번째로 복사했어요!';
+						} else if (item.copyCount === 0 && result.first === false) {
+							tooltioMessage = '아쉽게도 누가 먼저 복사했어요!';
+						}
+
+						tooltip(tooltioMessage);
+
+						return {
+							...item,
+							copied: true,
+							copyCount: result.copyCount,
+						};
+					});
+
+					return {
+						...prev,
+						datas: newDatas,
+					};
+				});
+
+				if (viewContent?.id === id) {
+					setViewContent((prevView) => {
+						if (prevView !== undefined) {
+							return {
+								...prevView,
+								copyCount: result.copyCount,
+							};
+						}
+					});
+				}
+			}
+		},
+		[viewContent?.id]
+	);
 
 	const [open, setOpen] = useState(false);
 	const [checked, setChecked] = useState(false);

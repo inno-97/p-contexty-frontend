@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import type { ButtonProps, DividerProps } from '@mui/material';
 import type { IUITextComponent } from 'src/types/components';
 
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 
@@ -105,26 +105,26 @@ export const UITextData: FC<IUITextComponent> = ({
 
 	const [message, setMessage] = useState('복사했어요!');
 
-	const successCopy = () => {
-		// if ((item.copied ?? false) === false) {
-		handleCopy(item.id);
-
-		if (item.copyCount === 0) {
-			setMessage('🎉 첫 번째로 복사했어요!');
-		} else {
-			setMessage('복사했어요!');
-		}
+	const handleTooltip = (message: string) => {
+		setMessage(message);
 		setOpen(true);
+	};
 
-		window.setTimeout(() => {
-			setOpen(false);
-		}, 2500);
-		// }
+	const successCopy = () => {
+		handleCopy(item.id, handleTooltip);
 	};
 
 	const handleCloseTooltip = () => {
 		setOpen(false);
 	};
+
+	useEffect(() => {
+		const closeTooltip = window.setTimeout(() => {
+			setOpen(false);
+		}, 2500);
+
+		return () => window.clearTimeout(closeTooltip);
+	}, [open]);
 
 	return (
 		<Stack
@@ -186,7 +186,7 @@ export const UITextData: FC<IUITextComponent> = ({
 														successCopy();
 													} else {
 														// failed
-														console.log('Failed to copy text');
+														handleTooltip('복사하지 못했어요!');
 													}
 												} catch (err) {
 													console.error(
@@ -203,7 +203,7 @@ export const UITextData: FC<IUITextComponent> = ({
 												.writeText(item.text)
 												.then(successCopy, function () {
 													// failed
-													console.log('Failed to copy text');
+													handleTooltip('복사하지 못했어요!');
 												});
 										}}
 									>

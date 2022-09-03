@@ -69,7 +69,7 @@ export interface IUITextComponent {
 	item: IUITextData;
 	onCopy?: boolean;
 	onTags?: boolean;
-	handleCopy: (id: number) => void;
+	handleCopy: (id: number, tooltip: (message: string) => void) => void;
 }
 
 export interface IUITagsItem extends TUITag {
