@@ -150,12 +150,15 @@ const TagsDivider = styled(({ ...props }: DividerProps) => (
 	verticalAlign: 'middle',
 });
 
-const ViewImage = styled(Paper)({
-	width: '270px',
-	height: '586px',
-	borderRadius: '8px',
-	display: 'flex',
-	justifyContent: 'center',
+const ViewImage = styled(Paper)(({ theme }) => {
+	return {
+		width: '270px',
+		height: '586px',
+		borderRadius: '8px',
+		border: `1px solid ${theme.palette.grey[100]}`,
+		display: 'flex',
+		justifyContent: 'center',
+	};
 });
 
 const ViewHeaderChip = styled(({ ...props }: ChipProps) => (
@@ -834,6 +837,9 @@ const Home: TNextPageWithLayout = () => {
 									alt="Text UI Data Image"
 									width="270px"
 									height="586px"
+									style={{
+										borderRadius: '8px',
+									}}
 									onError={(e) => {
 										setViewContent({
 											...viewContent,

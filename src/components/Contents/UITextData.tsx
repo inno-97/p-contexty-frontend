@@ -152,7 +152,7 @@ export const UITextData: FC<IUITextComponent> = ({
 						</Stack>
 					</HeaderBox>
 				)}
-				<TextBox className="ctt_text_18 ctt_medium">{item.text}</TextBox>
+				<TextBox className="ctt_text_16 ctt_medium">{item.text}</TextBox>
 			</Box>
 			{onCopy === true && (
 				<Stack
