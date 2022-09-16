@@ -7,11 +7,15 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { createTheme } from 'src/themes';
 import createEmotionCache from 'src/createEmotionCache';
 
 import ThemeConfigContext from 'src/contexts/ThemeConfigContext';
 import NoLayout from 'src/components/Layout/NoLayout';
+
+import * as ga from 'src/utils/ga';
 
 import 'src/styles/fontStyle.css';
 
@@ -24,11 +28,25 @@ interface IMyAppPropsWithLayout extends AppProps {
 }
 
 export default function MyApp(props: IMyAppPropsWithLayout) {
+	const router = useRouter();
+
 	const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
 	const PageLayout = Component.PageLayout ? Component.PageLayout : NoLayout;
 
 	const [themeMode, setThemeMode] = useState('light');
+
+	useEffect(() => {
+		const handleRouteChange = (url: string) => {
+			ga.pageview(url);
+		};
+		router.events.on('routeChangeComplete', handleRouteChange);
+
+		return () => {
+			router.events.off('routeChangeComplete', handleRouteChange);
+		};
+	}, [router.events]);
+
 	// cosnt value
 	return (
 		<CacheProvider value={emotionCache}>

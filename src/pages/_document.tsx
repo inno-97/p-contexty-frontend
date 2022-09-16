@@ -38,6 +38,25 @@ export default class MyDocument extends Document {
 						// crossorigin
 						href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.4/dist/web/static/pretendard-dynamic-subset.css"
 					/>
+
+					{/* Google Analytics */}
+					<script
+						async
+						src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+					/>
+					<script
+						dangerouslySetInnerHTML={{
+							__html: `
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
+								gtag('js', new Date());
+								gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+								page_path: window.location.pathname,
+								});
+							`,
+						}}
+					/>
+
 					{/* Inject MUI styles first to match with the prepend: true configuration. */}
 					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 					{(this.props as any).emotionStyleTags}
