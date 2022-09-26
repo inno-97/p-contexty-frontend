@@ -281,7 +281,7 @@ const getQueryString = (
 	datas: IUITextData[]
 ) => {
 	const query = [];
-	let default_mode = true;
+	// let default_mode = true;
 
 	if (typeof page === 'number') {
 		query.push(`p=${page}`);
@@ -289,18 +289,18 @@ const getQueryString = (
 
 	if (typeof word === 'string' && word !== '') {
 		query.push(`q=${word}`);
-		default_mode = false;
+		// default_mode = false;
 	}
 
 	if (typeof tags === 'string' && tags !== '') {
 		query.push(`t=${tags.slice(0, -1)}`);
-		default_mode = false;
+		// default_mode = false;
 	}
 
-	if (default_mode) {
-		const did = datas.map((item) => item.id);
-		query.push(`ri=${did.join()}`);
-	}
+	// if (default_mode) {
+	// 	const did = datas.map((item) => item.id);
+	// 	query.push(`ri=${did.join()}`);
+	// }
 
 	return query.join('&');
 };
