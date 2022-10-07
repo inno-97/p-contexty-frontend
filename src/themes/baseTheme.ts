@@ -47,6 +47,10 @@ export const baseTheme: ThemeOptions = {
 				p: {
 					margin: 0,
 				},
+				ul: {
+					margin: 0,
+					padding: 0,
+				},
 			},
 		},
 		MuiOutlinedInput: {
@@ -63,6 +67,13 @@ export const baseTheme: ThemeOptions = {
 						borderRadius: '16px',
 						padding: '40px',
 					},
+				},
+			},
+		},
+		MuiCircularProgress: {
+			styleOverrides: {
+				circle: {
+					strokeLinecap: 'round',
 				},
 			},
 		},

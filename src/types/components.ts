@@ -29,6 +29,7 @@ export interface IContentsCard extends PropsWithChildren {
 
 export interface IWritingDefault extends PropsWithChildren {
 	className?: string;
+	textAlign?: 'center' | 'end' | 'justify' | 'left' | 'match-parent' | 'right' | 'start';
 	lineSpacing?: number;
 	size?: string;
 	weight?: string;
@@ -55,26 +56,30 @@ export interface IDialog {
 
 export interface ISelectFilter {
 	id: string;
+	disabled?: boolean;
 	sx?: SxProps;
 	StartIcon?: ReactElement;
 	label?: string;
 	options: { label: string | number }[];
-	inputValue: string | number | null;
-	onInputChange: (event: SyntheticEvent, value: string) => void;
+	inputValue?: string | number | null;
+	onOptionClick?: (event: SyntheticEvent) => void;
 }
 
 export interface IUITextComponent {
 	item: IUITextData;
 	onCopy?: boolean;
-	onHeader?: boolean;
+	onTags?: boolean;
+	handleCopy: (id: number, tooltip: (message: string) => void) => void;
 }
 
 export interface IUITagsItem extends TUITag {
 	label: string;
 	value: number;
+	selected?: boolean;
 }
 
-export interface IUITagCoponents {
+export interface IUITagComponents {
+	[key: string]: IUITagsItem[];
 	categorys: IUITagsItem[];
 	services: IUITagsItem[];
 	events: IUITagsItem[];

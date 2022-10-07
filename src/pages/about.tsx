@@ -12,7 +12,7 @@ import { SubContentsLayer } from 'src/components/CustomLayer';
 import Contents from 'src/components/Contents';
 import { Writing, Paragraph } from 'src/components/Contents/Writing';
 
-import BottomCharacter from '/public/characters/character2.svg';
+import BottomCharacter from '/public/characters/about.png';
 import Brunch from '/public/service/brunch.svg';
 import Notion from '/public/service/notion.svg';
 import Instagram from '/public/service/instagram.svg';
@@ -20,7 +20,6 @@ import Github from '/public/service/github.svg';
 
 const BottomImage = styled(Image)(({ theme }) => {
 	return {
-		opacity: 0.3,
 		color: theme.palette.grey[400],
 	};
 });
@@ -66,7 +65,7 @@ const About: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchPhoto = async () => {
-			const res = await fetch('/api/profiles');
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`);
 			setProfiles({ ...profiles, datas: await res.json() });
 		};
 		fetchPhoto();
@@ -104,7 +103,7 @@ const About: TNextPageWithLayout = () => {
 						</Paragraph>
 					</Writing>
 					{/* Contributors */}
-					<Box>
+					<Box height="77px">
 						<Paragraph mb={24} className="ctt_text_14 ctt_bold">
 							만든 사람들
 						</Paragraph>
@@ -135,8 +134,14 @@ const About: TNextPageWithLayout = () => {
 											<Avatar
 												alt={item.name}
 												sx={{ width: 32, height: 32 }}
+												src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/profiles/${item.uuid}.png`}
 											/>
-											<Typography className="ctt_text_14 ctt_bold">
+											<Typography
+												className="ctt_text_14 ctt_bold"
+												sx={{
+													marginLeft: '4px !important',
+												}}
+											>
 												{item.name}
 											</Typography>
 											{item.links.map((link) => {
@@ -152,7 +157,12 @@ const About: TNextPageWithLayout = () => {
 
 					{/* Bottom Image */}
 					<Box sx={{ mt: '80px' }}>
-						<BottomImage alt="About Page Character" {...BottomCharacter} />
+						<BottomImage
+							alt="About Page Character"
+							{...BottomCharacter}
+							width={149}
+							height={130}
+						/>
 					</Box>
 				</Contents>
 			</SubContentsLayer>

@@ -7,6 +7,7 @@ export type TLink = {
 /* Interface */
 export interface IProfile {
 	name: string;
+	uuid?: string;
 	links: TLink[];
 }
 

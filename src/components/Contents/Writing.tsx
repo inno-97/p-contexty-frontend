@@ -9,6 +9,7 @@ const SentenceElement = styled('p')({});
 
 function makeDefaultStyle(lineSpacing?: number, size?: string, weight?: string) {
 	const sx: SystemCssProperties = {};
+
 	if (lineSpacing !== undefined) {
 		sx.lineHeight = `${lineSpacing}px`;
 	}
@@ -36,6 +37,7 @@ function makeMarginStyle(mt?: number, mb?: number) {
 
 export const Writing: FC<IWriting> = ({
 	className,
+	textAlign,
 	lineSpacing,
 	size,
 	weight,
@@ -47,6 +49,7 @@ export const Writing: FC<IWriting> = ({
 		<Box
 			className={className}
 			sx={{
+				textAlign,
 				...makeDefaultStyle(lineSpacing, size, weight),
 				...makeMarginStyle(mt, mb),
 			}}
@@ -58,6 +61,7 @@ export const Writing: FC<IWriting> = ({
 
 export const Paragraph: FC<IParagraph> = ({
 	className,
+	textAlign,
 	lineSpacing,
 	size,
 	weight,
@@ -69,6 +73,7 @@ export const Paragraph: FC<IParagraph> = ({
 		<Box
 			className={className}
 			sx={{
+				textAlign,
 				...makeDefaultStyle(lineSpacing, size, weight),
 				...makeMarginStyle(mt, mb),
 			}}
@@ -78,9 +83,19 @@ export const Paragraph: FC<IParagraph> = ({
 	);
 };
 
-export const Sentence: FC<ISentence> = ({ className, lineSpacing, size, weight, children }) => {
+export const Sentence: FC<ISentence> = ({
+	className,
+	textAlign,
+	lineSpacing,
+	size,
+	weight,
+	children,
+}) => {
 	return (
-		<SentenceElement className={className} sx={makeDefaultStyle(lineSpacing, size, weight)}>
+		<SentenceElement
+			className={className}
+			sx={{ textAlign, ...makeDefaultStyle(lineSpacing, size, weight) }}
+		>
 			{children}
 		</SentenceElement>
 	);

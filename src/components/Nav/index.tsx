@@ -38,6 +38,7 @@ const Logo = styled(Image)(({ theme }) => {
 	return {
 		textTransform: 'none',
 		color: theme.palette.grey[400],
+		cursor: 'pointer',
 		filter,
 	};
 });
@@ -57,7 +58,9 @@ export const Nav: FC<TNavItem> = (props) => {
 					}}
 				>
 					{/* Contexty Logo */}
-					<Logo alt="Contexty Logo" {...SVGLogo} />
+					<Link href="/">
+						<Logo alt="Contexty Logo" {...SVGLogo} />
+					</Link>
 					<Box
 						sx={{
 							flexGrow: 1,
