@@ -24,6 +24,9 @@ const SendButton = styled(({ ...props }: ButtonProps) => (
 		textTransform: 'none',
 		borderRadius: '8px',
 		padding: '20px 48px',
+		'&:hover': {
+			backgroundColor: '#495057',
+		},
 	};
 });
 
@@ -55,27 +58,19 @@ const Contact: TNextPageWithLayout = () => {
 							제보하고 싶은 서비스가 있거나 문의사항이 있다면 보내주세요.
 						</Paragraph>
 					</Writing>
-					<Stack spacing={1} sx={{ mb: '40px' }}>
+					<Stack spacing={2} sx={{ mb: '40px' }}>
+						<TextField fullWidth id="contact-name" label="이름" type="name" />
+						<TextField fullWidth id="contact-from-email" label="이메일" type="email" />
 						<TextField
 							fullWidth
-							id="contact-name"
-							label="이름을 입력해 주세요"
-							type="name"
-						/>
-						<TextField
-							fullWidth
-							id="contact-from-email"
-							label="이메일 주소를 입력해 주세요."
-							type="email"
-						/>
-						<TextField
-							fullWidth
+							multiline
+							rows={6}
 							id="contact-contents"
-							label="내용을 입력해 주세요."
+							label="내용"
 							type="contents"
 						/>
 					</Stack>
-					<SendButton onClick={handleDialogOpen}>
+					<SendButton variant="contained" onClick={handleDialogOpen}>
 						<SendButtonText>보내기</SendButtonText>
 					</SendButton>
 				</Contents>

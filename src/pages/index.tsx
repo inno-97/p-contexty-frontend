@@ -786,6 +786,12 @@ const Home: TNextPageWithLayout = () => {
 														padding: '32px',
 														height: '100%',
 														cursor: 'pointer',
+														'&:hover': {
+															background: '#F3F5F7',
+														},
+														'&:active': {
+															background: '#E9ECEF',
+														},
 													}}
 													onClick={async () => {
 														const contentsData = await getData(item.id);

@@ -27,10 +27,12 @@ const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 				borderColor: theme.palette.grey[100],
 			},
 			'&:hover fieldset': {
-				borderColor: theme.palette.grey[100],
+				borderColor: theme.palette.grey[300],
+				transition: '0.1s linear',
 			},
 			'&.Mui-focused fieldset': {
-				borderColor: theme.palette.grey[100],
+				borderColor: theme.palette.grey[300],
+				transition: '0.1s linear',
 				borderWidth: '1px',
 			},
 			'&.Mui-disabled fieldset': {
