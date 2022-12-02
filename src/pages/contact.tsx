@@ -1,7 +1,7 @@
 import type { TypographyProps } from '@mui/material';
 import type { TNextPageWithLayout } from 'src/types/components';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Stack, TextField, Button, ButtonProps, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -39,14 +39,86 @@ const SendButtonText = styled(({ ...props }: TypographyProps) => (
 });
 
 const Contact: TNextPageWithLayout = () => {
-	const [open, setOpen] = useState(false);
+	const [modal, setModal] = useState({
+		open: false,
+		title: '',
+		content: '',
+	});
+
+	const [report, setReport] = useState({
+		name: '',
+		email: '',
+		content: '',
+	});
 
 	const handleDialogClose = () => {
-		setOpen(false);
+		setModal((prev) => {
+			return {
+				...prev,
+				open: false,
+			};
+		});
 	};
 
-	const handleDialogOpen = () => {
-		setOpen(true);
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		event.preventDefault();
+		setReport((prev) => {
+			return {
+				...prev,
+				[event.target.name]: event.target.value,
+			};
+		});
+	};
+
+	const handelSendEmail = async () => {
+		if (report.name === '') {
+			setModal({
+				title: '',
+				content: '이름을 입력 해주세요!',
+				open: true,
+			});
+
+			return;
+		}
+
+		if (report.email === '') {
+			setModal({
+				title: '',
+				content: '이메일을 입력 해주세요!',
+				open: true,
+			});
+
+			return;
+		}
+
+		if (report.content === '') {
+			setModal({
+				title: '',
+				content: '내용을 입력 해주세요!',
+				open: true,
+			});
+
+			return;
+		}
+
+		const sendEmail = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report-email`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				...report,
+			}),
+		});
+
+		if (sendEmail.status === 200) {
+			setModal({
+				title: '',
+				content: '성공적으로 보냈습니다!',
+				open: true,
+			});
+		}
 	};
 
 	return (
@@ -59,24 +131,39 @@ const Contact: TNextPageWithLayout = () => {
 						</Paragraph>
 					</Writing>
 					<Stack spacing={2} sx={{ mb: '40px' }}>
-						<TextField fullWidth id="contact-name" label="이름" type="name" />
-						<TextField fullWidth id="contact-from-email" label="이메일" type="email" />
+						<TextField
+							fullWidth
+							name="name"
+							label="이름"
+							value={report.name}
+							onChange={handleChange}
+						/>
+						<TextField
+							fullWidth
+							name="email"
+							label="이메일"
+							value={report.email}
+							onChange={handleChange}
+						/>
 						<TextField
 							fullWidth
 							multiline
 							rows={6}
-							id="contact-contents"
+							name="content"
 							label="내용"
-							type="contents"
+							value={report.content}
+							onChange={handleChange}
 						/>
 					</Stack>
-					<SendButton variant="contained" onClick={handleDialogOpen}>
+					<SendButton variant="contained" onClick={handelSendEmail}>
 						<SendButtonText>보내기</SendButtonText>
 					</SendButton>
 				</Contents>
 			</SubContentsLayer>
-			<Dialog open={open} onClose={handleDialogClose}>
-				<Box margin={'30px 30px'}>서비스 준비중입니다.</Box>
+			<Dialog open={modal.open} onClose={handleDialogClose}>
+				<Box margin={'30px 30px'}>
+					{modal.title} {modal.content}
+				</Box>
 			</Dialog>
 		</Box>
 	);
