@@ -118,6 +118,12 @@ const Contact: TNextPageWithLayout = () => {
 				content: '성공적으로 보냈습니다!',
 				open: true,
 			});
+
+			setReport({
+				name: '',
+				email: '',
+				content: '',
+			});
 		}
 	};
 
