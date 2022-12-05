@@ -787,9 +787,11 @@ const Home: TNextPageWithLayout = () => {
 														height: '100%',
 														cursor: 'pointer',
 														'&:hover': {
+															transition: 'all 0.1s linear',
 															background: '#F3F5F7',
 														},
 														'&:active': {
+															transition: 'all 0.1s linear',
 															background: '#E9ECEF',
 														},
 													}}
@@ -903,39 +905,39 @@ const Home: TNextPageWithLayout = () => {
 							{/* Reference */}
 							{/* 서비스 오픈 후 예정 */}
 							{/* <Box>
-								<ViewReferenceText>
-									비슷한 상황에서 다른 서비스들은 이렇게 써요.
-								</ViewReferenceText>
+									<ViewReferenceText>
+										비슷한 상황에서 다른 서비스들은 이렇게 써요.
+									</ViewReferenceText>
 
-								<Grid container spacing={1}>
-									{ReferenceCardTest.map((item) => {
-										return (
-											<Grid item key={item} xs={12} sm={6}>
-												<ReferenceCard
-													sx={{
-														padding: '16px',
-														maxHeight: '124px',
-														minHeight: '124px',
-													}}
-												>
-													<UIRefTextData
-														item={{
-															id: parseInt(item),
-															text: 'RefData',
-															tags: {
-																service: {
-																	id: 1,
-																	name: '컨텍스트',
-																},
-															},
+									<Grid container spacing={1}>
+										{ReferenceCardTest.map((item) => {
+											return (
+												<Grid item key={item} xs={12} sm={6}>
+													<ReferenceCard
+														sx={{
+															padding: '16px',
+															maxHeight: '124px',
+															minHeight: '124px',
 														}}
-													/>
-												</ReferenceCard>
-											</Grid>
-										);
-									})}
-								</Grid>
-							</Box> */}
+													>
+														<UIRefTextData
+															item={{
+																id: parseInt(item),
+																text: 'RefData',
+																tags: {
+																	service: {
+																		id: 1,
+																		name: '컨텍스트',
+																	},
+																},
+															}}
+														/>
+													</ReferenceCard>
+												</Grid>
+											);
+										})}
+									</Grid>
+								</Box> */}
 						</ViewDetail>
 					</Stack>
 				)}
