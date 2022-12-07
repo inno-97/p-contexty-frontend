@@ -11,6 +11,7 @@ import {
 	Grid,
 	Paper,
 	Stack,
+	DialogContent,
 	TextField,
 	Button,
 	IconButton,
@@ -821,90 +822,99 @@ const Home: TNextPageWithLayout = () => {
 			{/* Detail Dialog */}
 			<Dialog open={open} onClose={handleDialogClose}>
 				{/* Display Contents Detail */}
-				{/* Close Button */}
-				<IconButton
-					aria-label="close"
-					onClick={handleDialogClose}
-					sx={{
-						position: 'absolute',
-						right: 6,
-						top: 6,
-						color: (theme) => theme.palette.grey[400],
-					}}
-				>
-					<Close fontSize="large" />
-				</IconButton>
-				{viewContent === undefined ? (
-					'NO DATA'
-				) : (
-					<Stack direction="row" spacing={4}>
-						{/* Image Box */}
-						<ViewImage elevation={0}>
-							{(typeof viewContent.image === 'string' && (
-								<Image
-									alt="Text UI Data Image"
-									width="270px"
-									height="586px"
-									style={{
-										borderRadius: '8px',
-									}}
-									onError={(e) => {
-										setViewContent({
-											...viewContent,
-											image: undefined,
-										});
-									}}
-									src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
-								/>
-							)) || <Image alt="No Image" {...NoImage} />}
-						</ViewImage>
-						{/* Detail Box */}
-						<ViewDetail spacing={3}>
-							{/* Header */}
-							<Stack alignItems="center" direction="row" spacing={1}>
-								{/* Service Icon */}
-								{viewContent.tags?.service.icon || (
-									<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-								)}
-								{/* Service Name */}
-								<ViewHeaderChip label={viewContent.tags?.service.name} />
-								<div>
-									<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-								</div>
-								{/* Event Tags*/}
-								{viewContent.tags?.events.map((event) => {
-									const react_event_key = `${viewContent.id}-${event.id}`;
-									return (
-										<ViewHeaderChip
-											label={`#${event.name}`}
-											key={react_event_key}
+				<DialogContent sx={{ padding: '40px' }}>
+					{/* Close Button */}
+					<IconButton
+						aria-label="close"
+						onClick={handleDialogClose}
+						sx={{
+							position: 'absolute',
+							right: 6,
+							top: 6,
+							color: (theme) => theme.palette.grey[400],
+						}}
+					>
+						<Close fontSize="large" />
+					</IconButton>
+					{viewContent === undefined ? (
+						'NO DATA'
+					) : (
+						<Stack direction="row" spacing={4}>
+							{/* Image Box */}
+							<ViewImage elevation={0}>
+								{(typeof viewContent.image === 'string' && (
+									<Image
+										alt="Text UI Data Image"
+										width="270px"
+										height="586px"
+										style={{
+											borderRadius: '8px',
+										}}
+										onError={(e) => {
+											setViewContent({
+												...viewContent,
+												image: undefined,
+											});
+										}}
+										src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
+									/>
+								)) || <Image alt="No Image" {...NoImage} />}
+							</ViewImage>
+							{/* Detail Box */}
+							<ViewDetail spacing={3}>
+								{/* Header */}
+								<Stack alignItems="center" direction="row" spacing={1}>
+									{/* Service Icon */}
+									{viewContent.tags?.service.icon || (
+										<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
+									)}
+									{/* Service Name */}
+									<ViewHeaderChip label={viewContent.tags?.service.name} />
+									<div>
+										<Divider
+											sx={{ height: 10 }}
+											orientation="vertical"
+											flexItem
 										/>
-									);
-								})}
-								<div>
-									<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-								</div>
-								{/* Registration Date */}
-								<ViewRegiDate className="ctt_text_14 ctt_regular">
-									{getUnixToYYYYMMDD(viewContent.timestamp)}
-								</ViewRegiDate>
-							</Stack>
-							{/* Text */}
-							<Card
-								sx={{
-									padding: '24px',
-									minHeight: '200px',
-								}}
-							>
-								<UITextData
-									item={viewContent}
-									onTags={false}
-									handleCopy={handleCopy}
-								/>
-							</Card>
-							{/* Reference */}
-							{/* 서비스 오픈 후 예정 */}
-							{/* <Box>
+									</div>
+									{/* Event Tags*/}
+									{viewContent.tags?.events.map((event) => {
+										const react_event_key = `${viewContent.id}-${event.id}`;
+										return (
+											<ViewHeaderChip
+												label={`#${event.name}`}
+												key={react_event_key}
+											/>
+										);
+									})}
+									<div>
+										<Divider
+											sx={{ height: 10 }}
+											orientation="vertical"
+											flexItem
+										/>
+									</div>
+									{/* Registration Date */}
+									<ViewRegiDate className="ctt_text_14 ctt_regular">
+										{getUnixToYYYYMMDD(viewContent.timestamp)}
+									</ViewRegiDate>
+								</Stack>
+								{/* Text */}
+								<Card
+									sx={{
+										padding: '24px',
+										minHeight: '200px',
+									}}
+								>
+									<UITextData
+										item={viewContent}
+										onTags={false}
+										handleCopy={handleCopy}
+									/>
+								</Card>
+								{/* Reference */}
+								{/* 서비스 오픈 후 예정 */}
+								{/* <Box>
 									<ViewReferenceText>
 										비슷한 상황에서 다른 서비스들은 이렇게 써요.
 									</ViewReferenceText>
@@ -938,9 +948,10 @@ const Home: TNextPageWithLayout = () => {
 										})}
 									</Grid>
 								</Box> */}
-						</ViewDetail>
-					</Stack>
-				)}
+							</ViewDetail>
+						</Stack>
+					)}
+				</DialogContent>
 			</Dialog>
 		</Fragment>
 	);
