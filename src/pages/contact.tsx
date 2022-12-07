@@ -2,7 +2,19 @@ import type { TypographyProps } from '@mui/material';
 import type { TNextPageWithLayout } from 'src/types/components';
 
 import React, { useState } from 'react';
-import { Box, Stack, TextField, Button, ButtonProps, Typography } from '@mui/material';
+import {
+	Box,
+	Stack,
+	TextField,
+	Button,
+	ButtonProps,
+	Typography,
+	DialogTitle,
+	DialogTitleProps,
+	DialogContentText,
+	DialogContentTextProps,
+	DialogActions,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
@@ -30,11 +42,48 @@ const SendButton = styled(({ ...props }: ButtonProps) => (
 	};
 });
 
-const SendButtonText = styled(({ ...props }: TypographyProps) => (
+const ButtonText = styled(({ ...props }: TypographyProps) => (
 	<Typography {...props} className={props.className + ' ctt_text_16 ctt_bold'} />
 ))(({ theme }) => {
 	return {
 		color: theme.palette.mode === 'dark' ? 'black' : 'white',
+	};
+});
+
+const CDialogTitle = styled(({ ...props }: DialogTitleProps) => (
+	<DialogTitle {...props} className={props.className + ' ctt_text_22 ctt_bold'} />
+))(({ theme }) => {
+	return {
+		padding: theme.spacing(0),
+		marginBottom: theme.spacing(1),
+	};
+});
+
+const CheckButton = styled(({ ...props }: ButtonProps) => (
+	<Button
+		{...props}
+		disableFocusRipple
+		disableElevation
+		className={props.className + ' ctt_text_14 ctt_medium'}
+	/>
+))(({ theme }) => {
+	return {
+		backgroundColor: theme.palette.grey[400],
+		textTransform: 'none',
+		borderRadius: '8px',
+		padding: '16px 40px',
+		'&:hover': {
+			backgroundColor: '#495057',
+		},
+	};
+});
+
+const CDialogContentText = styled(({ ...props }: DialogContentTextProps) => (
+	<DialogContentText {...props} className={props.className + ' ctt_text_14 ctt_regular'} />
+))(({ theme }) => {
+	return {
+		color: theme.palette.grey[400],
+		marginBottom: theme.spacing(6),
 	};
 });
 
@@ -73,7 +122,7 @@ const Contact: TNextPageWithLayout = () => {
 	const handelSendEmail = async () => {
 		if (report.name === '') {
 			setModal({
-				title: '',
+				title: '입력 오류!',
 				content: '이름을 입력 해주세요!',
 				open: true,
 			});
@@ -83,7 +132,7 @@ const Contact: TNextPageWithLayout = () => {
 
 		if (report.email === '') {
 			setModal({
-				title: '',
+				title: '입력 오류!',
 				content: '이메일을 입력 해주세요!',
 				open: true,
 			});
@@ -93,7 +142,7 @@ const Contact: TNextPageWithLayout = () => {
 
 		if (report.content === '') {
 			setModal({
-				title: '',
+				title: '입력 오류!',
 				content: '내용을 입력 해주세요!',
 				open: true,
 			});
@@ -114,8 +163,8 @@ const Contact: TNextPageWithLayout = () => {
 
 		if (sendEmail.status === 200) {
 			setModal({
-				title: '',
-				content: '성공적으로 보냈습니다!',
+				title: '접수 완료!',
+				content: '와아 관심 가져주셔서 감사해요.\n보내주신 내용은 저희가 잘 살펴볼게요.',
 				open: true,
 			});
 
@@ -162,13 +211,26 @@ const Contact: TNextPageWithLayout = () => {
 						/>
 					</Stack>
 					<SendButton variant="contained" onClick={handelSendEmail}>
-						<SendButtonText>보내기</SendButtonText>
+						<ButtonText>보내기</ButtonText>
 					</SendButton>
 				</Contents>
 			</SubContentsLayer>
 			<Dialog open={modal.open} onClose={handleDialogClose}>
-				<Box margin={'30px 30px'}>
-					{modal.title} {modal.content}
+				<Box padding="32px">
+					<CDialogTitle>{modal.title}</CDialogTitle>
+					{/* <DialogContent> */}
+					<pre>
+						<CDialogContentText>{modal.content}</CDialogContentText>
+					</pre>
+					<DialogActions
+						sx={{
+							padding: 0,
+						}}
+					>
+						<CheckButton onClick={handleDialogClose}>
+							<ButtonText>확인</ButtonText>
+						</CheckButton>
+					</DialogActions>
 				</Box>
 			</Dialog>
 		</Box>

@@ -7,6 +7,10 @@ export default class MyDocument extends Document {
 		return (
 			<Html lang="en">
 				<Head>
+					<meta property="og:title" content="Contexty" />
+					<meta property="og:type" content="website" />
+					<meta property="og:url" content="https://contexty.kr" />
+					<meta property="og:image" content="https://cdn.contexty.kr/OpenGraph.png" />
 					<link rel="shortcut icon" href="/favicon/favicon.ico" />
 					<link
 						rel="apple-touch-icon"
@@ -56,7 +60,6 @@ export default class MyDocument extends Document {
 							`,
 						}}
 					/>
-
 					{/* Inject MUI styles first to match with the prepend: true configuration. */}
 					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 					{(this.props as any).emotionStyleTags}

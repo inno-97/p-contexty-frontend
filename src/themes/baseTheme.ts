@@ -44,6 +44,9 @@ export const baseTheme: ThemeOptions = {
 				body: {
 					minHeight: '100%',
 				},
+				pre: {
+					margin: 0,
+				},
 				p: {
 					margin: 0,
 				},
