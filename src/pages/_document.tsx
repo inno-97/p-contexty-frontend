@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
 					<meta property="og:title" content="Contexty" />
 					<meta property="og:type" content="website" />
 					<meta property="og:url" content="https://contexty.kr" />
-					{/* <meta property='og:image' /> */}
+					<meta property="og:image" content="https://cdn.contexty.kr/OpenGraph.png" />
 					<link rel="shortcut icon" href="/favicon/favicon.ico" />
 					<link
 						rel="apple-touch-icon"
