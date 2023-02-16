@@ -9,7 +9,7 @@ export type TNextPageWithLayout = NextPage & {
 };
 
 export type TNavItem = {
-	items: { name: string; link: string }[];
+	items: { name: string; link: string; icon?: ReactElement }[];
 };
 
 /* Interface */
