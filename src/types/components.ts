@@ -78,6 +78,11 @@ export interface IUITagsItem extends TUITag {
 	selected?: boolean;
 }
 
+export interface ISelectedTags {
+	tags: IUITagComponents;
+	clearEvent: (idx: 'all' | IUITagsItem) => void;
+}
+
 export interface IUITagComponents {
 	[key: string]: IUITagsItem[];
 	categorys: IUITagsItem[];

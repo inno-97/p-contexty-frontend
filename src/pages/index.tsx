@@ -1,5 +1,4 @@
-import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
-import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
+import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useCallback, useEffect, Fragment } from 'react';
@@ -13,18 +12,18 @@ import {
 	Stack,
 	DialogContent,
 	TextField,
-	Button,
 	IconButton,
 	InputAdornment,
 	Typography,
 	Divider,
 	Avatar,
 	Chip,
+	ChipProps,
 	Grow,
 	CircularProgress,
 } from '@mui/material';
 
-import { Close, Search, Refresh } from '@mui/icons-material';
+import { Close, Search } from '@mui/icons-material';
 
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
@@ -40,6 +39,7 @@ import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
 import { Writing } from 'src/components/Contents/Writing';
 import Dialog from 'src/components/Dialog';
 import SelectFilter from 'src/components/SelectFilter';
+import SelectedTags from 'src/components/Tag/SelectedTags';
 
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
@@ -102,55 +102,6 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
-const FilterClearButton = styled(({ ...props }: ButtonProps) => (
-	<Button
-		{...props}
-		endIcon={<Refresh />}
-		className={props.className + ' ctt_text_14 ctt_medium'}
-	/>
-))(({ theme }) => {
-	return {
-		color: theme.palette.grey[300],
-		padding: '6px 2px',
-		'& .MuiButton-endIcon': {
-			marginLeft: '4.67px',
-			marginRight: '4.67px',
-		},
-	};
-});
-
-const TagChip = styled(({ ...props }: ChipProps) => (
-	<Chip
-		{...props}
-		// size="small"
-		className={props.className + ' ctt_text_14 ctt_bold'}
-		deleteIcon={<Close />}
-	/>
-))({
-	marginRight: '8px',
-	padding: '8px 16px',
-	height: 'auto',
-	borderRadius: '100px',
-	'& .MuiSvgIcon-root': {
-		fontSize: '16px',
-		color: 'inherit',
-		margin: '4px 0',
-	},
-	'& .MuiChip-label': {
-		padding: 0,
-		paddingRight: '8px',
-	},
-});
-
-const TagsDivider = styled(({ ...props }: DividerProps) => (
-	<Divider {...props} orientation="vertical" flexItem />
-))({
-	height: 16,
-	display: 'inline-block',
-	marginRight: '8px',
-	verticalAlign: 'middle',
-});
-
 const ViewImage = styled(Paper)(({ theme }) => {
 	return {
 		width: '270px',
@@ -179,101 +130,6 @@ const ViewRegiDate = styled('p')(({ theme }) => {
 const ViewDetail = styled(Stack)({
 	width: '488px',
 });
-
-const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsItem) => void) => {
-	const selCategorys = tags.categorys.filter((item) => item.selected === true);
-	const selServices = tags.services.filter((item) => item.selected === true);
-	const selEvents = tags.events.filter((item) => item.selected === true);
-
-	if (selCategorys.length + selServices.length + selEvents.length === 0) {
-		return null;
-	}
-
-	return (
-		<Stack direction={{ xs: 'column', sm: 'row' }} alignItems="baseline" spacing={2}>
-			<FilterClearButton
-				onClick={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-
-					clearEvent('all');
-				}}
-			>
-				초기화
-			</FilterClearButton>
-			<Box lineHeight={3} maxWidth="1146px">
-				{/* categores */}
-				{selCategorys.map((tag, idx) => {
-					return (
-						<Fragment key={tag.id}>
-							<TagChip
-								sx={{
-									backgroundColor: '#ECF6FE',
-									color: '#2196F3',
-								}}
-								label={tag.label}
-								onDelete={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-
-									clearEvent(tag);
-								}}
-							/>
-							{selCategorys.length - 1 === idx &&
-								selServices.length + selEvents.length !== 0 && <TagsDivider />}
-						</Fragment>
-					);
-				})}
-
-				{/* services */}
-				{selServices.map((tag, idx) => {
-					return (
-						<Fragment key={tag.id}>
-							<TagChip
-								sx={{
-									backgroundColor: '#E6F9EA',
-									color: '#3BD569',
-								}}
-								label={tag.label}
-								onDelete={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-
-									clearEvent(tag);
-								}}
-							/>
-							{selServices.length - 1 === idx && selEvents.length !== 0 && (
-								// <div>
-								<TagsDivider />
-								// </div>
-							)}
-						</Fragment>
-					);
-				})}
-
-				{/* events */}
-				{selEvents.map((tag) => {
-					return (
-						<TagChip
-							key={tag.id}
-							sx={{
-								backgroundColor: '#FEF3E0',
-								color: '#FB9600',
-							}}
-							label={tag.label}
-							onDelete={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-
-								clearEvent(tag);
-							}}
-						/>
-					);
-				})}
-			</Box>
-		</Stack>
-	);
-};
 
 const getQueryString = (
 	page: number | null,
@@ -735,13 +591,16 @@ const Home: TNextPageWithLayout = () => {
 					</Stack>
 					{/* Display Current Filters */}
 					<Box marginTop="24px">
-						{SelectedTags(tags, (target) => {
-							if (target === 'all') {
-								handleClearTags();
-							} else {
-								handleSetTag(target.id, target.type + 's', false);
-							}
-						})}
+						<SelectedTags
+							tags={tags}
+							clearEvent={(target) => {
+								if (target === 'all') {
+									handleClearTags();
+								} else {
+									handleSetTag(target.id, target.type + 's', false);
+								}
+							}}
+						/>
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0" minHeight={430}>
