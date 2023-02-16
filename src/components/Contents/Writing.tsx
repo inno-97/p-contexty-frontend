@@ -7,7 +7,7 @@ import { Box } from '@mui/material';
 
 const SentenceElement = styled('p')({});
 
-function makeDefaultStyle(lineSpacing?: number, size?: string, weight?: string) {
+function makeDefaultStyle(lineSpacing?: number, size?: string, weight?: string, color?: string) {
 	const sx: SystemCssProperties = {};
 
 	if (lineSpacing !== undefined) {
@@ -18,6 +18,9 @@ function makeDefaultStyle(lineSpacing?: number, size?: string, weight?: string) 
 	}
 	if (weight !== undefined) {
 		sx.fontWeight = weight;
+	}
+	if (color !== undefined) {
+		sx.color = color;
 	}
 
 	return sx;
@@ -39,6 +42,7 @@ export const Writing: FC<IWriting> = ({
 	className,
 	textAlign,
 	lineSpacing,
+	color,
 	size,
 	weight,
 	mt,
@@ -50,7 +54,7 @@ export const Writing: FC<IWriting> = ({
 			className={className}
 			sx={{
 				textAlign,
-				...makeDefaultStyle(lineSpacing, size, weight),
+				...makeDefaultStyle(lineSpacing, size, weight, color),
 				...makeMarginStyle(mt, mb),
 			}}
 		>
@@ -63,6 +67,7 @@ export const Paragraph: FC<IParagraph> = ({
 	className,
 	textAlign,
 	lineSpacing,
+	color,
 	size,
 	weight,
 	mt,
@@ -74,7 +79,7 @@ export const Paragraph: FC<IParagraph> = ({
 			className={className}
 			sx={{
 				textAlign,
-				...makeDefaultStyle(lineSpacing, size, weight),
+				...makeDefaultStyle(lineSpacing, size, weight, color),
 				...makeMarginStyle(mt, mb),
 			}}
 		>
@@ -87,6 +92,7 @@ export const Sentence: FC<ISentence> = ({
 	className,
 	textAlign,
 	lineSpacing,
+	color,
 	size,
 	weight,
 	children,
@@ -94,7 +100,7 @@ export const Sentence: FC<ISentence> = ({
 	return (
 		<SentenceElement
 			className={className}
-			sx={{ textAlign, ...makeDefaultStyle(lineSpacing, size, weight) }}
+			sx={{ textAlign, ...makeDefaultStyle(lineSpacing, size, weight, color) }}
 		>
 			{children}
 		</SentenceElement>

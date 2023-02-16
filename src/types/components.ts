@@ -33,6 +33,7 @@ export interface IWritingDefault extends PropsWithChildren {
 	lineSpacing?: number;
 	size?: string;
 	weight?: string;
+	color?: string;
 }
 
 export interface IWriting extends IWritingDefault {
