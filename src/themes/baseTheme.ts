@@ -56,6 +56,13 @@ export const baseTheme: ThemeOptions = {
 				},
 			},
 		},
+		MuiToolbar: {
+			styleOverrides: {
+				root: {
+					height: '73px',
+				},
+			},
+		},
 		MuiOutlinedInput: {
 			styleOverrides: {
 				root: {
