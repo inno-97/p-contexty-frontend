@@ -84,3 +84,9 @@ export interface IUITagComponents {
 	services: IUITagsItem[];
 	events: IUITagsItem[];
 }
+
+export interface ITabContents {
+	children?: React.ReactNode;
+	value: number;
+	index: number;
+}
