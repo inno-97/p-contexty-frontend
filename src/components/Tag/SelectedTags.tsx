@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Stack, Button, ButtonProps, Divider, DividerProps } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 
-import { TagChip, SmallTagChip } from 'src/components/Tag/TagChip';
+import TagChip from 'src/components/Tag/TagChip';
 
 const FilterClearButton = styled(({ ...props }: ButtonProps) => (
 	<Button
@@ -35,6 +35,8 @@ const TagsDivider = styled(({ ...props }: DividerProps) => (
 	verticalAlign: 'middle',
 });
 
+const TagChipMargin = '0 8px 0 0';
+
 const SelectedTags: FC<ISelectedTags> = ({ size = 'medium', tags, clearEvent }) => {
 	const selCategorys = tags.categorys.filter((item) => item.selected === true);
 	const selServices = tags.services.filter((item) => item.selected === true);
@@ -44,7 +46,6 @@ const SelectedTags: FC<ISelectedTags> = ({ size = 'medium', tags, clearEvent }) 
 		return null;
 	}
 
-	const Chip = size === 'medium' ? TagChip : SmallTagChip;
 	return (
 		<Stack direction={{ xs: 'column', sm: 'row' }} alignItems="baseline" spacing={2}>
 			<FilterClearButton
@@ -62,13 +63,12 @@ const SelectedTags: FC<ISelectedTags> = ({ size = 'medium', tags, clearEvent }) 
 				{selCategorys.map((tag, idx) => {
 					return (
 						<Fragment key={tag.id}>
-							<Chip
-								size={size}
-								sx={{
-									backgroundColor: '#ECF6FE',
-									color: '#2196F3',
-								}}
+							<TagChip
+								type="category"
+								value={tag.id}
 								label={tag.label}
+								margin={TagChipMargin}
+								size={size}
 								onDelete={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
@@ -86,13 +86,12 @@ const SelectedTags: FC<ISelectedTags> = ({ size = 'medium', tags, clearEvent }) 
 				{selServices.map((tag, idx) => {
 					return (
 						<Fragment key={tag.id}>
-							<Chip
-								size={size}
-								sx={{
-									backgroundColor: '#E6F9EA',
-									color: '#3BD569',
-								}}
+							<TagChip
+								type="service"
+								value={tag.id}
 								label={tag.label}
+								margin={TagChipMargin}
+								size={size}
 								onDelete={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
@@ -112,14 +111,13 @@ const SelectedTags: FC<ISelectedTags> = ({ size = 'medium', tags, clearEvent }) 
 				{/* events */}
 				{selEvents.map((tag) => {
 					return (
-						<Chip
-							size={size}
+						<TagChip
 							key={tag.id}
-							sx={{
-								backgroundColor: '#FEF3E0',
-								color: '#FB9600',
-							}}
+							size={size}
+							type="events"
+							value={tag.id}
 							label={tag.label}
+							margin={TagChipMargin}
 							onDelete={(e) => {
 								e.preventDefault();
 								e.stopPropagation();

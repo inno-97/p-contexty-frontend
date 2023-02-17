@@ -91,6 +91,15 @@ export interface IUITagComponents {
 	events: IUITagsItem[];
 }
 
+export interface ITagChip {
+	size?: 'small' | 'medium';
+	type: 'category' | 'service' | 'events';
+	label?: string;
+	value?: number;
+	margin?: string;
+	onDelete?: (event: SyntheticEvent) => void;
+}
+
 export interface ITabContents extends PropsWithChildren {
 	value: number;
 	index: number;
