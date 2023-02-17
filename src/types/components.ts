@@ -91,8 +91,7 @@ export interface IUITagComponents {
 	events: IUITagsItem[];
 }
 
-export interface ITabContents {
-	children?: React.ReactNode;
+export interface ITabContents extends PropsWithChildren {
 	value: number;
 	index: number;
 }
