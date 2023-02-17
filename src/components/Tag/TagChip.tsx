@@ -18,7 +18,7 @@ export const SmallTagChip = styled(({ ...props }: ChipProps) => (
 	'& .MuiSvgIcon-root': {
 		fontSize: '14px',
 		color: 'inherit',
-		margin: '4px 0 4px 8px',
+		margin: '4px 0 4px 4px',
 	},
 	'& .MuiChip-label': {
 		padding: 0,
