@@ -49,9 +49,8 @@ export interface IParagraph extends IWritingDefault {
 
 export interface ISentence extends IWritingDefault {}
 
-export interface IDialog {
+export interface IDialog extends PropsWithChildren {
 	open: boolean;
-	children?: React.ReactNode;
 	onClose: () => void;
 }
 
