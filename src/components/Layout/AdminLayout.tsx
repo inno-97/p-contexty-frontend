@@ -1,7 +1,7 @@
 import { Fragment, PropsWithChildren } from 'react';
 import type { TNavItem } from 'src/types/components';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -61,6 +61,29 @@ function AdminLayout(props: PropsWithChildren) {
 	const router = useRouter();
 
 	const [mobileOpen, setMobileOpen] = useState(false);
+
+	// 나중에 Provider로 감싸서 API 한곳에서 처리하자.
+	useEffect(() => {
+		fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/my`, {
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// .then((rs) => rs.json())
+			.then(async (rs) => {
+				if (rs.ok === true) {
+					return await rs.json();
+				} else {
+					// login 페이지 이동
+					router.push('/admin');
+				}
+			})
+			.catch((e) => {
+				console.error(e);
+				alert('get my Profile Error');
+			});
+	}, []);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
