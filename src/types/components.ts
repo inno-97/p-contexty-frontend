@@ -104,3 +104,24 @@ export interface ITabContents extends PropsWithChildren {
 	value: number;
 	index: number;
 }
+
+export interface IDataTable {
+	sx?: SxProps;
+	onRowsPerPage?: boolean;
+	rowsPerPageList?: number[];
+	rowsPerPage?: number;
+	onTotalCount?: boolean;
+	onTopPagination?: boolean;
+	onBottomPagination?: boolean;
+	page?: number;
+	changePage?: (page: number) => void;
+	totalCount?: number;
+	selecting?: boolean;
+	headers: {
+		key: string | number;
+		name?: string;
+		align?: 'right' | 'left' | 'center';
+		width?: string;
+	}[];
+	rows: { [key: string]: string | number | boolean | ReactElement }[];
+}
