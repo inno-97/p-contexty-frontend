@@ -20,6 +20,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Typography,
+	TypographyProps,
 } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -42,6 +43,16 @@ const Logo = styled(Image)(({ theme }) => {
 		color: theme.palette.grey[400],
 		cursor: 'pointer',
 		filter,
+	};
+});
+
+const LogoutText = styled(({ ...props }: TypographyProps) => (
+	<Typography {...props} noWrap className={props.className + ' ctt_text_14 ctt_medium'} />
+))(({ theme }) => {
+	return {
+		cursor: 'pointer',
+		marginLeft: 'auto',
+		color: theme.palette.grey[200],
 	};
 });
 
@@ -118,6 +129,9 @@ function AdminLayout(props: PropsWithChildren) {
 						<Typography noWrap component="div" color={theme.palette.grey[400]}>
 							{now}
 						</Typography>
+						<Link href={'/admin'}>
+							<LogoutText>로그아웃</LogoutText>
+						</Link>
 					</Toolbar>
 				</AppBar>
 				<Box
