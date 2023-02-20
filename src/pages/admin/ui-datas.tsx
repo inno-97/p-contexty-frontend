@@ -122,6 +122,7 @@ const UIDataTableHeader = [
 	{ key: 'service', name: 'Service', width: '130px' },
 	{ key: 'events', name: 'Events', width: '220px', align: LEFT_ALIGN },
 	{ key: 'text', name: 'Text', align: LEFT_ALIGN },
+	{ key: 'image', name: 'Image', align: LEFT_ALIGN, width: '220px' },
 	{ key: 'copyCount', name: 'Copy', width: '80px' },
 	{ key: 'timestamp', name: 'Created', width: '110px' },
 ];
