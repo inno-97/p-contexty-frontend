@@ -72,33 +72,31 @@ const Admin: TNextPageWithLayout = () => {
 				password: '',
 			}}
 			onSubmit={(values: Values, { setSubmitting }: FormikHelpers<Values>) => {
-				setTimeout(() => {
-					fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, {
-						method: 'POST',
-						credentials: 'include',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({
-							uid: values.uid,
-							password: values.password,
-						}),
+				fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						uid: values.uid,
+						password: values.password,
+					}),
+				})
+					.then((rs) => {
+						if (rs.status !== 200) {
+							alert('아이디 또는 패스워드를 확인해주세요');
+						} else {
+							router.push('/admin/ui-datas');
+						}
 					})
-						.then((rs) => {
-							if (rs.status !== 200) {
-								alert('아이디 또는 패스워드를 확인해주세요');
-							} else {
-								router.push('/admin/ui-datas');
-							}
-						})
-						.catch((e) => {
-							console.log(e);
-							alert('로그인 실패');
-						})
-						.finally(() => {
-							setSubmitting(false);
-						});
-				}, 500);
+					.catch((e) => {
+						console.log(e);
+						alert('로그인 실패');
+					})
+					.finally(() => {
+						setSubmitting(false);
+					});
 			}}
 		>
 			{({ values, handleChange, isSubmitting }) => (
