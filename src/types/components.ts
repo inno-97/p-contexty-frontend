@@ -65,6 +65,14 @@ export interface ISelectFilter {
 	onOptionClick?: (event: SyntheticEvent) => void;
 }
 
+export interface IUIDialogViewer {
+	open: boolean;
+	onClose: () => void;
+	data?: IUITextData;
+	TextComponent?: ReactElement;
+	ImageComponent?: ReactElement;
+}
+
 export interface IUITextComponent {
 	item: IUITextData;
 	onCopy?: boolean;

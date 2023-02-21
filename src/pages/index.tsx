@@ -10,38 +10,31 @@ import {
 	Grid,
 	Paper,
 	Stack,
-	DialogContent,
 	TextField,
-	IconButton,
 	InputAdornment,
 	Typography,
-	Divider,
-	Avatar,
-	Chip,
-	ChipProps,
 	Grow,
 	CircularProgress,
 } from '@mui/material';
 
-import { Close, Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
+
+import NoImage from '/public/noImage.svg';
 
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
-import NoImage from '/public/noImage.svg';
 
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { ContentsLayer } from 'src/components/CustomLayer';
 import { Card, ReferenceCard } from 'src/components/Contents/Card';
+import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
 import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
 import { Writing } from 'src/components/Contents/Writing';
-import Dialog from 'src/components/Dialog';
 import SelectFilter from 'src/components/SelectFilter';
 import SelectedTags from 'src/components/Tag/SelectedTags';
-
-import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 const SearchBox = styled(Paper)({
 	height: '240px',
@@ -100,35 +93,6 @@ const FilterIcon = styled(Image)(({ theme }) => {
 		color: theme.palette.grey[400],
 		filter,
 	};
-});
-
-const ViewImage = styled(Paper)(({ theme }) => {
-	return {
-		width: '270px',
-		height: '586px',
-		borderRadius: '8px',
-		border: `1px solid ${theme.palette.grey[100]}`,
-		display: 'flex',
-		justifyContent: 'center',
-	};
-});
-
-const ViewHeaderChip = styled(({ ...props }: ChipProps) => (
-	<Chip {...props} className={props.className + ' ctt_text_14 ctt_bold'} />
-))(({ theme }) => {
-	return {
-		color: theme.palette.grey[200],
-	};
-});
-
-const ViewRegiDate = styled('p')(({ theme }) => {
-	return {
-		color: theme.palette.grey[300],
-	};
-});
-
-const ViewDetail = styled(Stack)({
-	width: '488px',
 });
 
 const getQueryString = (
@@ -679,139 +643,35 @@ const Home: TNextPageWithLayout = () => {
 				</ContentsLayer>
 			</Box>
 			{/* Detail Dialog */}
-			<Dialog open={open} onClose={handleDialogClose}>
-				{/* Display Contents Detail */}
-				<DialogContent sx={{ padding: '40px' }}>
-					{/* Close Button */}
-					<IconButton
-						aria-label="close"
-						onClick={handleDialogClose}
-						sx={{
-							position: 'absolute',
-							right: 6,
-							top: 6,
-							color: (theme) => theme.palette.grey[400],
-						}}
-					>
-						<Close fontSize="large" />
-					</IconButton>
-					{viewContent === undefined ? (
-						'NO DATA'
-					) : (
-						<Stack direction="row" spacing={4}>
-							{/* Image Box */}
-							<ViewImage elevation={0}>
-								{(typeof viewContent.image === 'string' && (
-									<Image
-										alt="Text UI Data Image"
-										width="270px"
-										height="586px"
-										style={{
-											borderRadius: '8px',
-										}}
-										onError={(e) => {
-											setViewContent({
-												...viewContent,
-												image: undefined,
-											});
-										}}
-										src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
-									/>
-								)) || <Image alt="No Image" {...NoImage} />}
-							</ViewImage>
-							{/* Detail Box */}
-							<ViewDetail spacing={3}>
-								{/* Header */}
-								<Stack alignItems="center" direction="row" spacing={1}>
-									{/* Service Icon */}
-									{viewContent.tags?.service.icon || (
-										<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-									)}
-									{/* Service Name */}
-									<ViewHeaderChip label={viewContent.tags?.service.name} />
-									<div>
-										<Divider
-											sx={{ height: 10 }}
-											orientation="vertical"
-											flexItem
-										/>
-									</div>
-									{/* Event Tags*/}
-									{viewContent.tags?.events.map((event) => {
-										const react_event_key = `${viewContent.id}-${event.id}`;
-										return (
-											<ViewHeaderChip
-												label={`#${event.name}`}
-												key={react_event_key}
-											/>
-										);
-									})}
-									<div>
-										<Divider
-											sx={{ height: 10 }}
-											orientation="vertical"
-											flexItem
-										/>
-									</div>
-									{/* Registration Date */}
-									<ViewRegiDate className="ctt_text_14 ctt_regular">
-										{getUnixToYYYYMMDD(viewContent.timestamp)}
-									</ViewRegiDate>
-								</Stack>
-								{/* Text */}
-								<Card
-									sx={{
-										padding: '24px',
-										minHeight: '200px',
-									}}
-								>
-									<UITextData
-										item={viewContent}
-										onTags={false}
-										handleCopy={handleCopy}
-									/>
-								</Card>
-								{/* Reference */}
-								{/* 서비스 오픈 후 예정 */}
-								{/* <Box>
-									<ViewReferenceText>
-										비슷한 상황에서 다른 서비스들은 이렇게 써요.
-									</ViewReferenceText>
-
-									<Grid container spacing={1}>
-										{ReferenceCardTest.map((item) => {
-											return (
-												<Grid item key={item} xs={12} sm={6}>
-													<ReferenceCard
-														sx={{
-															padding: '16px',
-															maxHeight: '124px',
-															minHeight: '124px',
-														}}
-													>
-														<UIRefTextData
-															item={{
-																id: parseInt(item),
-																text: 'RefData',
-																tags: {
-																	service: {
-																		id: 1,
-																		name: '컨텍스트',
-																	},
-																},
-															}}
-														/>
-													</ReferenceCard>
-												</Grid>
-											);
-										})}
-									</Grid>
-								</Box> */}
-							</ViewDetail>
-						</Stack>
-					)}
-				</DialogContent>
-			</Dialog>
+			<UIDialogViewer
+				open={open}
+				onClose={handleDialogClose}
+				data={viewContent}
+				ImageComponent={
+					(typeof viewContent?.image === 'string' && (
+						<Image
+							alt="Text UI Data Image"
+							width="270px"
+							height="586px"
+							style={{
+								borderRadius: '8px',
+							}}
+							onError={(e) => {
+								setViewContent({
+									...viewContent,
+									image: undefined,
+								});
+							}}
+							src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
+						/>
+					)) || <Image alt="No Image" {...NoImage} />
+				}
+				TextComponent={
+					viewContent && (
+						<UITextData item={viewContent} onTags={false} handleCopy={handleCopy} />
+					)
+				}
+			/>
 		</Fragment>
 	);
 };
