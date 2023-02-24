@@ -72,7 +72,7 @@ const Admin: TNextPageWithLayout = () => {
 				password: '',
 			}}
 			onSubmit={(values: Values, { setSubmitting }: FormikHelpers<Values>) => {
-				fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, {
+				fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-in`, {
 					method: 'POST',
 					credentials: 'include',
 					headers: {
