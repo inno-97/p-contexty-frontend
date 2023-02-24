@@ -6,21 +6,25 @@ export type TUITag = {
 	icon?: string;
 };
 
+export type TUITgas = {
+	category?: TUITag;
+	service?: TUITag;
+	events?: TUITag[];
+};
+
 export type TUIData = {
-	id: number;
-	copyCount: number;
-	timestamp: number;
-	tags?: {
-		category: TUITag;
-		service: TUITag;
-		events: TUITag[];
-	};
+	id?: number;
+	copyCount?: number;
+	timestamp?: number;
+	tags?: TUITgas;
 	image?: string;
+	imageSrc?: string;
+	File?: File;
 };
 
 /* Interface */
 export interface IUITextData extends TUIData {
-	text: string;
+	text?: string;
 	copied?: boolean;
 }
 

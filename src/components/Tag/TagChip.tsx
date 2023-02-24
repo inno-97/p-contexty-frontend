@@ -5,6 +5,17 @@ import { styled } from '@mui/material/styles';
 import { Chip, ChipProps } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
+export const NormalTagChip = styled(({ ...props }: ChipProps) => (
+	<Chip {...props} className={props.className + ' ctt_text_14 ctt_bold'} />
+))(({ theme }) => {
+	return {
+		color: theme.palette.grey[200],
+		'& > span': {
+			display: 'flex',
+		},
+	};
+});
+
 export const SmallTagChip = styled(({ ...props }: ChipProps) => (
 	<Chip
 		{...props}

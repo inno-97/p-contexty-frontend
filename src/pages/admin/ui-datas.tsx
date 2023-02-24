@@ -1,5 +1,5 @@
-import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
-import type { IUIDatas, IUITextData } from 'src/types/ui-data';
+import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
+import type { TUITgas, IUITextData } from 'src/types/ui-data';
 
 import { useEffect, useState, useCallback, Fragment } from 'react';
 import Image from 'next/image';
@@ -11,8 +11,15 @@ import {
 	TextFieldProps,
 	OutlinedInputProps,
 	InputAdornment,
+	IconButton,
+	Button,
+	Avatar,
+	Menu,
+	MenuItem,
+	Divider,
+	Fade,
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Search, AddPhotoAlternate } from '@mui/icons-material';
 
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
@@ -23,8 +30,9 @@ import { AntTabs, AntTab, TabContents } from 'src/components/Tab';
 import { Writing } from 'src/components/Contents/Writing';
 import SelectFilter from 'src/components/SelectFilter';
 import SelectedTags from 'src/components/Tag/SelectedTags';
-import TagChip from 'src/components/Tag/TagChip';
+import { TagChip, NormalTagChip } from 'src/components/Tag/TagChip';
 import DataTable from 'src/components/DataTable';
+import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
 
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
@@ -41,6 +49,32 @@ const getTextUIDatas = async (q: string | null = null) => {
 		console.error(e);
 		return [];
 	}
+};
+
+const imageUpload = async (file: File, service: string) => {
+	if (file === undefined) {
+		return [];
+	}
+
+	const imageData = new FormData();
+	const blob = file.slice(0, file.size, file.type);
+
+	const copyFile = new File([blob], encodeURIComponent(`${service}/${file.name}`), {
+		type: file.type,
+	});
+
+	imageData.append('file', copyFile);
+
+	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/file-upload`, {
+		method: 'POST',
+		credentials: 'include',
+		body: imageData,
+	})
+		.then((rs) => rs.json())
+		.catch((err) => {
+			console.log(err);
+			return [];
+		});
 };
 
 const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
@@ -67,6 +101,11 @@ const getQueryString = (page: number | null, word: string | null, tags: string |
 const ContentsBox = styled(Box)({
 	backgroundColor: '#fcfcfc',
 	padding: '10px',
+});
+
+const ButtonBox = styled(Box)({
+	// paddingBottom: '10px',
+	textAlign: 'right',
 });
 
 const FilterIcon = styled(Image)(({ theme }) => {
@@ -147,6 +186,8 @@ const UIDataList = () => {
 
 	const [contents, setContents] = useState([]);
 
+	const [newData, setNewData] = useState<IUITextData>({});
+
 	const [tagQuery, setTagQuery] = useState('');
 
 	const [search, setSearch] = useState<{
@@ -158,6 +199,113 @@ const UIDataList = () => {
 		request: '',
 		noResult: false,
 	});
+
+	const [open, setOpen] = useState(false);
+
+	const handleDialogClose = () => {
+		setOpen(false);
+	};
+	const handleDialogOpen = () => {
+		setOpen(true);
+	};
+
+	const [tagMenu, setTagMenu] = useState<{
+		target: null | HTMLElement;
+		data: IUITagsItem[];
+	}>({
+		target: null,
+		data: [],
+	});
+
+	const handleTagMenuClose = () => {
+		setTagMenu((prev) => {
+			return {
+				...prev,
+				target: null,
+			};
+		});
+	};
+
+	const handleTagMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+		setTagMenu({
+			target: event.currentTarget,
+			data: tags[event.currentTarget.id],
+		});
+	};
+
+	const handleTagDelete = (id: number) => {
+		setNewData((prev) => {
+			if (prev?.tags?.events !== undefined) {
+				const newEventsTags = [...prev.tags.events];
+				const delIndex = newEventsTags.findIndex((item) => item.id === id);
+
+				if (delIndex !== -1) {
+					newEventsTags.splice(delIndex, 1);
+					return {
+						...prev,
+						tags: {
+							...prev.tags,
+							events: newEventsTags,
+						},
+					};
+				}
+			}
+			return prev;
+		});
+	};
+
+	const handleImageChange = (e: React.ChangeEvent) => {
+		const targetFiles = (e.target as HTMLInputElement).files as FileList;
+
+		const imageName = targetFiles[0].name;
+		const imageSrc = URL.createObjectURL(targetFiles[0]);
+
+		setNewData((prev) => {
+			return {
+				...prev,
+				image: imageName,
+				imageSrc: imageSrc,
+				File: targetFiles[0],
+			};
+		});
+	};
+
+	const handleTagChange = (tag: IUITagsItem) => {
+		setNewData((prev) => {
+			let newTags: TUITgas = {};
+			if (prev.tags !== undefined) {
+				newTags = {
+					...prev.tags,
+				};
+			}
+
+			const curTag = {
+				type: tag.type,
+				id: tag.id,
+				name: tag.name,
+			};
+
+			if (tag.type === 'category' || tag.type === 'service') {
+				newTags[tag.type] = curTag;
+			} else if (tag.type === 'event') {
+				if (
+					newTags?.events &&
+					newTags.events.findIndex((item) => item.id === tag.id) === -1
+				) {
+					newTags.events = [...newTags.events, curTag];
+				} else {
+					newTags.events = [curTag];
+				}
+			}
+
+			return {
+				...prev,
+				tags: newTags,
+			};
+		});
+
+		handleTagMenuClose();
+	};
 
 	const handleClearTags = useCallback(() => {
 		setTags((preTags) => {
@@ -263,8 +411,8 @@ const UIDataList = () => {
 							size="small"
 							type="category"
 							margin={TagChipMargin}
-							value={item.tags?.category.id}
-							label={item.tags?.category.name}
+							value={item.tags?.category?.id}
+							label={item.tags?.category?.name}
 						/>
 					),
 					service: (
@@ -272,13 +420,13 @@ const UIDataList = () => {
 							size="small"
 							type="service"
 							margin={TagChipMargin}
-							value={item.tags?.service.id}
-							label={item.tags?.service.name}
+							value={item.tags?.service?.id}
+							label={item.tags?.service?.name}
 						/>
 					),
 					events: (
 						<Fragment>
-							{item.tags?.events.map((tag) => {
+							{item.tags?.events?.map((tag) => {
 								return (
 									<TagChip
 										key={tag.id}
@@ -304,8 +452,8 @@ const UIDataList = () => {
 					};
 				});
 			}
-			setContents(result);
 
+			setContents(result);
 			setSearch({ ...search, noResult: result.length === 0 });
 		};
 
@@ -317,6 +465,12 @@ const UIDataList = () => {
 	return (
 		<Fragment>
 			<ContentsBox>
+				<ButtonBox>
+					<Button variant="contained" onClick={handleDialogOpen}>
+						데이터 추가
+					</Button>
+				</ButtonBox>
+
 				{/* Filter */}
 				<Writing size="14px" color="#828282" mb={4}>
 					filter.
@@ -447,6 +601,246 @@ const UIDataList = () => {
 					totalCount={page.totalCount}
 				/>
 			</ContentsBox>
+			<UIDialogViewer
+				open={open}
+				onClose={handleDialogClose}
+				ImageComponent={
+					<Fragment>
+						{newData.imageSrc !== undefined && (
+							<span
+								style={{
+									borderRadius: '8px',
+									position: 'absolute',
+								}}
+							>
+								<Image
+									alt="Text UI Data Image"
+									width="270px"
+									height="586px"
+									// loader={previewIamgeLoader}
+									src={newData?.imageSrc}
+								/>
+							</span>
+						)}
+						<IconButton
+							sx={{ margin: 'auto', backgroundColor: '#6f6f6f30' }}
+							component="label"
+						>
+							<input
+								hidden
+								accept="image/*"
+								type="file"
+								onClick={(e) => {
+									if (newData?.tags?.service?.id === undefined) {
+										e.preventDefault();
+										alert('이미지를 추가하기 전 서비스를 먼저 선택해 주세요.');
+									}
+								}}
+								onChange={handleImageChange}
+							/>
+							<AddPhotoAlternate fontSize="large" />
+						</IconButton>
+					</Fragment>
+				}
+				HeaderComponent={
+					<Stack alignItems="center" direction="row" spacing={1}>
+						{/* Category Tag */}
+						<NormalTagChip
+							id="categorys"
+							onClick={handleTagMenuOpen}
+							label={
+								(newData?.tags?.category && newData?.tags?.category.name) || (
+									<FilterIcon alt="App Category Filter" {...filter_category} />
+								)
+							}
+						/>
+
+						{/* Service Icon */}
+						{/* {newData?.tags?.service.icon || (
+							<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
+						)} */}
+
+						{/* Service Tag */}
+						<NormalTagChip
+							id="services"
+							onClick={handleTagMenuOpen}
+							label={
+								(newData?.tags?.service && newData?.tags?.service.name) || (
+									<FilterIcon alt="App Service Filter" {...filter_service} />
+								)
+							}
+						/>
+						<div>
+							<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
+						</div>
+						{/* Event Tags*/}
+						{newData?.tags?.events?.map((event) => {
+							const react_event_key = `new-${event.id}`;
+							return (
+								<NormalTagChip
+									label={`#${event.name}`}
+									key={react_event_key}
+									onDelete={handleTagDelete.bind(null, event.id)}
+								/>
+							);
+						})}
+						<NormalTagChip
+							onClick={handleTagMenuOpen}
+							id="events"
+							label={<FilterIcon alt="App Events Filter" {...filter_situation} />}
+						/>
+					</Stack>
+				}
+				TextComponent={
+					<TextField
+						value={newData?.text}
+						fullWidth
+						multiline
+						minRows={3}
+						sx={{
+							marginBottom: '38px',
+						}}
+						placeholder="텍스트를 입력하세요!"
+						onChange={(e) => {
+							setNewData((prev) => {
+								return {
+									...prev,
+									text: e.target.value,
+								};
+							});
+						}}
+					/>
+				}
+				BottomComponent={
+					<Stack
+						direction="row"
+						alignItems="center"
+						justifyContent="flex-end"
+						spacing={1}
+					>
+						<Button
+							variant="contained"
+							onClick={() => {
+								setNewData({ text: '' });
+							}}
+						>
+							초기화
+						</Button>
+						<Button
+							variant="contained"
+							onClick={async (e) => {
+								e.preventDefault();
+
+								const data = {
+									image: newData.image,
+									text: newData.text,
+									tags: newData.tags,
+								};
+
+								const rs = await fetch(
+									`${process.env.NEXT_PUBLIC_API_URL}/ui/datas`,
+									{
+										method: 'POST',
+										credentials: 'include',
+										headers: {
+											'Content-Type': 'application/json',
+										},
+										body: JSON.stringify({ datas: [data] }),
+									}
+								)
+									.then((rs) => rs.json())
+									.catch((err) => {
+										console.log(err);
+									});
+
+								const result = rs[0];
+
+								if (result.validation !== true) {
+									alert('Validation Faild: ' + result.validation);
+									return;
+								}
+
+								if (result.image === 'exists') {
+									alert('Image already exists.');
+									return;
+								}
+
+								if (result.create === true) {
+									if (!!newData.File && !!newData?.tags?.service?.name) {
+										const upload_rs = await imageUpload(
+											newData.File,
+											newData.tags.service.name
+										);
+
+										if (upload_rs?.length === 0) {
+											alert(
+												'데이터 생성은 성공하였으나, 이미지 업로드를 실패하였습니다.\n관리자에게 문의하세요.'
+											);
+										} else {
+											setNewData({ text: '' });
+										}
+									}
+								} else {
+									alert('데이터 생성에 실패하였습니다.\n관리자에게 문의하세요.');
+									return;
+								}
+							}}
+						>
+							추가하기
+						</Button>
+					</Stack>
+				}
+			/>
+			<Menu
+				id="long-menu"
+				MenuListProps={{
+					'aria-labelledby': 'long-button',
+				}}
+				anchorEl={tagMenu.target}
+				open={Boolean(tagMenu.target)}
+				onClose={handleTagMenuClose}
+				PaperProps={{
+					style: {
+						maxHeight: 48 * 4.5,
+						width: '20ch',
+					},
+				}}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'center',
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'center',
+				}}
+				TransitionComponent={Fade}
+			>
+				{tagMenu.data.map((tag) => {
+					let selected = false;
+
+					if (tag.type === 'event') {
+						const find = newData?.tags?.events?.findIndex((item) => item.id === tag.id);
+						if (find !== undefined && find > -1) {
+							selected = true;
+						}
+					} else if (tag.type === 'category' || tag.type === 'service') {
+						const a = newData?.tags;
+						if (a) {
+							selected = tag.id === a[tag.type]?.id;
+						}
+					}
+
+					return (
+						<MenuItem
+							key={`new-${tag.id}`}
+							onClick={handleTagChange.bind(null, tag)}
+							selected={selected}
+						>
+							{tag.name}
+						</MenuItem>
+					);
+				})}
+			</Menu>
 		</Fragment>
 	);
 };
