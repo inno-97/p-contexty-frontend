@@ -6,7 +6,10 @@ function leftPad(value: number) {
 	return `0${value}`;
 }
 
-export function getUnixToYYYYMMDD(unixTime: number) {
+export function getUnixToYYYYMMDD(unixTime: number | null = null) {
+	if (unixTime === null) {
+		return '';
+	}
 	const calendar = new Date(unixTime);
 
 	const year = calendar.getFullYear();

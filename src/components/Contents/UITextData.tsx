@@ -111,7 +111,9 @@ export const UITextData: FC<IUITextComponent> = ({
 	};
 
 	const successCopy = () => {
-		handleCopy(item.id, handleTooltip);
+		if (!!item.id) {
+			handleCopy(item.id, handleTooltip);
+		}
 	};
 
 	const handleCloseTooltip = () => {
@@ -144,7 +146,7 @@ export const UITextData: FC<IUITextComponent> = ({
 							spacing={0}
 						>
 							<Stack direction="row" spacing={1}>
-								{item.tags?.events.map((event) => {
+								{item?.tags?.events?.map((event) => {
 									const react_event_key = `${item.id}-${event.id}`;
 									return <p key={react_event_key}>#{event.name}</p>;
 								})}
@@ -173,7 +175,7 @@ export const UITextData: FC<IUITextComponent> = ({
 
 											if (typeof navigator.clipboard == 'undefined') {
 												const textArea = document.createElement('textarea');
-												textArea.value = item.text;
+												textArea.value = item.text || 'No Data';
 												textArea.style.position = 'fixed'; //avoid scrolling to bottom
 												document.body.appendChild(textArea);
 												textArea.focus();
@@ -200,7 +202,7 @@ export const UITextData: FC<IUITextComponent> = ({
 											}
 
 											navigator.clipboard
-												.writeText(item.text)
+												.writeText(item.text || 'No Data')
 												.then(successCopy, function () {
 													// failed
 													handleTooltip('복사하지 못했어요!');
@@ -221,9 +223,9 @@ export const UITextData: FC<IUITextComponent> = ({
 					</ClickAwayListener>
 					{onTags === true && (
 						<TagsBox className="ctt_text_14 ctt_medium">
-							{item.tags?.category.name}
+							{item.tags?.category?.name}
 							<TagsDivider />
-							{item.tags?.service.name}
+							{item.tags?.service?.name}
 						</TagsBox>
 					)}
 				</Stack>
@@ -238,7 +240,7 @@ export const UIRefTextData: FC<IUITextComponent> = ({ item }) => {
 	return (
 		<Box>
 			<HeaderBox mb={1} className="ctt_text_14 ctt_bold">
-				{item.tags?.service.name}
+				{item.tags?.service?.name}
 			</HeaderBox>
 			<TextBox className="ctt_text_14 ctt_regular">{item.text}</TextBox>
 		</Box>

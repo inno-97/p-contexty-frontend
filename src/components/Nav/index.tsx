@@ -51,12 +51,7 @@ export const Nav: FC<TNavItem> = (props) => {
 	return (
 		<AppBar elevation={0} component="nav">
 			<ContentsLayer>
-				<Toolbar
-					disableGutters
-					sx={{
-						height: '73px',
-					}}
-				>
+				<Toolbar disableGutters>
 					{/* Contexty Logo */}
 					<Link href="/">
 						<Logo alt="Contexty Logo" {...SVGLogo} />

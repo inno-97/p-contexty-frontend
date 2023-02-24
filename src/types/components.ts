@@ -9,7 +9,7 @@ export type TNextPageWithLayout = NextPage & {
 };
 
 export type TNavItem = {
-	items: { name: string; link: string }[];
+	items: { name: string; link: string; icon?: ReactElement }[];
 };
 
 /* Interface */
@@ -33,6 +33,7 @@ export interface IWritingDefault extends PropsWithChildren {
 	lineSpacing?: number;
 	size?: string;
 	weight?: string;
+	color?: string;
 }
 
 export interface IWriting extends IWritingDefault {
@@ -48,9 +49,8 @@ export interface IParagraph extends IWritingDefault {
 
 export interface ISentence extends IWritingDefault {}
 
-export interface IDialog {
+export interface IDialog extends PropsWithChildren {
 	open: boolean;
-	children?: React.ReactNode;
 	onClose: () => void;
 }
 
@@ -63,6 +63,15 @@ export interface ISelectFilter {
 	options: { label: string | number }[];
 	inputValue?: string | number | null;
 	onOptionClick?: (event: SyntheticEvent) => void;
+}
+
+export interface IUIDialogViewer {
+	open: boolean;
+	onClose: () => void;
+	ImageComponent?: ReactElement;
+	HeaderComponent?: ReactElement;
+	TextComponent?: ReactElement | string;
+	BottomComponent?: ReactElement;
 }
 
 export interface IUITextComponent {
@@ -78,9 +87,50 @@ export interface IUITagsItem extends TUITag {
 	selected?: boolean;
 }
 
+export interface ISelectedTags {
+	tags: IUITagComponents;
+	size?: 'small' | 'medium';
+	clearEvent: (idx: 'all' | IUITagsItem) => void;
+}
+
 export interface IUITagComponents {
 	[key: string]: IUITagsItem[];
 	categorys: IUITagsItem[];
 	services: IUITagsItem[];
 	events: IUITagsItem[];
+}
+
+export interface ITagChip {
+	size?: 'small' | 'medium';
+	type: 'category' | 'service' | 'events';
+	label?: string;
+	value?: number;
+	margin?: string;
+	onDelete?: (event: SyntheticEvent) => void;
+}
+
+export interface ITabContents extends PropsWithChildren {
+	value: number;
+	index: number;
+}
+
+export interface IDataTable {
+	sx?: SxProps;
+	onRowsPerPage?: boolean;
+	rowsPerPageList?: number[];
+	rowsPerPage?: number;
+	onTotalCount?: boolean;
+	onTopPagination?: boolean;
+	onBottomPagination?: boolean;
+	page?: number;
+	changePage?: (page: number) => void;
+	totalCount?: number;
+	selecting?: boolean;
+	headers: {
+		key: string | number;
+		name?: string;
+		align?: 'right' | 'left' | 'center';
+		width?: string;
+	}[];
+	rows: { [key: string]: string | number | boolean | ReactElement }[];
 }

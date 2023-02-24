@@ -1,5 +1,4 @@
-import type { TypographyProps, ChipProps, ButtonProps, DividerProps } from '@mui/material';
-import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
+import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useCallback, useEffect, Fragment } from 'react';
@@ -11,35 +10,34 @@ import {
 	Grid,
 	Paper,
 	Stack,
-	DialogContent,
 	TextField,
-	Button,
-	IconButton,
 	InputAdornment,
 	Typography,
-	Divider,
-	Avatar,
-	Chip,
 	Grow,
 	CircularProgress,
+	Avatar,
+	Divider,
 } from '@mui/material';
 
-import { Close, Search, Refresh } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
+
+import NoImage from '/public/noImage.svg';
 
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
-import NoImage from '/public/noImage.svg';
 
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { ContentsLayer } from 'src/components/CustomLayer';
 import { Card, ReferenceCard } from 'src/components/Contents/Card';
+import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
 import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
 import { Writing } from 'src/components/Contents/Writing';
-import Dialog from 'src/components/Dialog';
 import SelectFilter from 'src/components/SelectFilter';
+import SelectedTags from 'src/components/Tag/SelectedTags';
+import { NormalTagChip } from 'src/components/Tag/TagChip';
 
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
@@ -102,178 +100,11 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
-const FilterClearButton = styled(({ ...props }: ButtonProps) => (
-	<Button
-		{...props}
-		endIcon={<Refresh />}
-		className={props.className + ' ctt_text_14 ctt_medium'}
-	/>
-))(({ theme }) => {
-	return {
-		color: theme.palette.grey[300],
-		padding: '6px 2px',
-		'& .MuiButton-endIcon': {
-			marginLeft: '4.67px',
-			marginRight: '4.67px',
-		},
-	};
-});
-
-const TagChip = styled(({ ...props }: ChipProps) => (
-	<Chip
-		{...props}
-		// size="small"
-		className={props.className + ' ctt_text_14 ctt_bold'}
-		deleteIcon={<Close />}
-	/>
-))({
-	marginRight: '8px',
-	padding: '8px 16px',
-	height: 'auto',
-	borderRadius: '100px',
-	'& .MuiSvgIcon-root': {
-		fontSize: '16px',
-		color: 'inherit',
-		margin: '4px 0',
-	},
-	'& .MuiChip-label': {
-		padding: 0,
-		paddingRight: '8px',
-	},
-});
-
-const TagsDivider = styled(({ ...props }: DividerProps) => (
-	<Divider {...props} orientation="vertical" flexItem />
-))({
-	height: 16,
-	display: 'inline-block',
-	marginRight: '8px',
-	verticalAlign: 'middle',
-});
-
-const ViewImage = styled(Paper)(({ theme }) => {
-	return {
-		width: '270px',
-		height: '586px',
-		borderRadius: '8px',
-		border: `1px solid ${theme.palette.grey[100]}`,
-		display: 'flex',
-		justifyContent: 'center',
-	};
-});
-
-const ViewHeaderChip = styled(({ ...props }: ChipProps) => (
-	<Chip {...props} className={props.className + ' ctt_text_14 ctt_bold'} />
-))(({ theme }) => {
-	return {
-		color: theme.palette.grey[200],
-	};
-});
-
-const ViewRegiDate = styled('p')(({ theme }) => {
+const RegistrationDate = styled('p')(({ theme }) => {
 	return {
 		color: theme.palette.grey[300],
 	};
 });
-
-const ViewDetail = styled(Stack)({
-	width: '488px',
-});
-
-const SelectedTags = (tags: IUITagComponents, clearEvent: (idx: 'all' | IUITagsItem) => void) => {
-	const selCategorys = tags.categorys.filter((item) => item.selected === true);
-	const selServices = tags.services.filter((item) => item.selected === true);
-	const selEvents = tags.events.filter((item) => item.selected === true);
-
-	if (selCategorys.length + selServices.length + selEvents.length === 0) {
-		return null;
-	}
-
-	return (
-		<Stack direction={{ xs: 'column', sm: 'row' }} alignItems="baseline" spacing={2}>
-			<FilterClearButton
-				onClick={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-
-					clearEvent('all');
-				}}
-			>
-				초기화
-			</FilterClearButton>
-			<Box lineHeight={3} maxWidth="1146px">
-				{/* categores */}
-				{selCategorys.map((tag, idx) => {
-					return (
-						<Fragment key={tag.id}>
-							<TagChip
-								sx={{
-									backgroundColor: '#ECF6FE',
-									color: '#2196F3',
-								}}
-								label={tag.label}
-								onDelete={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-
-									clearEvent(tag);
-								}}
-							/>
-							{selCategorys.length - 1 === idx &&
-								selServices.length + selEvents.length !== 0 && <TagsDivider />}
-						</Fragment>
-					);
-				})}
-
-				{/* services */}
-				{selServices.map((tag, idx) => {
-					return (
-						<Fragment key={tag.id}>
-							<TagChip
-								sx={{
-									backgroundColor: '#E6F9EA',
-									color: '#3BD569',
-								}}
-								label={tag.label}
-								onDelete={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-
-									clearEvent(tag);
-								}}
-							/>
-							{selServices.length - 1 === idx && selEvents.length !== 0 && (
-								// <div>
-								<TagsDivider />
-								// </div>
-							)}
-						</Fragment>
-					);
-				})}
-
-				{/* events */}
-				{selEvents.map((tag) => {
-					return (
-						<TagChip
-							key={tag.id}
-							sx={{
-								backgroundColor: '#FEF3E0',
-								color: '#FB9600',
-							}}
-							label={tag.label}
-							onDelete={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-
-								clearEvent(tag);
-							}}
-						/>
-					);
-				})}
-			</Box>
-		</Stack>
-	);
-};
 
 const getQueryString = (
 	page: number | null,
@@ -306,7 +137,10 @@ const getQueryString = (
 	return query.join('&');
 };
 
-const getData = async (id: number) => {
+const getData = async (id: number | null = null) => {
+	if (id === null) {
+		throw 'getData ID is Null';
+	}
 	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
 	const data = await res.json();
 	return data;
@@ -735,13 +569,16 @@ const Home: TNextPageWithLayout = () => {
 					</Stack>
 					{/* Display Current Filters */}
 					<Box marginTop="24px">
-						{SelectedTags(tags, (target) => {
-							if (target === 'all') {
-								handleClearTags();
-							} else {
-								handleSetTag(target.id, target.type + 's', false);
-							}
-						})}
+						<SelectedTags
+							tags={tags}
+							clearEvent={(target) => {
+								if (target === 'all') {
+									handleClearTags();
+								} else {
+									handleSetTag(target.id, target.type + 's', false);
+								}
+							}}
+						/>
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0" minHeight={430}>
@@ -820,139 +657,64 @@ const Home: TNextPageWithLayout = () => {
 				</ContentsLayer>
 			</Box>
 			{/* Detail Dialog */}
-			<Dialog open={open} onClose={handleDialogClose}>
-				{/* Display Contents Detail */}
-				<DialogContent sx={{ padding: '40px' }}>
-					{/* Close Button */}
-					<IconButton
-						aria-label="close"
-						onClick={handleDialogClose}
-						sx={{
-							position: 'absolute',
-							right: 6,
-							top: 6,
-							color: (theme) => theme.palette.grey[400],
-						}}
-					>
-						<Close fontSize="large" />
-					</IconButton>
-					{viewContent === undefined ? (
-						'NO DATA'
-					) : (
-						<Stack direction="row" spacing={4}>
-							{/* Image Box */}
-							<ViewImage elevation={0}>
-								{(typeof viewContent.image === 'string' && (
-									<Image
-										alt="Text UI Data Image"
-										width="270px"
-										height="586px"
-										style={{
-											borderRadius: '8px',
-										}}
-										onError={(e) => {
-											setViewContent({
-												...viewContent,
-												image: undefined,
-											});
-										}}
-										src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
-									/>
-								)) || <Image alt="No Image" {...NoImage} />}
-							</ViewImage>
-							{/* Detail Box */}
-							<ViewDetail spacing={3}>
-								{/* Header */}
-								<Stack alignItems="center" direction="row" spacing={1}>
-									{/* Service Icon */}
-									{viewContent.tags?.service.icon || (
-										<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-									)}
-									{/* Service Name */}
-									<ViewHeaderChip label={viewContent.tags?.service.name} />
-									<div>
-										<Divider
-											sx={{ height: 10 }}
-											orientation="vertical"
-											flexItem
-										/>
-									</div>
-									{/* Event Tags*/}
-									{viewContent.tags?.events.map((event) => {
-										const react_event_key = `${viewContent.id}-${event.id}`;
-										return (
-											<ViewHeaderChip
-												label={`#${event.name}`}
-												key={react_event_key}
-											/>
-										);
-									})}
-									<div>
-										<Divider
-											sx={{ height: 10 }}
-											orientation="vertical"
-											flexItem
-										/>
-									</div>
-									{/* Registration Date */}
-									<ViewRegiDate className="ctt_text_14 ctt_regular">
-										{getUnixToYYYYMMDD(viewContent.timestamp)}
-									</ViewRegiDate>
-								</Stack>
-								{/* Text */}
-								<Card
-									sx={{
-										padding: '24px',
-										minHeight: '200px',
-									}}
-								>
-									<UITextData
-										item={viewContent}
-										onTags={false}
-										handleCopy={handleCopy}
-									/>
-								</Card>
-								{/* Reference */}
-								{/* 서비스 오픈 후 예정 */}
-								{/* <Box>
-									<ViewReferenceText>
-										비슷한 상황에서 다른 서비스들은 이렇게 써요.
-									</ViewReferenceText>
-
-									<Grid container spacing={1}>
-										{ReferenceCardTest.map((item) => {
-											return (
-												<Grid item key={item} xs={12} sm={6}>
-													<ReferenceCard
-														sx={{
-															padding: '16px',
-															maxHeight: '124px',
-															minHeight: '124px',
-														}}
-													>
-														<UIRefTextData
-															item={{
-																id: parseInt(item),
-																text: 'RefData',
-																tags: {
-																	service: {
-																		id: 1,
-																		name: '컨텍스트',
-																	},
-																},
-															}}
-														/>
-													</ReferenceCard>
-												</Grid>
-											);
-										})}
-									</Grid>
-								</Box> */}
-							</ViewDetail>
+			<UIDialogViewer
+				open={open}
+				onClose={handleDialogClose}
+				ImageComponent={
+					(typeof viewContent?.image === 'string' && (
+						<Image
+							alt="Text UI Data Image"
+							width="270px"
+							height="586px"
+							style={{
+								borderRadius: '8px',
+							}}
+							onError={(e) => {
+								setViewContent({
+									...viewContent,
+									image: undefined,
+								});
+							}}
+							src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
+						/>
+					)) || <Image alt="No Image" {...NoImage} />
+				}
+				HeaderComponent={
+					viewContent && (
+						<Stack alignItems="center" direction="row" spacing={1}>
+							{/* Service Icon */}
+							{viewContent.tags?.service?.icon || (
+								<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
+							)}
+							{/* Service Name */}
+							<NormalTagChip label={viewContent.tags?.service?.name} />
+							<div>
+								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
+							</div>
+							{/* Event Tags*/}
+							{viewContent.tags?.events?.map((event) => {
+								const react_event_key = `${viewContent.id}-${event.id}`;
+								return (
+									<NormalTagChip label={`#${event.name}`} key={react_event_key} />
+								);
+							})}
+							<div>
+								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
+							</div>
+							{/* Registration Date */}
+							<RegistrationDate className="ctt_text_14 ctt_regular">
+								{getUnixToYYYYMMDD(viewContent.timestamp)}
+							</RegistrationDate>
 						</Stack>
-					)}
-				</DialogContent>
-			</Dialog>
+					)
+				}
+				TextComponent={
+					(viewContent && (
+						<UITextData item={viewContent} onTags={false} handleCopy={handleCopy} />
+					)) ||
+					'선택된 데이터가 없습니다.'
+				}
+			/>
 		</Fragment>
 	);
 };
