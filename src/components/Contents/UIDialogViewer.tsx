@@ -1,24 +1,13 @@
-import type { FC } from 'react';
+import { FC, Fragment } from 'react';
 import type { IUIDialogViewer } from 'src/types/components';
 
 import { styled } from '@mui/material/styles';
-import {
-	Paper,
-	Stack,
-	DialogContent,
-	Chip,
-	ChipProps,
-	IconButton,
-	Avatar,
-	Divider,
-} from '@mui/material';
+import { Paper, Box, Stack, DialogContent, IconButton } from '@mui/material';
 
 import { Close } from '@mui/icons-material';
 
 import { Card, ReferenceCard } from 'src/components/Contents/Card';
 import Dialog from 'src/components/Dialog';
-
-import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 const ImageLayout = styled(Paper)(({ theme }) => {
 	return {
@@ -28,6 +17,7 @@ const ImageLayout = styled(Paper)(({ theme }) => {
 		border: `1px solid ${theme.palette.grey[100]}`,
 		display: 'flex',
 		justifyContent: 'center',
+		position: 'relative',
 	};
 });
 
@@ -35,26 +25,18 @@ const DetailLayout = styled(Stack)({
 	width: '488px',
 });
 
-const TagChip = styled(({ ...props }: ChipProps) => (
-	<Chip {...props} className={props.className + ' ctt_text_14 ctt_bold'} />
-))(({ theme }) => {
-	return {
-		color: theme.palette.grey[200],
-	};
-});
-
-const RegistrationDate = styled('p')(({ theme }) => {
-	return {
-		color: theme.palette.grey[300],
-	};
+const BottomLayout = styled(Box)({
+	marginTop: '8px',
+	// textAlign: 'right',
 });
 
 export const UIDialogViewer: FC<IUIDialogViewer> = ({
 	open = false,
 	onClose,
-	data,
 	ImageComponent = null,
+	HeaderComponent = null,
 	TextComponent = null,
+	BottomComponent = null,
 }) => {
 	return (
 		<Dialog open={open} onClose={onClose}>
@@ -73,54 +55,28 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 				>
 					<Close fontSize="large" />
 				</IconButton>
-				{data === undefined ? (
-					'NO DATA'
-				) : (
-					<Stack direction="row" spacing={4}>
-						{/* Image Box */}
-						<ImageLayout elevation={0}>{ImageComponent && ImageComponent}</ImageLayout>
-						{/* Detail Box */}
-						<DetailLayout spacing={3}>
-							{/* Header */}
-							<Stack alignItems="center" direction="row" spacing={1}>
-								{/* Service Icon */}
-								{data.tags?.service.icon || (
-									<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-								)}
-								{/* Service Name */}
-								<TagChip label={data.tags?.service.name} />
-								<div>
-									<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-								</div>
-								{/* Event Tags*/}
-								{data.tags?.events.map((event) => {
-									const react_event_key = `${data.id}-${event.id}`;
-									return (
-										<TagChip label={`#${event.name}`} key={react_event_key} />
-									);
-								})}
-								<div>
-									<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-								</div>
-								{/* Registration Date */}
-								<RegistrationDate className="ctt_text_14 ctt_regular">
-									{getUnixToYYYYMMDD(data.timestamp)}
-								</RegistrationDate>
-							</Stack>
-							{/* Text */}
-							{TextComponent && (
-								<Card
-									sx={{
-										padding: '24px',
-										minHeight: '200px',
-									}}
-								>
-									{TextComponent}
-								</Card>
-							)}
-							{/* Reference */}
-							{/* 서비스 오픈 후 예정 */}
-							{/* <Box>
+
+				<Stack direction="row" spacing={4}>
+					{/* Image Box */}
+					{ImageComponent && <ImageLayout elevation={0}>{ImageComponent}</ImageLayout>}
+					{/* Detail Box */}
+					<DetailLayout spacing={3}>
+						{/* Detail Header Layout */}
+						{HeaderComponent && HeaderComponent}
+						{/* Text */}
+						{TextComponent && (
+							<Card
+								sx={{
+									padding: '24px',
+									minHeight: '200px',
+								}}
+							>
+								{TextComponent}
+							</Card>
+						)}
+						{/* Reference */}
+						{/* 서비스 오픈 후 예정 */}
+						{/* <Box>
 									<ViewReferenceText>
 										비슷한 상황에서 다른 서비스들은 이렇게 써요.
 									</ViewReferenceText>
@@ -154,9 +110,9 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 										})}
 									</Grid>
 								</Box> */}
-						</DetailLayout>
-					</Stack>
-				)}
+					</DetailLayout>
+				</Stack>
+				{BottomComponent && <BottomLayout>{BottomComponent}</BottomLayout>}
 			</DialogContent>
 		</Dialog>
 	);

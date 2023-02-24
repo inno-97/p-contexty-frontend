@@ -15,6 +15,8 @@ import {
 	Typography,
 	Grow,
 	CircularProgress,
+	Avatar,
+	Divider,
 } from '@mui/material';
 
 import { Search } from '@mui/icons-material';
@@ -35,6 +37,9 @@ import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
 import { Writing } from 'src/components/Contents/Writing';
 import SelectFilter from 'src/components/SelectFilter';
 import SelectedTags from 'src/components/Tag/SelectedTags';
+import { NormalTagChip } from 'src/components/Tag/TagChip';
+
+import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 const SearchBox = styled(Paper)({
 	height: '240px',
@@ -95,6 +100,12 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
+const RegistrationDate = styled('p')(({ theme }) => {
+	return {
+		color: theme.palette.grey[300],
+	};
+});
+
 const getQueryString = (
 	page: number | null,
 	word: string | null,
@@ -126,7 +137,10 @@ const getQueryString = (
 	return query.join('&');
 };
 
-const getData = async (id: number) => {
+const getData = async (id: number | null = null) => {
+	if (id === null) {
+		throw 'getData ID is Null';
+	}
 	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
 	const data = await res.json();
 	return data;
@@ -646,7 +660,6 @@ const Home: TNextPageWithLayout = () => {
 			<UIDialogViewer
 				open={open}
 				onClose={handleDialogClose}
-				data={viewContent}
 				ImageComponent={
 					(typeof viewContent?.image === 'string' && (
 						<Image
@@ -666,10 +679,40 @@ const Home: TNextPageWithLayout = () => {
 						/>
 					)) || <Image alt="No Image" {...NoImage} />
 				}
-				TextComponent={
+				HeaderComponent={
 					viewContent && (
-						<UITextData item={viewContent} onTags={false} handleCopy={handleCopy} />
+						<Stack alignItems="center" direction="row" spacing={1}>
+							{/* Service Icon */}
+							{viewContent.tags?.service?.icon || (
+								<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
+							)}
+							{/* Service Name */}
+							<NormalTagChip label={viewContent.tags?.service?.name} />
+							<div>
+								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
+							</div>
+							{/* Event Tags*/}
+							{viewContent.tags?.events?.map((event) => {
+								const react_event_key = `${viewContent.id}-${event.id}`;
+								return (
+									<NormalTagChip label={`#${event.name}`} key={react_event_key} />
+								);
+							})}
+							<div>
+								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
+							</div>
+							{/* Registration Date */}
+							<RegistrationDate className="ctt_text_14 ctt_regular">
+								{getUnixToYYYYMMDD(viewContent.timestamp)}
+							</RegistrationDate>
+						</Stack>
 					)
+				}
+				TextComponent={
+					(viewContent && (
+						<UITextData item={viewContent} onTags={false} handleCopy={handleCopy} />
+					)) ||
+					'선택된 데이터가 없습니다.'
 				}
 			/>
 		</Fragment>

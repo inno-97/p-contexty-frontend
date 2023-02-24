@@ -68,9 +68,10 @@ export interface ISelectFilter {
 export interface IUIDialogViewer {
 	open: boolean;
 	onClose: () => void;
-	data?: IUITextData;
-	TextComponent?: ReactElement;
 	ImageComponent?: ReactElement;
+	HeaderComponent?: ReactElement;
+	TextComponent?: ReactElement | string;
+	BottomComponent?: ReactElement;
 }
 
 export interface IUITextComponent {
