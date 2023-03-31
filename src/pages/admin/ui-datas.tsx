@@ -1,5 +1,5 @@
-import type { TNextPageWithLayout, IUITagComponents, IUITagsItem } from 'src/types/components';
-import type { TUITgas, IUITextData } from 'src/types/ui-data';
+import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
+import type { IUITextData } from 'src/types/ui-data';
 
 import { useEffect, useState, useCallback, Fragment } from 'react';
 import Image from 'next/image';
@@ -11,15 +11,9 @@ import {
 	TextFieldProps,
 	OutlinedInputProps,
 	InputAdornment,
-	IconButton,
 	Button,
-	Avatar,
-	Menu,
-	MenuItem,
-	Divider,
-	Fade,
 } from '@mui/material';
-import { Search, AddPhotoAlternate } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
@@ -30,7 +24,7 @@ import { AntTabs, AntTab, TabContents } from 'src/components/Tab';
 import { Writing } from 'src/components/Contents/Writing';
 import SelectFilter from 'src/components/SelectFilter';
 import SelectedTags from 'src/components/Tag/SelectedTags';
-import { TagChip, NormalTagChip } from 'src/components/Tag/TagChip';
+import { TagChip } from 'src/components/Tag/TagChip';
 import DataTable from 'src/components/DataTable';
 import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
 
@@ -79,7 +73,6 @@ const imageUpload = async (file: File, service: string) => {
 
 const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
 	const query = [];
-	// let default_mode = true;
 
 	if (typeof page === 'number') {
 		query.push(`p=${page}`);
@@ -87,12 +80,10 @@ const getQueryString = (page: number | null, word: string | null, tags: string |
 
 	if (typeof word === 'string' && word !== '') {
 		query.push(`q=${word}`);
-		// default_mode = false;
 	}
 
 	if (typeof tags === 'string' && tags !== '') {
 		query.push(`t=${tags.slice(0, -1)}`);
-		// default_mode = false;
 	}
 
 	return query.join('&');
@@ -104,7 +95,6 @@ const ContentsBox = styled(Box)({
 });
 
 const ButtonBox = styled(Box)({
-	// paddingBottom: '10px',
 	textAlign: 'right',
 });
 
@@ -124,7 +114,6 @@ const SearchTextField = styled(({ ...props }: TextFieldProps) => (
 		width: '300px',
 		zIndex: 1,
 		'& .MuiOutlinedInput-root': {
-			// border: 'none',
 			borderRadius: '100px',
 			color: theme.palette.grey[300],
 			'& fieldset': {
@@ -165,9 +154,6 @@ const UIDataTableHeader = [
 	{ key: 'copyCount', name: 'Copy', width: '80px' },
 	{ key: 'timestamp', name: 'Created', width: '110px' },
 ];
-// const UIDataTableRowOption = {
-
-// }
 
 const TagChipMargin = '0 2px 0 0';
 
@@ -179,12 +165,12 @@ const UIDataList = () => {
 	});
 
 	const [page, setPage] = useState({
-		cur: 0, // 개발환경에서 맨 처음 useEffect에서 두번씩 조회해서 페이지 첫 로딩시에는 0으로 셋팅
+		cur: 0,
 		totalPage: 1,
 		totalCount: 0,
 	});
 
-	const [contents, setContents] = useState([]);
+	const [UIDatas, setUIDatas] = useState([]);
 
 	const [newData, setNewData] = useState<IUITextData>({});
 
@@ -200,111 +186,24 @@ const UIDataList = () => {
 		noResult: false,
 	});
 
-	const [open, setOpen] = useState(false);
-
-	const handleDialogClose = () => {
-		setOpen(false);
-	};
-	const handleDialogOpen = () => {
-		setOpen(true);
-	};
-
-	const [tagMenu, setTagMenu] = useState<{
-		target: null | HTMLElement;
-		data: IUITagsItem[];
-	}>({
-		target: null,
-		data: [],
+	const [dialog, setDialog] = useState({
+		mode: 'add',
+		open: false,
 	});
 
-	const handleTagMenuClose = () => {
-		setTagMenu((prev) => {
+	const handleDialogClose = () => {
+		setDialog((prev) => {
 			return {
 				...prev,
-				target: null,
+				open: false,
 			};
 		});
 	};
-
-	const handleTagMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-		setTagMenu({
-			target: event.currentTarget,
-			data: tags[event.currentTarget.id],
+	const handleNewDialogOpen = () => {
+		setDialog({
+			mode: 'add',
+			open: true,
 		});
-	};
-
-	const handleTagDelete = (id: number) => {
-		setNewData((prev) => {
-			if (prev?.tags?.events !== undefined) {
-				const newEventsTags = [...prev.tags.events];
-				const delIndex = newEventsTags.findIndex((item) => item.id === id);
-
-				if (delIndex !== -1) {
-					newEventsTags.splice(delIndex, 1);
-					return {
-						...prev,
-						tags: {
-							...prev.tags,
-							events: newEventsTags,
-						},
-					};
-				}
-			}
-			return prev;
-		});
-	};
-
-	const handleImageChange = (e: React.ChangeEvent) => {
-		const targetFiles = (e.target as HTMLInputElement).files as FileList;
-
-		const imageName = targetFiles[0].name;
-		const imageSrc = URL.createObjectURL(targetFiles[0]);
-
-		setNewData((prev) => {
-			return {
-				...prev,
-				image: imageName,
-				imageSrc: imageSrc,
-				File: targetFiles[0],
-			};
-		});
-	};
-
-	const handleTagChange = (tag: IUITagsItem) => {
-		setNewData((prev) => {
-			let newTags: TUITgas = {};
-			if (prev.tags !== undefined) {
-				newTags = {
-					...prev.tags,
-				};
-			}
-
-			const curTag = {
-				type: tag.type,
-				id: tag.id,
-				name: tag.name,
-			};
-
-			if (tag.type === 'category' || tag.type === 'service') {
-				newTags[tag.type] = curTag;
-			} else if (tag.type === 'event') {
-				if (
-					newTags?.events &&
-					newTags.events.findIndex((item) => item.id === tag.id) === -1
-				) {
-					newTags.events = [...newTags.events, curTag];
-				} else {
-					newTags.events = [curTag];
-				}
-			}
-
-			return {
-				...prev,
-				tags: newTags,
-			};
-		});
-
-		handleTagMenuClose();
 	};
 
 	const handleClearTags = useCallback(() => {
@@ -453,7 +352,7 @@ const UIDataList = () => {
 				});
 			}
 
-			setContents(result);
+			setUIDatas(result);
 			setSearch({ ...search, noResult: result.length === 0 });
 		};
 
@@ -466,7 +365,7 @@ const UIDataList = () => {
 		<Fragment>
 			<ContentsBox>
 				<ButtonBox>
-					<Button variant="contained" onClick={handleDialogOpen}>
+					<Button variant="contained" onClick={handleNewDialogOpen}>
 						데이터 추가
 					</Button>
 				</ButtonBox>
@@ -488,7 +387,7 @@ const UIDataList = () => {
 
 								handleClearTags();
 
-								setContents([]);
+								setUIDatas([]);
 
 								setPage({
 									cur: 1,
@@ -585,7 +484,7 @@ const UIDataList = () => {
 				</Writing>
 				<DataTable
 					headers={UIDataTableHeader}
-					rows={contents}
+					rows={UIDatas}
 					page={page.cur}
 					changePage={(page) => {
 						setPage((prev) => {
@@ -601,116 +500,15 @@ const UIDataList = () => {
 					totalCount={page.totalCount}
 				/>
 			</ContentsBox>
+
+			{/* Add UI Data Diaolog */}
 			<UIDialogViewer
-				open={open}
+				open={dialog.open}
+				write={true}
+				data={newData}
+				setData={setNewData}
+				tags={tags}
 				onClose={handleDialogClose}
-				ImageComponent={
-					<Fragment>
-						{newData.imageSrc !== undefined && (
-							<span
-								style={{
-									borderRadius: '8px',
-									position: 'absolute',
-								}}
-							>
-								<Image
-									alt="Text UI Data Image"
-									width="270px"
-									height="586px"
-									// loader={previewIamgeLoader}
-									src={newData?.imageSrc}
-								/>
-							</span>
-						)}
-						<IconButton
-							sx={{ margin: 'auto', backgroundColor: '#6f6f6f30' }}
-							component="label"
-						>
-							<input
-								hidden
-								accept="image/*"
-								type="file"
-								onClick={(e) => {
-									if (newData?.tags?.service?.id === undefined) {
-										e.preventDefault();
-										alert('이미지를 추가하기 전 서비스를 먼저 선택해 주세요.');
-									}
-								}}
-								onChange={handleImageChange}
-							/>
-							<AddPhotoAlternate fontSize="large" />
-						</IconButton>
-					</Fragment>
-				}
-				HeaderComponent={
-					<Stack alignItems="center" direction="row" spacing={1}>
-						{/* Category Tag */}
-						<NormalTagChip
-							id="categorys"
-							onClick={handleTagMenuOpen}
-							label={
-								(newData?.tags?.category && newData?.tags?.category.name) || (
-									<FilterIcon alt="App Category Filter" {...filter_category} />
-								)
-							}
-						/>
-
-						{/* Service Icon */}
-						{/* {newData?.tags?.service.icon || (
-							<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-						)} */}
-
-						{/* Service Tag */}
-						<NormalTagChip
-							id="services"
-							onClick={handleTagMenuOpen}
-							label={
-								(newData?.tags?.service && newData?.tags?.service.name) || (
-									<FilterIcon alt="App Service Filter" {...filter_service} />
-								)
-							}
-						/>
-						<div>
-							<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-						</div>
-						{/* Event Tags*/}
-						{newData?.tags?.events?.map((event) => {
-							const react_event_key = `new-${event.id}`;
-							return (
-								<NormalTagChip
-									label={`#${event.name}`}
-									key={react_event_key}
-									onDelete={handleTagDelete.bind(null, event.id)}
-								/>
-							);
-						})}
-						<NormalTagChip
-							onClick={handleTagMenuOpen}
-							id="events"
-							label={<FilterIcon alt="App Events Filter" {...filter_situation} />}
-						/>
-					</Stack>
-				}
-				TextComponent={
-					<TextField
-						value={newData?.text}
-						fullWidth
-						multiline
-						minRows={3}
-						sx={{
-							marginBottom: '38px',
-						}}
-						placeholder="텍스트를 입력하세요!"
-						onChange={(e) => {
-							setNewData((prev) => {
-								return {
-									...prev,
-									text: e.target.value,
-								};
-							});
-						}}
-					/>
-				}
 				BottomComponent={
 					<Stack
 						direction="row"
@@ -791,56 +589,6 @@ const UIDataList = () => {
 					</Stack>
 				}
 			/>
-			<Menu
-				id="long-menu"
-				MenuListProps={{
-					'aria-labelledby': 'long-button',
-				}}
-				anchorEl={tagMenu.target}
-				open={Boolean(tagMenu.target)}
-				onClose={handleTagMenuClose}
-				PaperProps={{
-					style: {
-						maxHeight: 48 * 4.5,
-						width: '20ch',
-					},
-				}}
-				anchorOrigin={{
-					vertical: 'bottom',
-					horizontal: 'center',
-				}}
-				transformOrigin={{
-					vertical: 'top',
-					horizontal: 'center',
-				}}
-				TransitionComponent={Fade}
-			>
-				{tagMenu.data.map((tag) => {
-					let selected = false;
-
-					if (tag.type === 'event') {
-						const find = newData?.tags?.events?.findIndex((item) => item.id === tag.id);
-						if (find !== undefined && find > -1) {
-							selected = true;
-						}
-					} else if (tag.type === 'category' || tag.type === 'service') {
-						const a = newData?.tags;
-						if (a) {
-							selected = tag.id === a[tag.type]?.id;
-						}
-					}
-
-					return (
-						<MenuItem
-							key={`new-${tag.id}`}
-							onClick={handleTagChange.bind(null, tag)}
-							selected={selected}
-						>
-							{tag.name}
-						</MenuItem>
-					);
-				})}
-			</Menu>
 		</Fragment>
 	);
 };

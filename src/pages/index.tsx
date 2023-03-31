@@ -15,13 +15,9 @@ import {
 	Typography,
 	Grow,
 	CircularProgress,
-	Avatar,
-	Divider,
 } from '@mui/material';
 
 import { Search } from '@mui/icons-material';
-
-import NoImage from '/public/noImage.svg';
 
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
@@ -31,15 +27,12 @@ import filter_situation from '/public/filter/situation.svg';
 
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { ContentsLayer } from 'src/components/CustomLayer';
-import { Card, ReferenceCard } from 'src/components/Contents/Card';
+import { Card } from 'src/components/Contents/Card';
 import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
-import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
+import { UITextData } from 'src/components/Contents/UITextData';
 import { Writing } from 'src/components/Contents/Writing';
 import SelectFilter from 'src/components/SelectFilter';
 import SelectedTags from 'src/components/Tag/SelectedTags';
-import { NormalTagChip } from 'src/components/Tag/TagChip';
-
-import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 const SearchBox = styled(Paper)({
 	height: '240px',
@@ -100,20 +93,8 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
-const RegistrationDate = styled('p')(({ theme }) => {
-	return {
-		color: theme.palette.grey[300],
-	};
-});
-
-const getQueryString = (
-	page: number | null,
-	word: string | null,
-	tags: string | null,
-	datas: IUITextData[]
-) => {
+const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
 	const query = [];
-	// let default_mode = true;
 
 	if (typeof page === 'number') {
 		query.push(`p=${page}`);
@@ -121,18 +102,11 @@ const getQueryString = (
 
 	if (typeof word === 'string' && word !== '') {
 		query.push(`q=${word}`);
-		// default_mode = false;
 	}
 
 	if (typeof tags === 'string' && tags !== '') {
 		query.push(`t=${tags.slice(0, -1)}`);
-		// default_mode = false;
 	}
-
-	// if (default_mode) {
-	// 	const did = datas.map((item) => item.id);
-	// 	query.push(`ri=${did.join()}`);
-	// }
 
 	return query.join('&');
 };
@@ -285,7 +259,7 @@ const Home: TNextPageWithLayout = () => {
 		[]
 	);
 
-	const handleCopy = useCallback(
+	const handleUITextCopy = useCallback(
 		async (id: number, tooltip: (message: string) => void) => {
 			// Copy 검증
 			const checkCopy = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/copy/ui-data`, {
@@ -377,9 +351,7 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await getTextUIDatas(
-				getQueryString(page.cur, search.request, tagQuery, contents.datas)
-			);
+			const res = await getTextUIDatas(getQueryString(page.cur, search.request, tagQuery));
 			const datas: IUITextData[] = res.datas;
 
 			if (res.totalPage !== page.totalPage) {
@@ -641,7 +613,7 @@ const Home: TNextPageWithLayout = () => {
 												>
 													<UITextData
 														item={item}
-														handleCopy={handleCopy}
+														handleCopy={handleUITextCopy}
 													/>
 												</Card>
 											</Grid>
@@ -659,61 +631,9 @@ const Home: TNextPageWithLayout = () => {
 			{/* Detail Dialog */}
 			<UIDialogViewer
 				open={open}
+				data={viewContent}
 				onClose={handleDialogClose}
-				ImageComponent={
-					(typeof viewContent?.image === 'string' && (
-						<Image
-							alt="Text UI Data Image"
-							width="270px"
-							height="586px"
-							style={{
-								borderRadius: '8px',
-							}}
-							onError={(e) => {
-								setViewContent({
-									...viewContent,
-									image: undefined,
-								});
-							}}
-							src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${viewContent.image}`}
-						/>
-					)) || <Image alt="No Image" {...NoImage} />
-				}
-				HeaderComponent={
-					viewContent && (
-						<Stack alignItems="center" direction="row" spacing={1}>
-							{/* Service Icon */}
-							{viewContent.tags?.service?.icon || (
-								<Avatar sx={{ width: 28, height: 28 }}> -</Avatar>
-							)}
-							{/* Service Name */}
-							<NormalTagChip label={viewContent.tags?.service?.name} />
-							<div>
-								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-							</div>
-							{/* Event Tags*/}
-							{viewContent.tags?.events?.map((event) => {
-								const react_event_key = `${viewContent.id}-${event.id}`;
-								return (
-									<NormalTagChip label={`#${event.name}`} key={react_event_key} />
-								);
-							})}
-							<div>
-								<Divider sx={{ height: 10 }} orientation="vertical" flexItem />
-							</div>
-							{/* Registration Date */}
-							<RegistrationDate className="ctt_text_14 ctt_regular">
-								{getUnixToYYYYMMDD(viewContent.timestamp)}
-							</RegistrationDate>
-						</Stack>
-					)
-				}
-				TextComponent={
-					(viewContent && (
-						<UITextData item={viewContent} onTags={false} handleCopy={handleCopy} />
-					)) ||
-					'선택된 데이터가 없습니다.'
-				}
+				onUITextCopy={handleUITextCopy}
 			/>
 		</Fragment>
 	);
