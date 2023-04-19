@@ -144,5 +144,12 @@ export interface IDataTable {
 		align?: 'right' | 'left' | 'center';
 		width?: string;
 	}[];
-	rows: { [key: string]: string | number | boolean | ReactElement }[];
+	rows: TDataTableRow[];
+	rowOptions?: {
+		column?: {
+			[key: string | number]: {
+				onClick?: (event: SyntheticEvent, row: TDataTableRow) => void;
+			};
+		};
+	};
 }

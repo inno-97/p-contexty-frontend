@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from 'react';
 import type { IDataTable } from 'src/types/components';
 import { FC, Fragment } from 'react';
 
@@ -24,13 +25,13 @@ const DataTable: FC<IDataTable> = ({
 	onBottomPagination = true,
 	selecting = false,
 	headers = [],
+	rowOptions = undefined,
 	rows = [],
 }) => {
 	const pageList = Math.ceil(totalCount / rowsPerPage);
+	const columnOption = rowOptions?.column;
+
 	return (
-		// 검색 건수
-		// row수
-		// 페이지 숏컷?
 		<Fragment>
 			<TableContainer component={Paper}>
 				<Table size="small" sx={{ whiteSpace: 'nowrap' }}>
@@ -61,10 +62,30 @@ const DataTable: FC<IDataTable> = ({
 								}}
 							>
 								{headers.map((item, idx) => {
+									let handleOnClick = undefined;
+									let style = {};
+
+									if (columnOption?.hasOwnProperty(item.key) === true) {
+										const columnEvents = columnOption[item.key].onClick;
+
+										if (columnEvents !== undefined) {
+											handleOnClick = (e: SyntheticEvent) => {
+												columnEvents(e, row);
+											};
+
+											style = {
+												cursor: 'pointer',
+												color: '#214ccb',
+											};
+										}
+									}
+
 									return (
 										<TableCell
 											key={`row-${item.key}-${idx}`}
 											align={item.align || 'center'}
+											onClick={handleOnClick}
+											sx={style}
 										>
 											{row[item.key]}
 										</TableCell>
