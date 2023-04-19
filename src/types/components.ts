@@ -1,4 +1,10 @@
-import type { ReactElement, PropsWithChildren, SyntheticEvent } from 'react';
+import type {
+	ReactElement,
+	PropsWithChildren,
+	SyntheticEvent,
+	Dispatch,
+	SetStateAction,
+} from 'react';
 import type { NextPage } from 'next';
 import type { SxProps } from '@mui/system';
 import type { TUITag, IUITextData } from 'src/types/ui-data';
@@ -10,6 +16,17 @@ export type TNextPageWithLayout = NextPage & {
 
 export type TNavItem = {
 	items: { name: string; link: string; icon?: ReactElement }[];
+};
+
+export type TDataTableRow = {
+	[key: string]: string | number | boolean | ReactElement;
+};
+
+export type TConfirmDialog = {
+	open: boolean;
+	content: string | ReactElement;
+	event?: () => void;
+	eventPrevent: boolean;
 };
 
 /* Interface */
@@ -66,11 +83,13 @@ export interface ISelectFilter {
 }
 
 export interface IUIDialogViewer {
+	write?: boolean;
 	open: boolean;
 	onClose: () => void;
-	ImageComponent?: ReactElement;
-	HeaderComponent?: ReactElement;
-	TextComponent?: ReactElement | string;
+	tags?: IUITagComponents;
+	data?: IUITextData;
+	setData?: Dispatch<SetStateAction<IUITextData>>;
+	onUITextCopy?: (id: number, tooltip: (message: string) => void) => Promise<void>;
 	BottomComponent?: ReactElement;
 }
 
@@ -132,5 +151,12 @@ export interface IDataTable {
 		align?: 'right' | 'left' | 'center';
 		width?: string;
 	}[];
-	rows: { [key: string]: string | number | boolean | ReactElement }[];
+	rows: TDataTableRow[];
+	rowOptions?: {
+		column?: {
+			[key: string | number]: {
+				onClick?: (event: SyntheticEvent, row: TDataTableRow) => void;
+			};
+		};
+	};
 }
