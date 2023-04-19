@@ -22,6 +22,13 @@ export type TDataTableRow = {
 	[key: string]: string | number | boolean | ReactElement;
 };
 
+export type TConfirmDialog = {
+	open: boolean;
+	content: string | ReactElement;
+	event?: () => void;
+	eventPrevent: boolean;
+};
+
 /* Interface */
 export interface IDepthLayer extends PropsWithChildren {
 	depth: number;

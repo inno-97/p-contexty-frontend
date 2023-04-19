@@ -1,4 +1,10 @@
-import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
+import type { SyntheticEvent } from 'react';
+import type {
+	TNextPageWithLayout,
+	TDataTableRow,
+	TConfirmDialog,
+	IUITagComponents,
+} from 'src/types/components';
 import type { IUITextData } from 'src/types/ui-data';
 
 import { useEffect, useState, useCallback, Fragment } from 'react';
@@ -12,6 +18,9 @@ import {
 	OutlinedInputProps,
 	InputAdornment,
 	Button,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -27,12 +36,13 @@ import SelectedTags from 'src/components/Tag/SelectedTags';
 import { TagChip } from 'src/components/Tag/TagChip';
 import DataTable from 'src/components/DataTable';
 import UIDialogViewer from 'src/components/Contents/UIDialogViewer';
+import Dialog from 'src/components/Dialog';
 
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
 
-const getTextUIDatas = async (q: string | null = null) => {
+const getDatas = async (q: string | null = null) => {
 	try {
 		const res = await fetch(
 			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
@@ -43,6 +53,49 @@ const getTextUIDatas = async (q: string | null = null) => {
 		console.error(e);
 		return [];
 	}
+};
+
+const getData = async (id: number | null = null) => {
+	if (id === null) {
+		throw 'getData ID is Null';
+	}
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
+	const data = await res.json();
+	return data;
+};
+
+const updateData = async (data: IUITextData) => {
+	const dataForm = new FormData();
+
+	if (data?.File !== undefined) {
+		dataForm.append('file', data.File);
+		data.File = undefined;
+	}
+
+	dataForm.append('data', JSON.stringify(data));
+
+	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${data.id}`, {
+		method: 'PUT',
+		credentials: 'include',
+		body: dataForm,
+	})
+		.then((rs) => rs.json())
+		.catch((err) => {
+			console.log(err);
+			return null;
+		});
+};
+
+const deleteData = async (did: number) => {
+	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${did}`, {
+		method: 'DELETE',
+		credentials: 'include',
+	})
+		.then((rs) => rs.json())
+		.catch((err) => {
+			console.log(err);
+			return null;
+		});
 };
 
 const imageUpload = async (file: File, service: string) => {
@@ -173,6 +226,7 @@ const UIDataList = () => {
 	const [UIDatas, setUIDatas] = useState([]);
 
 	const [newData, setNewData] = useState<IUITextData>({});
+	const [UIData, setUIData] = useState<IUITextData>({});
 
 	const [tagQuery, setTagQuery] = useState('');
 
@@ -180,16 +234,34 @@ const UIDataList = () => {
 		current: string;
 		request: string;
 		noResult: boolean;
+		refresh: number;
 	}>({
 		current: '',
 		request: '',
 		noResult: false,
+		refresh: 0,
 	});
 
 	const [dialog, setDialog] = useState({
 		mode: 'add',
 		open: false,
 	});
+
+	const [confirm, setConfirm] = useState<TConfirmDialog>({
+		open: false,
+		content: '',
+		eventPrevent: false,
+	});
+
+	const handleConfirmClose = () => {
+		setConfirm((prev) => {
+			return {
+				...prev,
+				open: false,
+				eventPrevent: false,
+			};
+		});
+	};
 
 	const handleDialogClose = () => {
 		setDialog((prev) => {
@@ -300,7 +372,7 @@ const UIDataList = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await getTextUIDatas(getQueryString(page.cur, search.request, tagQuery));
+			const res = await getDatas(getQueryString(page.cur, search.request, tagQuery));
 			const result = res.datas.map((item: IUITextData) => {
 				return {
 					...item,
@@ -359,7 +431,48 @@ const UIDataList = () => {
 		if (page.cur !== 0) {
 			fetchUIData();
 		}
-	}, [page.cur, tagQuery, search.request]);
+	}, [page.cur, tagQuery, search.request, search.refresh]);
+
+	const handleUIDataUpdate = async (data: IUITextData) => {
+		const rs = await updateData(data);
+
+		if (rs.validation !== true) {
+			alert('Validation Faild: ' + rs.validation);
+			return;
+		}
+
+		if (rs.image === 'exists') {
+			alert('Image already exists.');
+			return;
+		}
+
+		if (rs.image === false) {
+			alert('이미지 업데이트에 실패하였습니다.\n관리자에게 문의하세요.');
+			return;
+		}
+
+		if (rs.update === false) {
+			alert('데이터 업데이트에 실패하였습니다.\n관리자에게 문의하세요.');
+			return;
+		}
+
+		setSearch({ ...search, refresh: search.refresh + 1 });
+	};
+
+	const handleUIDataDelete = async (did: number) => {
+		const rs = await deleteData(did);
+
+		if (rs.delete === false) {
+			alert('데이터 삭제를 실패하였습니다.\n관리자에게 문의하세요.');
+		}
+
+		if (rs.delete === false) {
+			alert('이미지 삭제를 실패하였습니다.\n관리자에게 문의하세요.');
+		}
+
+		setSearch({ ...search, refresh: search.refresh + 1 });
+		handleDialogClose();
+	};
 
 	return (
 		<Fragment>
@@ -484,6 +597,25 @@ const UIDataList = () => {
 				</Writing>
 				<DataTable
 					headers={UIDataTableHeader}
+					rowOptions={{
+						column: {
+							text: {
+								onClick: async (e: SyntheticEvent, row: TDataTableRow) => {
+									if (typeof row?.id !== 'number') {
+										return;
+									}
+
+									const data = await getData(row.id);
+									setUIData(data);
+
+									setDialog({
+										mode: 'edit',
+										open: true,
+									});
+								},
+							},
+						},
+					}}
 					rows={UIDatas}
 					page={page.cur}
 					changePage={(page) => {
@@ -505,8 +637,8 @@ const UIDataList = () => {
 			<UIDialogViewer
 				open={dialog.open}
 				write={true}
-				data={newData}
-				setData={setNewData}
+				data={dialog.mode === 'add' ? newData : UIData}
+				setData={dialog.mode === 'add' ? setNewData : setUIData}
 				tags={tags}
 				onClose={handleDialogClose}
 				BottomComponent={
@@ -518,77 +650,152 @@ const UIDataList = () => {
 					>
 						<Button
 							variant="contained"
-							onClick={() => {
-								setNewData({ text: '' });
+							onClick={async () => {
+								if (dialog.mode === 'add') {
+									setNewData({ text: '' });
+								} else {
+									const data = await getData(UIData.id);
+									setUIData(data);
+								}
 							}}
 						>
 							초기화
 						</Button>
-						<Button
-							variant="contained"
-							onClick={async (e) => {
-								e.preventDefault();
+						{dialog.mode === 'add' ? (
+							<Button
+								variant="contained"
+								onClick={async (e) => {
+									e.preventDefault();
 
-								const data = {
-									image: newData.image,
-									text: newData.text,
-									tags: newData.tags,
-								};
+									const data = {
+										image: newData.image,
+										text: newData.text,
+										tags: newData.tags,
+									};
 
-								const rs = await fetch(
-									`${process.env.NEXT_PUBLIC_API_URL}/ui/datas`,
-									{
-										method: 'POST',
-										credentials: 'include',
-										headers: {
-											'Content-Type': 'application/json',
-										},
-										body: JSON.stringify({ datas: [data] }),
-									}
-								)
-									.then((rs) => rs.json())
-									.catch((err) => {
-										console.log(err);
-									});
-
-								const result = rs[0];
-
-								if (result.validation !== true) {
-									alert('Validation Faild: ' + result.validation);
-									return;
-								}
-
-								if (result.image === 'exists') {
-									alert('Image already exists.');
-									return;
-								}
-
-								if (result.create === true) {
-									if (!!newData.File && !!newData?.tags?.service?.name) {
-										const upload_rs = await imageUpload(
-											newData.File,
-											newData.tags.service.name
-										);
-
-										if (upload_rs?.length === 0) {
-											alert(
-												'데이터 생성은 성공하였으나, 이미지 업로드를 실패하였습니다.\n관리자에게 문의하세요.'
-											);
-										} else {
-											setNewData({ text: '' });
+									const rs = await fetch(
+										`${process.env.NEXT_PUBLIC_API_URL}/ui/datas`,
+										{
+											method: 'POST',
+											credentials: 'include',
+											headers: {
+												'Content-Type': 'application/json',
+											},
+											body: JSON.stringify({ datas: [data] }),
 										}
+									)
+										.then((rs) => rs.json())
+										.catch((err) => {
+											console.log(err);
+										});
+
+									const result = rs[0];
+
+									if (result.validation !== true) {
+										alert('Validation Faild: ' + result.validation);
+										return;
 									}
-								} else {
-									alert('데이터 생성에 실패하였습니다.\n관리자에게 문의하세요.');
-									return;
-								}
-							}}
-						>
-							추가하기
-						</Button>
+
+									if (result.image === 'exists') {
+										alert('Image already exists.');
+										return;
+									}
+
+									if (result.create === true) {
+										if (!!newData.File && !!newData?.tags?.service?.name) {
+											const upload_rs = await imageUpload(
+												newData.File,
+												newData.tags.service.name
+											);
+
+											if (upload_rs?.length === 0) {
+												alert(
+													'데이터 생성은 성공하였으나, 이미지 업로드를 실패하였습니다.\n관리자에게 문의하세요.'
+												);
+											} else {
+												setNewData({ text: '' });
+											}
+										}
+									} else {
+										alert(
+											'데이터 생성에 실패하였습니다.\n관리자에게 문의하세요.'
+										);
+										return;
+									}
+								}}
+							>
+								추가
+							</Button>
+						) : (
+							<Fragment>
+								<Button
+									variant="contained"
+									onClick={() => {
+										setConfirm((prev) => {
+											return {
+												...prev,
+												open: true,
+												content: '수정하시겠습니까?',
+												event: async () => {
+													await handleUIDataUpdate(UIData);
+													handleConfirmClose();
+												},
+											};
+										});
+									}}
+								>
+									수정
+								</Button>
+								<Button
+									variant="contained"
+									onClick={() => {
+										setConfirm((prev) => {
+											return {
+												...prev,
+												open: true,
+												content: '삭제하시겠습니까?',
+												event: async () => {
+													if (UIData?.id !== undefined) {
+														await handleUIDataDelete(UIData.id);
+														handleConfirmClose();
+													}
+												},
+											};
+										});
+									}}
+								>
+									삭제
+								</Button>
+							</Fragment>
+						)}
 					</Stack>
 				}
 			/>
+			<Dialog open={confirm.open} onClose={handleConfirmClose}>
+				<DialogTitle>Confirm</DialogTitle>
+				<DialogContent>{confirm.content}</DialogContent>
+				<DialogActions>
+					<Button onClick={handleConfirmClose}>아니요</Button>
+					<Button
+						onClick={() => {
+							if (
+								typeof confirm?.event === 'function' &&
+								confirm.eventPrevent === false
+							) {
+								setConfirm((prev) => {
+									return {
+										...prev,
+										eventPrevent: true,
+									};
+								});
+								confirm.event();
+							}
+						}}
+					>
+						예
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Fragment>
 	);
 };
