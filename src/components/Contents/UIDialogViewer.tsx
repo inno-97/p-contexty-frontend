@@ -1,5 +1,5 @@
-import { FC, useState, Fragment } from 'react';
-import type { TUITgas, IUITextData } from 'src/types/ui-data';
+import { FC, useState, Fragment, useEffect } from 'react';
+import type { TUITgas } from 'src/types/ui-data';
 import type { IUIDialogViewer, IUITagsItem } from 'src/types/components';
 
 import Image from 'next/image';
@@ -20,8 +20,8 @@ import {
 
 import { Close, AddPhotoAlternate } from '@mui/icons-material';
 
-import { UITextData, UIRefTextData } from 'src/components/Contents/UITextData';
-import { Card, ReferenceCard } from 'src/components/Contents/Card';
+import { UITextData } from 'src/components/Contents/UITextData';
+import { Card } from 'src/components/Contents/Card';
 import { NormalTagChip } from 'src/components/Tag/TagChip';
 import Dialog from 'src/components/Dialog';
 
@@ -77,7 +77,11 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 	onUITextCopy,
 	BottomComponent = null,
 }) => {
-	const [noImage, setNoImage] = useState((data !== undefined && !data?.image) || false);
+	const [noImage, setNoImage] = useState(false);
+
+	useEffect(() => {
+		setNoImage(!data?.image);
+	}, [data?.image]);
 
 	const [tagMenu, setTagMenu] = useState<{
 		target: null | HTMLElement;
@@ -234,7 +238,7 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 											setNoImage(true);
 										}}
 										src={
-											(data?.imageSrc && data?.imageSrc) ||
+											data?.imageSrc ||
 											`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${data?.image}`
 										}
 									/>
@@ -249,7 +253,7 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 									<IconButton
 										sx={{ margin: 'auto', backgroundColor: '#6f6f6f30' }}
 										component="label"
-										onClick={(e) => {
+										onClick={(e: React.MouseEvent<HTMLElement>) => {
 											if (data?.tags?.service?.id === undefined) {
 												e.preventDefault();
 												alert(
@@ -352,18 +356,7 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 						<Stack direction="row" spacing={4}>
 							<ImageLayout elevation={0}>
 								{/* 쓰기 모드가 아니고, 이미지가 없거나 로드중 에러가 발생한 경우 */}
-								{noImage && (
-									<Image
-										style={{
-											borderRadius: '8px',
-										}}
-										alt="No Image"
-										{...NoImage}
-									/>
-								)}
-
-								{/* 이미지 성공적으로 로드 되었을 때 */}
-								{noImage === false && (
+								{noImage === false ? (
 									<Image
 										alt="Text UI Data Image"
 										width="270px"
@@ -376,9 +369,17 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 											setNoImage(true);
 										}}
 										src={
-											(data?.imageSrc && data?.imageSrc) ||
+											data?.imageSrc ||
 											`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${data?.image}`
 										}
+									/>
+								) : (
+									<Image
+										style={{
+											borderRadius: '8px',
+										}}
+										alt="No Image"
+										{...NoImage}
 									/>
 								)}
 							</ImageLayout>
