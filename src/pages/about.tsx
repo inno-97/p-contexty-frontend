@@ -1,7 +1,6 @@
-import type { TNextPageWithLayout } from 'src/types/components';
 import type { IProfiles, IProfile, TLink } from 'src/types/profile';
 
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Box, Avatar, Stack, Typography, Divider } from '@mui/material';
@@ -60,17 +59,7 @@ function getContributorLink(data: TLink, key: string) {
 	);
 }
 
-const About: TNextPageWithLayout = () => {
-	const [profiles, setProfiles] = useState<IProfiles>({ datas: [] });
-
-	useEffect(() => {
-		const fetchPhoto = async () => {
-			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`);
-			setProfiles({ ...profiles, datas: await res.json() });
-		};
-		fetchPhoto();
-	}, []);
-
+const About = (profiles: IProfiles) => {
 	return (
 		<Box>
 			<SubContentsLayer>
@@ -121,7 +110,6 @@ const About: TNextPageWithLayout = () => {
 								return (
 									<Fragment key={item.name}>
 										<Stack
-											// key={item.name}
 											alignItems="center"
 											direction="row"
 											spacing={1}
@@ -169,6 +157,21 @@ const About: TNextPageWithLayout = () => {
 		</Box>
 	);
 };
+
+export async function getStaticProps() {
+	let datas = [];
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`);
+
+	if (!res.ok) {
+		throw new Error(`Failed to fetch profiles, status ${res.status}`);
+	}
+	datas = await res.json();
+
+	return {
+		props: { datas },
+		revalidate: 60 * 60 * 24,
+	};
+}
 
 About.PageLayout = DefaultLayout;
 
