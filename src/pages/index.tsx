@@ -2,6 +2,8 @@ import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useCallback, useEffect, Fragment } from 'react';
+import { useQuery } from 'react-query';
+
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
@@ -101,11 +103,14 @@ const Home: TNextPageWithLayout = () => {
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
-	const [tags, setTags] = useState<IUITagComponents>({
-		categorys: [],
-		services: [],
-		events: [],
+	const { data: tagsQueryData } = useQuery(['tags'], UITagsAPI.getUITags, {
+		placeholderData: { categorys: [], services: [], events: [] },
+		onSuccess: (data) => {
+			setTags(data);
+		},
 	});
+
+	const [tags, setTags] = useState<IUITagComponents>(tagsQueryData);
 
 	const [page, setPage] = useState({
 		cur: 0,
@@ -296,12 +301,6 @@ const Home: TNextPageWithLayout = () => {
 	};
 
 	useEffect(() => {
-		const fetchUITags = async () => {
-			const tagsData = await UITagsAPI.getUITags();
-			setTags(tagsData);
-		};
-		fetchUITags();
-
 		setPage((prev) => {
 			return {
 				...prev,
