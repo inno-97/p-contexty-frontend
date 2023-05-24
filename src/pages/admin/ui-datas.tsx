@@ -24,7 +24,9 @@ import {
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
+import UIDatasAPI from 'src/apis/ui-datas';
 import UITagsAPI from 'src/apis/ui-tags';
+
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 import AdminLayout from 'src/components/Layout/AdminLayout';
@@ -42,62 +44,6 @@ import Dialog from 'src/components/Dialog';
 import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
-
-const getDatas = async (q: string | null = null) => {
-	try {
-		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
-		).then((data) => data.json());
-
-		return res;
-	} catch (e) {
-		console.error(e);
-		return [];
-	}
-};
-
-const getData = async (id: number | null = null) => {
-	if (id === null) {
-		throw 'getData ID is Null';
-	}
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
-	const data = await res.json();
-	return data;
-};
-
-const updateData = async (data: IUITextData) => {
-	const dataForm = new FormData();
-
-	if (data?.File !== undefined) {
-		dataForm.append('file', data.File);
-		data.File = undefined;
-	}
-
-	dataForm.append('data', JSON.stringify(data));
-
-	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${data.id}`, {
-		method: 'PUT',
-		credentials: 'include',
-		body: dataForm,
-	})
-		.then((rs) => rs.json())
-		.catch((err) => {
-			console.log(err);
-			return null;
-		});
-};
-
-const deleteData = async (did: number) => {
-	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${did}`, {
-		method: 'DELETE',
-		credentials: 'include',
-	})
-		.then((rs) => rs.json())
-		.catch((err) => {
-			console.log(err);
-			return null;
-		});
-};
 
 const imageUpload = async (file: File, service: string) => {
 	if (file === undefined) {
@@ -123,24 +69,6 @@ const imageUpload = async (file: File, service: string) => {
 			console.log(err);
 			return [];
 		});
-};
-
-const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
-	const query = [];
-
-	if (typeof page === 'number') {
-		query.push(`p=${page}`);
-	}
-
-	if (typeof word === 'string' && word !== '') {
-		query.push(`q=${word}`);
-	}
-
-	if (typeof tags === 'string' && tags !== '') {
-		query.push(`t=${tags.slice(0, -1)}`);
-	}
-
-	return query.join('&');
 };
 
 const ContentsBox = styled(Box)({
@@ -371,7 +299,7 @@ const UIDataList = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await getDatas(getQueryString(page.cur, search.request, tagQuery));
+			const res = await UIDatasAPI.getUIDatas(page.cur, search.request, tagQuery);
 			const result = res.datas.map((item: IUITextData) => {
 				return {
 					...item,
@@ -433,7 +361,7 @@ const UIDataList = () => {
 	}, [page.cur, tagQuery, search.request, search.refresh]);
 
 	const handleUIDataUpdate = async (data: IUITextData) => {
-		const rs = await updateData(data);
+		const rs = await UIDatasAPI.updateUIData(data);
 
 		if (rs.validation !== true) {
 			alert('Validation Faild: ' + rs.validation);
@@ -458,8 +386,8 @@ const UIDataList = () => {
 		setSearch({ ...search, refresh: search.refresh + 1 });
 	};
 
-	const handleUIDataDelete = async (did: number) => {
-		const rs = await deleteData(did);
+	const handleUIDataDelete = async (id: number) => {
+		const rs = await UIDatasAPI.deleteUIData(id);
 
 		if (rs.delete === false) {
 			alert('데이터 삭제를 실패하였습니다.\n관리자에게 문의하세요.');
@@ -604,7 +532,7 @@ const UIDataList = () => {
 										return;
 									}
 
-									const data = await getData(row.id);
+									const data = await UIDatasAPI.getUIdata(row.id);
 									setUIData(data);
 
 									setDialog({
@@ -653,7 +581,7 @@ const UIDataList = () => {
 								if (dialog.mode === 'add') {
 									setNewData({ text: '' });
 								} else {
-									const data = await getData(UIData.id);
+									const data = await UIDatasAPI.getUIdata(UIData.id);
 									setUIData(data);
 								}
 							}}
@@ -666,28 +594,11 @@ const UIDataList = () => {
 								onClick={async (e) => {
 									e.preventDefault();
 
-									const data = {
-										image: newData.image,
-										text: newData.text,
-										tags: newData.tags,
-									};
-
-									const rs = await fetch(
-										`${process.env.NEXT_PUBLIC_API_URL}/ui/datas`,
-										{
-											method: 'POST',
-											credentials: 'include',
-											headers: {
-												'Content-Type': 'application/json',
-											},
-											body: JSON.stringify({ datas: [data] }),
-										}
-									)
-										.then((rs) => rs.json())
-										.catch((err) => {
-											console.log(err);
-										});
-
+									const rs = await UIDatasAPI.createUIData(
+										newData.image,
+										newData.text,
+										newData.tags
+									);
 									const result = rs[0];
 
 									if (result.validation !== true) {

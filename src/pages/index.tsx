@@ -19,6 +19,7 @@ import {
 
 import { Search } from '@mui/icons-material';
 
+import UIDatasAPI from 'src/apis/ui-datas';
 import UITagsAPI from 'src/apis/ui-tags';
 
 import BannerCharacter from '/public/characters/banner.png';
@@ -94,46 +95,6 @@ const FilterIcon = styled(Image)(({ theme }) => {
 		filter,
 	};
 });
-
-const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
-	const query = [];
-
-	if (typeof page === 'number') {
-		query.push(`p=${page}`);
-	}
-
-	if (typeof word === 'string' && word !== '') {
-		query.push(`q=${word}`);
-	}
-
-	if (typeof tags === 'string' && tags !== '') {
-		query.push(`t=${tags.slice(0, -1)}`);
-	}
-
-	return query.join('&');
-};
-
-const getData = async (id: number | null = null) => {
-	if (id === null) {
-		throw 'getData ID is Null';
-	}
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
-	const data = await res.json();
-	return data;
-};
-
-const getTextUIDatas = async (q: string | null = null) => {
-	try {
-		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
-		).then((data) => data.json());
-
-		return res;
-	} catch (e) {
-		console.error(e);
-		return [];
-	}
-};
 
 const Home: TNextPageWithLayout = () => {
 	const [loading, setLoading] = useState(true);
@@ -351,7 +312,7 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await getTextUIDatas(getQueryString(page.cur, search.request, tagQuery));
+			const res = await UIDatasAPI.getUIDatas(page.cur, search.request, tagQuery);
 			const datas: IUITextData[] = res.datas;
 
 			if (res.totalPage !== page.totalPage) {
@@ -606,7 +567,8 @@ const Home: TNextPageWithLayout = () => {
 														},
 													}}
 													onClick={async () => {
-														const contentsData = await getData(item.id);
+														const contentsData =
+															await UIDatasAPI.getUIdata(item.id);
 														setViewContent(contentsData);
 														handleDialogOpen();
 													}}
