@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Box, Avatar, Stack, Typography, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import UsersAPI from 'src/apis/users';
+
 import DefaultLayout from 'src/components/Layout/DefaultLayout';
 import { SubContentsLayer } from 'src/components/CustomLayer';
 import Contents from 'src/components/Contents';
@@ -159,14 +161,7 @@ const About = (profiles: IProfiles) => {
 };
 
 export async function getStaticProps() {
-	let datas = [];
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`);
-
-	if (!res.ok) {
-		throw new Error(`Failed to fetch profiles, status ${res.status}`);
-	}
-	datas = await res.json();
-
+	const datas = await UsersAPI.getContributors();
 	return {
 		props: { datas },
 		revalidate: 60 * 60 * 24,
