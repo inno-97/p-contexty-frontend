@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 
 import { Formik, Form, FormikHelpers } from 'formik';
 
+import UsersAPI from 'src/apis/users';
+
 import type { TNextPageWithLayout } from 'src/types/components';
 
 import {
@@ -57,7 +59,7 @@ const ButtonText = styled(({ ...props }: TypographyProps) => (
 	};
 });
 
-interface Values {
+interface Authentication {
 	uid: string;
 	password: string;
 }
@@ -71,18 +73,11 @@ const Admin: TNextPageWithLayout = () => {
 				uid: '',
 				password: '',
 			}}
-			onSubmit={(values: Values, { setSubmitting }: FormikHelpers<Values>) => {
-				fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-in`, {
-					method: 'POST',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						uid: values.uid,
-						password: values.password,
-					}),
-				})
+			onSubmit={(
+				values: Authentication,
+				{ setSubmitting }: FormikHelpers<Authentication>
+			) => {
+				UsersAPI.authUser(values.uid, values.password)
 					.then((rs) => {
 						if (rs.status !== 200) {
 							alert('아이디 또는 패스워드를 확인해주세요');
@@ -91,7 +86,7 @@ const Admin: TNextPageWithLayout = () => {
 						}
 					})
 					.catch((e) => {
-						console.log(e);
+						console.error(e);
 						alert('로그인 실패');
 					})
 					.finally(() => {

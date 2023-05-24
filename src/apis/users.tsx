@@ -7,8 +7,23 @@ export async function getContributors() {
 	return res.json();
 }
 
+export function authUser(uid: string, password: string) {
+	return fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-in`, {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			uid,
+			password,
+		}),
+	});
+}
+
 const UsersAPI = {
 	getContributors,
+	authUser,
 };
 
 export default UsersAPI;
