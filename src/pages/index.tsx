@@ -19,6 +19,8 @@ import {
 
 import { Search } from '@mui/icons-material';
 
+import UITagsAPI from 'src/apis/ui-tags';
+
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
 import filter_category from '/public/filter/category.svg';
@@ -145,7 +147,7 @@ const Home: TNextPageWithLayout = () => {
 	});
 
 	const [page, setPage] = useState({
-		cur: 0, // 개발환경에서 맨 처음 useEffect에서 두번씩 조회해서 페이지 첫 로딩시에는 0으로 셋팅
+		cur: 0,
 		totalPage: 1,
 		totalCount: 0,
 	});
@@ -334,9 +336,7 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUITags = async () => {
-			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
-			const tagsData = await res.json();
-
+			const tagsData = await UITagsAPI.getUITags();
 			setTags(tagsData);
 		};
 		fetchUITags();

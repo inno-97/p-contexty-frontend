@@ -24,6 +24,7 @@ import {
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
+import UITagsAPI from 'src/apis/ui-tags';
 import { getUnixToYYYYMMDD } from 'src/utils/simpleDate';
 
 import AdminLayout from 'src/components/Layout/AdminLayout';
@@ -355,9 +356,7 @@ const UIDataList = () => {
 
 	useEffect(() => {
 		const fetchUITags = async () => {
-			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
-			const tagsData = await res.json();
-
+			const tagsData = await UITagsAPI.getUITags();
 			setTags(tagsData);
 		};
 		fetchUITags();
