@@ -299,7 +299,9 @@ const UIDataList = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await UIDatasAPI.getUIDatas(page.cur, search.request, tagQuery);
+			const res = await UIDatasAPI.getUIDatas(
+				UIDatasAPI.getQueryString(page.cur, search.request, tagQuery)
+			);
 			const result = res.datas.map((item: IUITextData) => {
 				return {
 					...item,

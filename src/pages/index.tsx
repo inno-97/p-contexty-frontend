@@ -311,7 +311,9 @@ const Home: TNextPageWithLayout = () => {
 
 	useEffect(() => {
 		const fetchUIData = async () => {
-			const res = await UIDatasAPI.getUIDatas(page.cur, search.request, tagQuery);
+			const res = await UIDatasAPI.getUIDatas(
+				UIDatasAPI.getQueryString(page.cur, search.request, tagQuery)
+			);
 			const datas: IUITextData[] = res.datas;
 
 			if (res.totalPage !== page.totalPage) {

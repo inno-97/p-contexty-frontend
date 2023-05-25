@@ -18,9 +18,7 @@ export function getQueryString(page: number | null, word: string | null, tags: s
 	return query.join('&');
 }
 
-export async function getUIDatas(page: number | null, word: string | null, tags: string | null) {
-	const query = getQueryString(page, word, tags);
-
+export async function getUIDatas(query = '') {
 	const res = await fetch(
 		`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${query === null ? '' : '?' + query}`
 	);
