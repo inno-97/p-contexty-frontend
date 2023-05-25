@@ -98,6 +98,13 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
+const initializePage = {
+	cur: 1,
+	rowsPerPage: 15,
+	totalPage: 0,
+	totalCount: 0,
+};
+
 const Home: TNextPageWithLayout = () => {
 	const [loading, setLoading] = useState(true);
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
@@ -112,12 +119,7 @@ const Home: TNextPageWithLayout = () => {
 
 	const [tags, setTags] = useState<IUITagComponents>(tagsQueryData);
 
-	const [page, setPage] = useState({
-		cur: 0,
-		rowsPerPage: 15,
-		totalPage: 1,
-		totalCount: 0,
-	});
+	const [page, setPage] = useState(initializePage);
 
 	const [search, setSearch] = useState<{
 		current: string;
@@ -177,12 +179,7 @@ const Home: TNextPageWithLayout = () => {
 			};
 		});
 
-		setPage({
-			cur: 1,
-			rowsPerPage: 15,
-			totalPage: 1,
-			totalCount: 0,
-		});
+		setPage(initializePage);
 
 		setTagQuery('');
 	}, []);
@@ -213,12 +210,7 @@ const Home: TNextPageWithLayout = () => {
 					};
 				});
 
-				setPage({
-					cur: 1,
-					rowsPerPage: 15,
-					totalPage: 1,
-					totalCount: 0,
-				});
+				setPage(initializePage);
 
 				setTagQuery((preQuery) => {
 					const t = `${type[0]}:${tagId},`;
@@ -304,15 +296,6 @@ const Home: TNextPageWithLayout = () => {
 	};
 
 	useEffect(() => {
-		setPage((prev) => {
-			return {
-				...prev,
-				cur: 1,
-			};
-		});
-	}, []);
-
-	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await UIDatasAPI.getUIDatas(
 				UIDatasAPI.getQueryString(page.rowsPerPage, page.cur, search.request, tagQuery)
@@ -354,10 +337,8 @@ const Home: TNextPageWithLayout = () => {
 			}
 		};
 
-		if (page.cur !== 0) {
-			setLoading(true);
-			fetchUIData();
-		}
+		setLoading(true);
+		fetchUIData();
 	}, [page.cur, tagQuery, search.request]);
 
 	return (
@@ -415,12 +396,7 @@ const Home: TNextPageWithLayout = () => {
 
 										setContents({ datas: [] });
 
-										setPage({
-											cur: 1,
-											rowsPerPage: 15,
-											totalPage: 1,
-											totalCount: 0,
-										});
+										setPage(initializePage);
 									}
 								}
 							}}
