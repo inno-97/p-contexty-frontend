@@ -1,7 +1,12 @@
 import type { TUITgas, IUITextData } from 'src/types/ui-data';
 
-export function getQueryString(page: number | null, word: string | null, tags: string | null) {
-	const query = [];
+export function getQueryString(
+	rowsPerPage = 15,
+	page: number | null,
+	word: string | null,
+	tags: string | null
+) {
+	const query = [`pp=${rowsPerPage}`];
 
 	if (typeof page === 'number') {
 		query.push(`p=${page}`);

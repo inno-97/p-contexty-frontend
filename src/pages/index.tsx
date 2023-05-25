@@ -114,6 +114,7 @@ const Home: TNextPageWithLayout = () => {
 
 	const [page, setPage] = useState({
 		cur: 0,
+		rowsPerPage: 15,
 		totalPage: 1,
 		totalCount: 0,
 	});
@@ -178,6 +179,7 @@ const Home: TNextPageWithLayout = () => {
 
 		setPage({
 			cur: 1,
+			rowsPerPage: 15,
 			totalPage: 1,
 			totalCount: 0,
 		});
@@ -213,6 +215,7 @@ const Home: TNextPageWithLayout = () => {
 
 				setPage({
 					cur: 1,
+					rowsPerPage: 15,
 					totalPage: 1,
 					totalCount: 0,
 				});
@@ -312,7 +315,7 @@ const Home: TNextPageWithLayout = () => {
 	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(page.cur, search.request, tagQuery)
+				UIDatasAPI.getQueryString(page.rowsPerPage, page.cur, search.request, tagQuery)
 			);
 			const datas: IUITextData[] = res.datas;
 
@@ -414,6 +417,7 @@ const Home: TNextPageWithLayout = () => {
 
 										setPage({
 											cur: 1,
+											rowsPerPage: 15,
 											totalPage: 1,
 											totalCount: 0,
 										});

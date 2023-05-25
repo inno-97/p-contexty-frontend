@@ -148,6 +148,7 @@ const UIDataList = () => {
 
 	const [page, setPage] = useState({
 		cur: 0,
+		rowsPerPage: 15,
 		totalPage: 1,
 		totalCount: 0,
 	});
@@ -233,6 +234,7 @@ const UIDataList = () => {
 
 		setPage({
 			cur: 1,
+			rowsPerPage: 15,
 			totalPage: 1,
 			totalCount: 0,
 		});
@@ -268,6 +270,7 @@ const UIDataList = () => {
 
 				setPage({
 					cur: 1,
+					rowsPerPage: 15,
 					totalPage: 1,
 					totalCount: 0,
 				});
@@ -300,7 +303,7 @@ const UIDataList = () => {
 	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(page.cur, search.request, tagQuery)
+				UIDatasAPI.getQueryString(page.rowsPerPage, page.cur, search.request, tagQuery)
 			);
 			const result = res.datas.map((item: IUITextData) => {
 				return {
@@ -433,6 +436,7 @@ const UIDataList = () => {
 
 								setPage({
 									cur: 1,
+									rowsPerPage: 15,
 									totalPage: 1,
 									totalCount: 0,
 								});
