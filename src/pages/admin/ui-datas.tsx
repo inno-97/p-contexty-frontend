@@ -8,6 +8,8 @@ import type {
 import type { IUITextData } from 'src/types/ui-data';
 
 import { useEffect, useState, useCallback, Fragment } from 'react';
+import { useQuery } from 'react-query';
+
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import {
@@ -140,11 +142,14 @@ const UIDataTableHeader = [
 const TagChipMargin = '0 2px 0 0';
 
 const UIDataList = () => {
-	const [tags, setTags] = useState<IUITagComponents>({
-		categorys: [],
-		services: [],
-		events: [],
+	const { data: tagsQueryData } = useQuery(['tags'], UITagsAPI.getUITags, {
+		placeholderData: { categorys: [], services: [], events: [] },
+		onSuccess: (data) => {
+			setTags(data);
+		},
 	});
+
+	const [tags, setTags] = useState<IUITagComponents>(tagsQueryData);
 
 	const [page, setPage] = useState({
 		cur: 0,
@@ -286,12 +291,6 @@ const UIDataList = () => {
 	);
 
 	useEffect(() => {
-		const fetchUITags = async () => {
-			const tagsData = await UITagsAPI.getUITags();
-			setTags(tagsData);
-		};
-		fetchUITags();
-
 		setPage((prev) => {
 			return {
 				...prev,
