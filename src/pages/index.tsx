@@ -110,14 +110,14 @@ const Home: TNextPageWithLayout = () => {
 	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
-	const { data: tagsQueryData } = useQuery(['tags'], UITagsAPI.getUITags, {
+	const { data: tagsQuery } = useQuery(['tags'], UITagsAPI.getUITags, {
 		placeholderData: { categorys: [], services: [], events: [] },
 		onSuccess: (data) => {
 			setTags(data);
 		},
 	});
 
-	const [tags, setTags] = useState<IUITagComponents>(tagsQueryData);
+	const [tags, setTags] = useState<IUITagComponents>(tagsQuery);
 
 	const [page, setPage] = useState(initializePage);
 
