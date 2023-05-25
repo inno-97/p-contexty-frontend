@@ -141,6 +141,13 @@ const UIDataTableHeader = [
 
 const TagChipMargin = '0 2px 0 0';
 
+const initializePage = {
+	cur: 1,
+	rowsPerPage: 15,
+	totalPage: 0,
+	totalCount: 0,
+};
+
 const UIDataList = () => {
 	const { data: tagsQueryData } = useQuery(['tags'], UITagsAPI.getUITags, {
 		placeholderData: { categorys: [], services: [], events: [] },
@@ -151,12 +158,7 @@ const UIDataList = () => {
 
 	const [tags, setTags] = useState<IUITagComponents>(tagsQueryData);
 
-	const [page, setPage] = useState({
-		cur: 0,
-		rowsPerPage: 15,
-		totalPage: 1,
-		totalCount: 0,
-	});
+	const [page, setPage] = useState(initializePage);
 
 	const [UIDatas, setUIDatas] = useState([]);
 
@@ -237,12 +239,7 @@ const UIDataList = () => {
 			};
 		});
 
-		setPage({
-			cur: 1,
-			rowsPerPage: 15,
-			totalPage: 1,
-			totalCount: 0,
-		});
+		setPage(initializePage);
 
 		setTagQuery('');
 	}, []);
@@ -273,12 +270,7 @@ const UIDataList = () => {
 					};
 				});
 
-				setPage({
-					cur: 1,
-					rowsPerPage: 15,
-					totalPage: 1,
-					totalCount: 0,
-				});
+				setPage(initializePage);
 
 				setTagQuery((preQuery) => {
 					const t = `${type[0]}:${tagId},`;
@@ -289,15 +281,6 @@ const UIDataList = () => {
 		},
 		[]
 	);
-
-	useEffect(() => {
-		setPage((prev) => {
-			return {
-				...prev,
-				cur: 1,
-			};
-		});
-	}, []);
 
 	useEffect(() => {
 		const fetchUIData = async () => {
@@ -359,9 +342,7 @@ const UIDataList = () => {
 			setSearch({ ...search, noResult: result.length === 0 });
 		};
 
-		if (page.cur !== 0) {
-			fetchUIData();
-		}
+		fetchUIData();
 	}, [page.cur, tagQuery, search.request, search.refresh]);
 
 	const handleUIDataUpdate = async (data: IUITextData) => {
@@ -433,12 +414,7 @@ const UIDataList = () => {
 
 								setUIDatas([]);
 
-								setPage({
-									cur: 1,
-									rowsPerPage: 15,
-									totalPage: 1,
-									totalCount: 0,
-								});
+								setPage(initializePage);
 							}
 						}
 					}}
