@@ -302,24 +302,17 @@ const Home: TNextPageWithLayout = () => {
 			);
 			const datas: IUITextData[] = res.datas;
 
-			if (res.totalPage !== page.totalPage) {
-				setPage((prev) => {
-					return {
-						...prev,
-						totalPage: res.totalPage,
-					};
-				});
-			}
+			setPage((prev) => {
+				const newPage = {
+					...prev,
+					totalPage: res.totalPage,
+				};
 
-			// 단어 검색시 검색 건수를 표출
-			if (search.request !== '' && page.cur === 1) {
-				setPage((prev) => {
-					return {
-						...prev,
-						totalCount: res.totalCount,
-					};
-				});
-			}
+				if (search.request !== '') {
+					newPage.totalCount = res.totalCount;
+				}
+				return newPage;
+			});
 
 			setLoading(false);
 
