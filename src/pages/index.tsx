@@ -127,7 +127,7 @@ const Home: TNextPageWithLayout = () => {
 		['ui-datas', UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)],
 		({ queryKey }) => {
 			if (search.page === 1) {
-				setContents({ datas: [] });
+				setUIDatas({ datas: [] });
 			}
 			return UIDatasAPI.getUIDatas(queryKey[1]);
 		},
@@ -152,9 +152,9 @@ const Home: TNextPageWithLayout = () => {
 				});
 
 				if (search.page === 1) {
-					setContents({ datas: datas });
+					setUIDatas({ datas: datas });
 				} else {
-					setContents((prev) => {
+					setUIDatas((prev) => {
 						return { ...prev, datas: [...prev.datas, ...datas] };
 					});
 				}
@@ -166,7 +166,7 @@ const Home: TNextPageWithLayout = () => {
 			refetchOnMount: true,
 		}
 	);
-	const [contents, setContents] = useState<IUIDatas>(uiDatasQuery);
+	const [UIDatas, setUIDatas] = useState<IUIDatas>(uiDatasQuery);
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
 	const handleIntersect = () => {
@@ -279,7 +279,7 @@ const Home: TNextPageWithLayout = () => {
 			if (checkCopy.status === 200) {
 				const result = await checkCopy.json();
 
-				setContents((prev) => {
+				setUIDatas((prev) => {
 					const newDatas = prev.datas.map((item) => {
 						if (item.id !== id) {
 							return item;
@@ -501,7 +501,7 @@ const Home: TNextPageWithLayout = () => {
 							</Box>
 						)) || (
 							<Grid container spacing={2}>
-								{contents.datas.map((item, idx) => {
+								{UIDatas.datas.map((item, idx) => {
 									return (
 										// 나중에 검색시 기본적으로 Grow Transition을 사용하여 Rendering 하도록 변경하자.
 										<Grow
@@ -518,7 +518,7 @@ const Home: TNextPageWithLayout = () => {
 												sm={6}
 												md={4}
 												ref={
-													contents.datas.length - 1 === idx
+													UIDatas.datas.length - 1 === idx
 														? setTarget
 														: null
 												}
