@@ -7,7 +7,7 @@ import type {
 } from 'src/types/components';
 import type { IUITextData } from 'src/types/ui-data';
 
-import { useEffect, useState, useCallback, Fragment } from 'react';
+import { useState, useCallback, Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 import Image from 'next/image';
@@ -158,19 +158,94 @@ const UIDataList = () => {
 
 	const [tags, setTags] = useState<IUITagComponents>(tagsQuery);
 
-	const [UIDatas, setUIDatas] = useState([]);
-
-	const [newData, setNewData] = useState<IUITextData>({});
-	const [UIData, setUIData] = useState<IUITextData>({});
-
 	const [search, setSearch] = useState({
-		refresh: 0,
 		current: '',
 		word: '',
 		tagQuery: '',
 		...initializePage,
 		noResult: false,
 	});
+
+	const { data: uiDatasQuery = { datas: [] }, refetch: uiDatasRefetch } = useQuery(
+		[
+			'ui-datas',
+			UIDatasAPI.getQueryString(
+				search.rowsPerPage,
+				search.page,
+				search.word,
+				search.tagQuery
+			),
+		],
+		({ queryKey }) => {
+			return UIDatasAPI.getUIDatas(queryKey[1]);
+		},
+		{
+			onSuccess: (res) => {
+				const result = res.datas.map((item: IUITextData) => {
+					return {
+						...item,
+						timestamp: getUnixToYYYYMMDD(item.timestamp),
+						category: (
+							<TagChip
+								size="small"
+								type="category"
+								margin={TagChipMargin}
+								value={item.tags?.category?.id}
+								label={item.tags?.category?.name}
+							/>
+						),
+						service: (
+							<TagChip
+								size="small"
+								type="service"
+								margin={TagChipMargin}
+								value={item.tags?.service?.id}
+								label={item.tags?.service?.name}
+							/>
+						),
+						events: (
+							<Fragment>
+								{item.tags?.events?.map((tag) => {
+									return (
+										<TagChip
+											key={tag.id}
+											size="small"
+											type="events"
+											margin={TagChipMargin}
+											value={tag.id}
+											label={tag.name}
+										/>
+									);
+								})}
+							</Fragment>
+						),
+					};
+				});
+
+				setSearch((prev) => {
+					const newData = {
+						...prev,
+						noResult: false,
+						totalPage: res.totalPage,
+						totalCount: res.totalCount,
+					};
+
+					if (result.length === 0) {
+						newData.noResult = true;
+					}
+
+					return newData;
+				});
+
+				setUIDatas(result);
+			},
+			refetchOnMount: true,
+		}
+	);
+	const [UIDatas, setUIDatas] = useState(uiDatasQuery.datas);
+
+	const [newData, setNewData] = useState<IUITextData>({});
+	const [UIData, setUIData] = useState<IUITextData>({});
 
 	const [dialog, setDialog] = useState({
 		mode: 'add',
@@ -282,78 +357,6 @@ const UIDataList = () => {
 		[]
 	);
 
-	useEffect(() => {
-		const fetchUIData = async () => {
-			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(
-					search.rowsPerPage,
-					search.page,
-					search.word,
-					search.tagQuery
-				)
-			);
-			const result = res.datas.map((item: IUITextData) => {
-				return {
-					...item,
-					timestamp: getUnixToYYYYMMDD(item.timestamp),
-					category: (
-						<TagChip
-							size="small"
-							type="category"
-							margin={TagChipMargin}
-							value={item.tags?.category?.id}
-							label={item.tags?.category?.name}
-						/>
-					),
-					service: (
-						<TagChip
-							size="small"
-							type="service"
-							margin={TagChipMargin}
-							value={item.tags?.service?.id}
-							label={item.tags?.service?.name}
-						/>
-					),
-					events: (
-						<Fragment>
-							{item.tags?.events?.map((tag) => {
-								return (
-									<TagChip
-										key={tag.id}
-										size="small"
-										type="events"
-										margin={TagChipMargin}
-										value={tag.id}
-										label={tag.name}
-									/>
-								);
-							})}
-						</Fragment>
-					),
-				};
-			});
-
-			setSearch((prev) => {
-				const newData = {
-					...prev,
-					noResult: false,
-					totalPage: res.totalPage,
-					totalCount: res.totalCount,
-				};
-
-				if (result.length === 0) {
-					newData.noResult = true;
-				}
-
-				return newData;
-			});
-
-			setUIDatas(result);
-		};
-
-		fetchUIData();
-	}, [search.rowsPerPage, search.page, search.tagQuery, search.word, search.refresh]);
-
 	const handleUIDataUpdate = async (data: IUITextData) => {
 		const rs = await UIDatasAPI.updateUIData(data);
 
@@ -377,7 +380,7 @@ const UIDataList = () => {
 			return;
 		}
 
-		setSearch({ ...search, refresh: search.refresh + 1 });
+		uiDatasRefetch();
 	};
 
 	const handleUIDataDelete = async (id: number) => {
@@ -391,7 +394,7 @@ const UIDataList = () => {
 			alert('이미지 삭제를 실패하였습니다.\n관리자에게 문의하세요.');
 		}
 
-		setSearch({ ...search, refresh: search.refresh + 1 });
+		uiDatasRefetch();
 		handleDialogClose();
 	};
 
