@@ -123,7 +123,7 @@ const Home: TNextPageWithLayout = () => {
 		...initializePage,
 	});
 
-	const { data: contentsData = { datas: [] }, isLoading } = useQuery(
+	const { data: uiDatasQuery = { datas: [] }, isLoading } = useQuery(
 		['ui-datas', UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)],
 		({ queryKey }) => {
 			if (search.page === 1) {
@@ -166,7 +166,7 @@ const Home: TNextPageWithLayout = () => {
 			refetchOnMount: true,
 		}
 	);
-	const [contents, setContents] = useState<IUIDatas>(contentsData);
+	const [contents, setContents] = useState<IUIDatas>(uiDatasQuery);
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
 
 	const handleIntersect = () => {
