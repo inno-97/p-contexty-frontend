@@ -1,7 +1,7 @@
 import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
-import { useState, useCallback, useEffect, Fragment } from 'react';
+import { useState, useCallback, Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
@@ -104,10 +104,6 @@ const initializePage = {
 };
 
 const Home: TNextPageWithLayout = () => {
-	const [loading, setLoading] = useState(true);
-	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
-	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
-
 	const { data: tagsQuery } = useQuery(['tags'], UITagsAPI.getUITags, {
 		placeholderData: { categorys: [], services: [], events: [] },
 		onSuccess: (data) => {
@@ -122,14 +118,59 @@ const Home: TNextPageWithLayout = () => {
 		requestWord: '',
 		word: '',
 		tagQuery: '',
-		query: '',
 		totalCount: 0,
 		noResult: false,
 		...initializePage,
 	});
 
+	const { data: contentsData = { datas: [] }, isLoading } = useQuery(
+		['ui-datas', UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)],
+		({ queryKey }) => {
+			if (search.page === 1) {
+				setContents({ datas: [] });
+			}
+			return UIDatasAPI.getUIDatas(queryKey[1]);
+		},
+		{
+			onSuccess: (rs) => {
+				const datas: IUITextData[] = rs.datas;
+				setSearch((prev) => {
+					const newData = {
+						...prev,
+						noResult: false,
+						totalPage: rs.totalPage,
+					};
+
+					newData.requestWord = search.word;
+					newData.totalCount = rs.totalCount;
+
+					if (search.page === 1 && datas.length === 0) {
+						newData.noResult = true;
+					}
+
+					return newData;
+				});
+
+				if (search.page === 1) {
+					setContents({ datas: datas });
+				} else {
+					setContents((prev) => {
+						return { ...prev, datas: [...prev.datas, ...datas] };
+					});
+				}
+
+				if (rs.length !== 0) {
+					setChecked(true);
+				}
+			},
+			refetchOnMount: true,
+		}
+	);
+	const [contents, setContents] = useState<IUIDatas>(contentsData);
+	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
+
 	const handleIntersect = () => {
-		if (loading === false) {
+		if (isLoading === false) {
 			setSearch((prev) => {
 				if (prev.totalPage > prev.page) {
 					return {
@@ -293,52 +334,6 @@ const Home: TNextPageWithLayout = () => {
 		setOpen(true);
 	};
 
-	useEffect(() => {
-		const fetchUIData = async () => {
-			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)
-			);
-			const datas: IUITextData[] = res.datas;
-
-			setLoading(false);
-			setSearch((prev) => {
-				const newData = {
-					...prev,
-					noResult: false,
-					totalPage: res.totalPage,
-				};
-
-				newData.requestWord = search.word;
-				newData.totalCount = res.totalCount;
-
-				if (search.page === 1 && datas.length === 0) {
-					newData.noResult = true;
-				}
-
-				return newData;
-			});
-
-			if (search.page === 1) {
-				setContents({ datas: datas });
-			} else {
-				setContents((prev) => {
-					return { ...prev, datas: [...prev.datas, ...datas] };
-				});
-			}
-
-			if (res.length !== 0) {
-				setChecked(true);
-			}
-		};
-
-		if (search.page === 1) {
-			setContents({ datas: [] });
-		}
-
-		setLoading(true);
-		fetchUIData();
-	}, [search.page, search.tagQuery, search.word]);
-
 	return (
 		<Fragment>
 			<Box>
@@ -384,8 +379,6 @@ const Home: TNextPageWithLayout = () => {
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') {
 									if (search.current !== search.word) {
-										setLoading(true);
-
 										setSearch({
 											...search,
 											word: search.current,
@@ -493,7 +486,7 @@ const Home: TNextPageWithLayout = () => {
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0" minHeight={430}>
-						{(search.noResult && !loading && (
+						{(search.noResult && !isLoading && (
 							<Box textAlign="center">
 								<Image
 									alt="noReulst Character"
@@ -562,7 +555,7 @@ const Home: TNextPageWithLayout = () => {
 								})}
 							</Grid>
 						)}
-						<Box textAlign="center" mt={2} display={loading ? 'block' : 'none'}>
+						<Box textAlign="center" mt={2} display={isLoading ? 'block' : 'none'}>
 							<CircularProgress size={48} thickness={7} sx={{ color: '#F1F3F5' }} />
 						</Box>
 					</Box>
