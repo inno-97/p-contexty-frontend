@@ -99,10 +99,8 @@ const FilterIcon = styled(Image)(({ theme }) => {
 });
 
 const initializePage = {
-	cur: 1,
-	rowsPerPage: 15,
+	page: 1,
 	totalPage: 0,
-	totalCount: 0,
 };
 
 const Home: TNextPageWithLayout = () => {
@@ -119,37 +117,30 @@ const Home: TNextPageWithLayout = () => {
 
 	const [tags, setTags] = useState<IUITagComponents>(tagsQuery);
 
-	const [page, setPage] = useState(initializePage);
-
-	const [search, setSearch] = useState<{
-		current: string;
-		request: string;
-		noResult: boolean;
-	}>({
+	const [search, setSearch] = useState({
 		current: '',
-		request: '',
+		requestWord: '',
+		word: '',
+		tagQuery: '',
+		query: '',
+		totalCount: 0,
 		noResult: false,
+		...initializePage,
 	});
 
-	const [tagQuery, setTagQuery] = useState('');
-
-	const handleIntersect = useCallback(() => {
+	const handleIntersect = () => {
 		if (loading === false) {
-			setLoading(true);
-
-			setPage((prev) => {
-				if (prev.totalPage > prev.cur) {
+			setSearch((prev) => {
+				if (prev.totalPage > prev.page) {
 					return {
 						...prev,
-						cur: prev.cur + 1,
+						page: prev.page + 1,
 					};
 				}
-
-				setLoading(false);
 				return prev;
 			});
 		}
-	}, [loading]);
+	};
 
 	const [setTarget] = useInfiniteScroll(handleIntersect, {
 		threshold: 1,
@@ -179,9 +170,13 @@ const Home: TNextPageWithLayout = () => {
 			};
 		});
 
-		setPage(initializePage);
-
-		setTagQuery('');
+		setSearch((prev) => {
+			return {
+				...prev,
+				...initializePage,
+				tagQuery: '',
+			};
+		});
 	}, []);
 
 	const handleSetTag = useCallback(
@@ -210,12 +205,15 @@ const Home: TNextPageWithLayout = () => {
 					};
 				});
 
-				setPage(initializePage);
-
-				setTagQuery((preQuery) => {
+				setSearch((prev) => {
 					const t = `${type[0]}:${tagId},`;
-					const newQuery = selected ? preQuery + t : preQuery.replace(t, '');
-					return newQuery;
+					const newQuery = selected ? prev.tagQuery + t : prev.tagQuery.replace(t, '');
+
+					return {
+						...prev,
+						...initializePage,
+						tagQuery: newQuery,
+					};
 				});
 			}
 		},
@@ -298,25 +296,29 @@ const Home: TNextPageWithLayout = () => {
 	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(page.rowsPerPage, page.cur, search.request, tagQuery)
+				UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)
 			);
 			const datas: IUITextData[] = res.datas;
 
-			setPage((prev) => {
-				const newPage = {
+			setLoading(false);
+			setSearch((prev) => {
+				const newData = {
 					...prev,
+					noResult: false,
 					totalPage: res.totalPage,
 				};
 
-				if (search.request !== '') {
-					newPage.totalCount = res.totalCount;
+				newData.requestWord = search.word;
+				newData.totalCount = res.totalCount;
+
+				if (search.page === 1 && datas.length === 0) {
+					newData.noResult = true;
 				}
-				return newPage;
+
+				return newData;
 			});
 
-			setLoading(false);
-
-			if (page.cur === 1) {
+			if (search.page === 1) {
 				setContents({ datas: datas });
 			} else {
 				setContents((prev) => {
@@ -324,15 +326,18 @@ const Home: TNextPageWithLayout = () => {
 				});
 			}
 
-			setSearch({ ...search, noResult: datas.length === 0 });
 			if (res.length !== 0) {
 				setChecked(true);
 			}
 		};
 
+		if (search.page === 1) {
+			setContents({ datas: [] });
+		}
+
 		setLoading(true);
 		fetchUIData();
-	}, [page.cur, tagQuery, search.request]);
+	}, [search.page, search.tagQuery, search.word]);
 
 	return (
 		<Fragment>
@@ -378,25 +383,24 @@ const Home: TNextPageWithLayout = () => {
 							value={search.current}
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') {
-									if (search.current !== search.request) {
+									if (search.current !== search.word) {
+										setLoading(true);
+
 										setSearch({
 											...search,
-											request: search.current,
-											noResult: false,
+											word: search.current,
 										});
 
 										handleClearTags();
-
-										setContents({ datas: [] });
-
-										setPage(initializePage);
 									}
 								}
 							}}
 							onChange={(e) => {
-								setSearch({
-									...search,
-									current: e.target.value,
+								setSearch((prev) => {
+									return {
+										...prev,
+										current: e.target.value,
+									};
 								});
 							}}
 							fullWidth
@@ -415,10 +419,10 @@ const Home: TNextPageWithLayout = () => {
 				<ContentsLayer>
 					{/* Search Result */}
 					<Box height="48px">
-						{search.request && (
+						{search.requestWord && (
 							<SearchResultBox className="ctt_text_16 ctt_regular">
-								<SearchResultText>{search.request}</SearchResultText> 검색 결과{' '}
-								<SearchResultText>{page.totalCount}</SearchResultText>건
+								<SearchResultText>{search.requestWord}</SearchResultText> 검색 결과{' '}
+								<SearchResultText>{search.totalCount}</SearchResultText>건
 							</SearchResultBox>
 						)}
 					</Box>
@@ -511,7 +515,7 @@ const Home: TNextPageWithLayout = () => {
 											key={item.id}
 											in={checked}
 											style={{ transformOrigin: '0 0 0' }}
-											{...(checked && page.cur === 1
+											{...(checked && search.page === 1
 												? { timeout: 200 + (idx / 3) * 250 }
 												: {})}
 										>
