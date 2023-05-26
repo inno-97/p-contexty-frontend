@@ -142,7 +142,7 @@ const UIDataTableHeader = [
 const TagChipMargin = '0 2px 0 0';
 
 const initializePage = {
-	cur: 1,
+	page: 1,
 	rowsPerPage: 15,
 	totalPage: 0,
 	totalCount: 0,
@@ -158,25 +158,18 @@ const UIDataList = () => {
 
 	const [tags, setTags] = useState<IUITagComponents>(tagsQuery);
 
-	const [page, setPage] = useState(initializePage);
-
 	const [UIDatas, setUIDatas] = useState([]);
 
 	const [newData, setNewData] = useState<IUITextData>({});
 	const [UIData, setUIData] = useState<IUITextData>({});
 
-	const [tagQuery, setTagQuery] = useState('');
-
-	const [search, setSearch] = useState<{
-		current: string;
-		request: string;
-		noResult: boolean;
-		refresh: number;
-	}>({
-		current: '',
-		request: '',
-		noResult: false,
+	const [search, setSearch] = useState({
 		refresh: 0,
+		current: '',
+		word: '',
+		tagQuery: '',
+		...initializePage,
+		noResult: false,
 	});
 
 	const [dialog, setDialog] = useState({
@@ -239,9 +232,13 @@ const UIDataList = () => {
 			};
 		});
 
-		setPage(initializePage);
-
-		setTagQuery('');
+		setSearch((prev) => {
+			return {
+				...prev,
+				...initializePage,
+				tagQuery: '',
+			};
+		});
 	}, []);
 
 	const handleSetTag = useCallback(
@@ -270,12 +267,15 @@ const UIDataList = () => {
 					};
 				});
 
-				setPage(initializePage);
-
-				setTagQuery((preQuery) => {
+				setSearch((prev) => {
 					const t = `${type[0]}:${tagId},`;
-					const newQuery = selected ? preQuery + t : preQuery.replace(t, '');
-					return newQuery;
+					const newQuery = selected ? prev.tagQuery + t : prev.tagQuery.replace(t, '');
+
+					return {
+						...prev,
+						...initializePage,
+						tagQuery: newQuery,
+					};
 				});
 			}
 		},
@@ -285,7 +285,12 @@ const UIDataList = () => {
 	useEffect(() => {
 		const fetchUIData = async () => {
 			const res = await UIDatasAPI.getUIDatas(
-				UIDatasAPI.getQueryString(page.rowsPerPage, page.cur, search.request, tagQuery)
+				UIDatasAPI.getQueryString(
+					search.rowsPerPage,
+					search.page,
+					search.word,
+					search.tagQuery
+				)
 			);
 			const result = res.datas.map((item: IUITextData) => {
 				return {
@@ -328,22 +333,26 @@ const UIDataList = () => {
 				};
 			});
 
-			if (res.totalPage !== page.totalPage) {
-				setPage((prev) => {
-					return {
-						...prev,
-						totalPage: res.totalPage,
-						totalCount: res.totalCount,
-					};
-				});
-			}
+			setSearch((prev) => {
+				const newData = {
+					...prev,
+					noResult: false,
+					totalPage: res.totalPage,
+					totalCount: res.totalCount,
+				};
+
+				if (result.length === 0) {
+					newData.noResult = true;
+				}
+
+				return newData;
+			});
 
 			setUIDatas(result);
-			setSearch({ ...search, noResult: result.length === 0 });
 		};
 
 		fetchUIData();
-	}, [page.cur, tagQuery, search.request, search.refresh]);
+	}, [search.rowsPerPage, search.page, search.tagQuery, search.word, search.refresh]);
 
 	const handleUIDataUpdate = async (data: IUITextData) => {
 		const rs = await UIDatasAPI.updateUIData(data);
@@ -403,18 +412,13 @@ const UIDataList = () => {
 					value={search.current}
 					onKeyDown={(e) => {
 						if (e.key === 'Enter') {
-							if (search.current !== search.request) {
+							if (search.current !== search.word) {
 								setSearch({
 									...search,
-									request: search.current,
-									noResult: false,
+									word: search.current,
 								});
 
 								handleClearTags();
-
-								setUIDatas([]);
-
-								setPage(initializePage);
 							}
 						}
 					}}
@@ -525,19 +529,19 @@ const UIDataList = () => {
 						},
 					}}
 					rows={UIDatas}
-					page={page.cur}
+					page={search.page}
 					changePage={(page) => {
-						setPage((prev) => {
-							if (prev.cur !== page) {
+						setSearch((prev) => {
+							if (prev.page !== page) {
 								return {
 									...prev,
-									cur: page,
+									page: page,
 								};
 							}
 							return prev;
 						});
 					}}
-					totalCount={page.totalCount}
+					totalCount={search.totalCount}
 				/>
 			</ContentsBox>
 
