@@ -1,8 +1,8 @@
 import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components';
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
-import { useState, useCallback, Fragment } from 'react';
-import { useQuery } from 'react-query';
+import { useState, useCallback, useEffect, Fragment } from 'react';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
 
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
 import Image from 'next/image';
@@ -123,7 +123,11 @@ const Home: TNextPageWithLayout = () => {
 		...initializePage,
 	});
 
-	const { data: uiDatasQuery = { datas: [] }, isLoading } = useQuery(
+	const {
+		data: uiDatasQuery = { datas: [] },
+		isLoading,
+		isFetched,
+	} = useQuery(
 		['ui-datas', UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)],
 		({ queryKey }) => {
 			if (search.page === 1) {
@@ -163,11 +167,36 @@ const Home: TNextPageWithLayout = () => {
 					setChecked(true);
 				}
 			},
-			refetchOnMount: true,
+			cacheTime: 0,
 		}
 	);
+
 	const [UIDatas, setUIDatas] = useState<IUIDatas>(uiDatasQuery);
 	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
+
+	useEffect(() => {
+		if (isFetched) {
+			setSearch((prev) => {
+				const newData = {
+					...prev,
+					noResult: false,
+					totalPage: uiDatasQuery.totalPage,
+				};
+
+				newData.totalCount = uiDatasQuery.totalCount;
+
+				if (UIDatas.datas.length === 0) {
+					newData.noResult = true;
+				}
+
+				return newData;
+			});
+
+			if (UIDatas.datas.length !== 0) {
+				setChecked(true);
+			}
+		}
+	}, []);
 
 	const handleIntersect = () => {
 		if (isLoading === false) {
@@ -571,6 +600,25 @@ const Home: TNextPageWithLayout = () => {
 		</Fragment>
 	);
 };
+
+export async function getStaticProps() {
+	const queryClient = new QueryClient();
+
+	await queryClient.prefetchQuery('tags', () => UITagsAPI.getUITags());
+	await queryClient.prefetchQuery(
+		['ui-datas', UIDatasAPI.getQueryString(15, 1, '', '')],
+		({ queryKey }) => {
+			return UIDatasAPI.getUIDatas(queryKey[1]);
+		}
+	);
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+		revalidate: 30, // 30 seconds
+	};
+}
 
 Home.PageLayout = DefaultLayout;
 

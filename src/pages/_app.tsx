@@ -10,7 +10,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider, Hydrate } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { createTheme } from 'src/themes';
@@ -71,20 +71,22 @@ export default function MyApp(props: IMyAppPropsWithLayout) {
 				<meta name="viewport" content="initial-scale=1, width=device-width" />
 			</Head>
 			<QueryClientProvider client={queryClient}>
-				<ThemeConfigContext.Provider value={{ themeMode, setThemeMode }}>
-					<ThemeProvider
-						theme={createTheme({
-							themeMode,
-						})}
-					>
-						{/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-						<CssBaseline />
-						<PageLayout>
-							<Component {...pageProps} />
-						</PageLayout>
-					</ThemeProvider>
-					<ReactQueryDevtools initialIsOpen={false} />
-				</ThemeConfigContext.Provider>
+				<Hydrate state={pageProps.dehydratedState}>
+					<ThemeConfigContext.Provider value={{ themeMode, setThemeMode }}>
+						<ThemeProvider
+							theme={createTheme({
+								themeMode,
+							})}
+						>
+							{/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+							<CssBaseline />
+							<PageLayout>
+								<Component {...pageProps} />
+							</PageLayout>
+						</ThemeProvider>
+						<ReactQueryDevtools initialIsOpen={false} />
+					</ThemeConfigContext.Provider>
+				</Hydrate>
 			</QueryClientProvider>
 		</CacheProvider>
 	);
