@@ -2,6 +2,8 @@ import type { TNextPageWithLayout, IUITagComponents } from 'src/types/components
 import type { IUIDatas, IUITextData } from 'src/types/ui-data';
 
 import { useState, useCallback, useEffect, Fragment } from 'react';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
+
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
@@ -18,6 +20,9 @@ import {
 } from '@mui/material';
 
 import { Search } from '@mui/icons-material';
+
+import UIDatasAPI from 'src/apis/ui-datas';
+import UITagsAPI from 'src/apis/ui-tags';
 
 import BannerCharacter from '/public/characters/banner.png';
 import NoResultCharacter from '/public/characters/noResult.png';
@@ -93,92 +98,119 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
-const getQueryString = (page: number | null, word: string | null, tags: string | null) => {
-	const query = [];
-
-	if (typeof page === 'number') {
-		query.push(`p=${page}`);
-	}
-
-	if (typeof word === 'string' && word !== '') {
-		query.push(`q=${word}`);
-	}
-
-	if (typeof tags === 'string' && tags !== '') {
-		query.push(`t=${tags.slice(0, -1)}`);
-	}
-
-	return query.join('&');
-};
-
-const getData = async (id: number | null = null) => {
-	if (id === null) {
-		throw 'getData ID is Null';
-	}
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas/${id}`);
-	const data = await res.json();
-	return data;
-};
-
-const getTextUIDatas = async (q: string | null = null) => {
-	try {
-		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/ui/datas${q === null ? '' : '?' + q}`
-		).then((data) => data.json());
-
-		return res;
-	} catch (e) {
-		console.error(e);
-		return [];
-	}
+const initializePage = {
+	page: 1,
+	totalPage: 0,
 };
 
 const Home: TNextPageWithLayout = () => {
-	const [loading, setLoading] = useState(true);
-	const [contents, setContents] = useState<IUIDatas>({ datas: [] });
-	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
-
-	const [tags, setTags] = useState<IUITagComponents>({
-		categorys: [],
-		services: [],
-		events: [],
+	const { data: uiTagsQuery } = useQuery(['ui-tags'], UITagsAPI.getUITags, {
+		placeholderData: { categorys: [], services: [], events: [] },
+		onSuccess: (data) => {
+			setTags(data);
+		},
 	});
 
-	const [page, setPage] = useState({
-		cur: 0, // 개발환경에서 맨 처음 useEffect에서 두번씩 조회해서 페이지 첫 로딩시에는 0으로 셋팅
-		totalPage: 1,
-		totalCount: 0,
-	});
+	const [tags, setTags] = useState<IUITagComponents>(uiTagsQuery);
 
-	const [search, setSearch] = useState<{
-		current: string;
-		request: string;
-		noResult: boolean;
-	}>({
+	const [search, setSearch] = useState({
 		current: '',
-		request: '',
+		requestWord: '',
+		word: '',
+		tagQuery: '',
+		totalCount: 0,
 		noResult: false,
+		...initializePage,
 	});
 
-	const [tagQuery, setTagQuery] = useState('');
-
-	const handleIntersect = useCallback(() => {
-		if (loading === false) {
-			setLoading(true);
-
-			setPage((prev) => {
-				if (prev.totalPage > prev.cur) {
-					return {
+	const {
+		data: uiDatasQuery = { datas: [] },
+		isLoading,
+		isFetched,
+	} = useQuery(
+		['ui-datas', UIDatasAPI.getQueryString(15, search.page, search.word, search.tagQuery)],
+		({ queryKey }) => {
+			if (search.page === 1) {
+				setUIDatas({ datas: [] });
+			}
+			return UIDatasAPI.getUIDatas(queryKey[1]);
+		},
+		{
+			onSuccess: (rs) => {
+				const datas: IUITextData[] = rs.datas;
+				setSearch((prev) => {
+					const newData = {
 						...prev,
-						cur: prev.cur + 1,
+						noResult: false,
+						totalPage: rs.totalPage,
 					};
+
+					newData.requestWord = search.word;
+					newData.totalCount = rs.totalCount;
+
+					if (search.page === 1 && datas.length === 0) {
+						newData.noResult = true;
+					}
+
+					return newData;
+				});
+
+				if (search.page === 1) {
+					setUIDatas({ datas: datas });
+				} else {
+					setUIDatas((prev) => {
+						return { ...prev, datas: [...prev.datas, ...datas] };
+					});
 				}
 
-				setLoading(false);
+				if (rs.length !== 0) {
+					setChecked(true);
+				}
+			},
+			cacheTime: 0,
+		}
+	);
+
+	const [UIDatas, setUIDatas] = useState<IUIDatas>(uiDatasQuery);
+	const [viewContent, setViewContent] = useState<IUITextData | undefined>();
+
+	useEffect(() => {
+		if (isFetched) {
+			setSearch((prev) => {
+				const newData = {
+					...prev,
+					noResult: false,
+					totalPage: uiDatasQuery.totalPage,
+				};
+
+				newData.totalCount = uiDatasQuery.totalCount;
+
+				if (UIDatas.datas.length === 0) {
+					newData.noResult = true;
+				}
+
+				return newData;
+			});
+
+			if (UIDatas.datas.length !== 0) {
+				setChecked(true);
+			}
+		}
+	}, []);
+
+	const handleIntersect = () => {
+		if (isLoading === false) {
+			setSearch((prev) => {
+				if (prev.totalPage > prev.page) {
+					return {
+						...prev,
+						page: prev.page + 1,
+					};
+				}
 				return prev;
 			});
 		}
-	}, [loading]);
+	};
 
 	const [setTarget] = useInfiniteScroll(handleIntersect, {
 		threshold: 1,
@@ -208,13 +240,13 @@ const Home: TNextPageWithLayout = () => {
 			};
 		});
 
-		setPage({
-			cur: 1,
-			totalPage: 1,
-			totalCount: 0,
+		setSearch((prev) => {
+			return {
+				...prev,
+				...initializePage,
+				tagQuery: '',
+			};
 		});
-
-		setTagQuery('');
 	}, []);
 
 	const handleSetTag = useCallback(
@@ -243,16 +275,15 @@ const Home: TNextPageWithLayout = () => {
 					};
 				});
 
-				setPage({
-					cur: 1,
-					totalPage: 1,
-					totalCount: 0,
-				});
-
-				setTagQuery((preQuery) => {
+				setSearch((prev) => {
 					const t = `${type[0]}:${tagId},`;
-					const newQuery = selected ? preQuery + t : preQuery.replace(t, '');
-					return newQuery;
+					const newQuery = selected ? prev.tagQuery + t : prev.tagQuery.replace(t, '');
+
+					return {
+						...prev,
+						...initializePage,
+						tagQuery: newQuery,
+					};
 				});
 			}
 		},
@@ -277,7 +308,7 @@ const Home: TNextPageWithLayout = () => {
 			if (checkCopy.status === 200) {
 				const result = await checkCopy.json();
 
-				setContents((prev) => {
+				setUIDatas((prev) => {
 					const newDatas = prev.datas.map((item) => {
 						if (item.id !== id) {
 							return item;
@@ -332,69 +363,6 @@ const Home: TNextPageWithLayout = () => {
 		setOpen(true);
 	};
 
-	useEffect(() => {
-		const fetchUITags = async () => {
-			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/tags`);
-			const tagsData = await res.json();
-
-			setTags(tagsData);
-		};
-		fetchUITags();
-
-		setPage((prev) => {
-			return {
-				...prev,
-				cur: 1,
-			};
-		});
-	}, []);
-
-	useEffect(() => {
-		const fetchUIData = async () => {
-			const res = await getTextUIDatas(getQueryString(page.cur, search.request, tagQuery));
-			const datas: IUITextData[] = res.datas;
-
-			if (res.totalPage !== page.totalPage) {
-				setPage((prev) => {
-					return {
-						...prev,
-						totalPage: res.totalPage,
-					};
-				});
-			}
-
-			// 단어 검색시 검색 건수를 표출
-			if (search.request !== '' && page.cur === 1) {
-				setPage((prev) => {
-					return {
-						...prev,
-						totalCount: res.totalCount,
-					};
-				});
-			}
-
-			setLoading(false);
-
-			if (page.cur === 1) {
-				setContents({ datas: datas });
-			} else {
-				setContents((prev) => {
-					return { ...prev, datas: [...prev.datas, ...datas] };
-				});
-			}
-
-			setSearch({ ...search, noResult: datas.length === 0 });
-			if (res.length !== 0) {
-				setChecked(true);
-			}
-		};
-
-		if (page.cur !== 0) {
-			setLoading(true);
-			fetchUIData();
-		}
-	}, [page.cur, tagQuery, search.request]);
-
 	return (
 		<Fragment>
 			<Box>
@@ -439,29 +407,22 @@ const Home: TNextPageWithLayout = () => {
 							value={search.current}
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') {
-									if (search.current !== search.request) {
+									if (search.current !== search.word) {
 										setSearch({
 											...search,
-											request: search.current,
-											noResult: false,
+											word: search.current,
 										});
 
 										handleClearTags();
-
-										setContents({ datas: [] });
-
-										setPage({
-											cur: 1,
-											totalPage: 1,
-											totalCount: 0,
-										});
 									}
 								}
 							}}
 							onChange={(e) => {
-								setSearch({
-									...search,
-									current: e.target.value,
+								setSearch((prev) => {
+									return {
+										...prev,
+										current: e.target.value,
+									};
 								});
 							}}
 							fullWidth
@@ -480,10 +441,10 @@ const Home: TNextPageWithLayout = () => {
 				<ContentsLayer>
 					{/* Search Result */}
 					<Box height="48px">
-						{search.request && (
+						{search.requestWord && (
 							<SearchResultBox className="ctt_text_16 ctt_regular">
-								<SearchResultText>{search.request}</SearchResultText> 검색 결과{' '}
-								<SearchResultText>{page.totalCount}</SearchResultText>건
+								<SearchResultText>{search.requestWord}</SearchResultText> 검색 결과{' '}
+								<SearchResultText>{search.totalCount}</SearchResultText>건
 							</SearchResultBox>
 						)}
 					</Box>
@@ -554,7 +515,7 @@ const Home: TNextPageWithLayout = () => {
 					</Box>
 					{/* Contents */}
 					<Box margin="56px 0" minHeight={430}>
-						{(search.noResult && !loading && (
+						{(search.noResult && !isLoading && (
 							<Box textAlign="center">
 								<Image
 									alt="noReulst Character"
@@ -569,14 +530,14 @@ const Home: TNextPageWithLayout = () => {
 							</Box>
 						)) || (
 							<Grid container spacing={2}>
-								{contents.datas.map((item, idx) => {
+								{UIDatas.datas.map((item, idx) => {
 									return (
 										// 나중에 검색시 기본적으로 Grow Transition을 사용하여 Rendering 하도록 변경하자.
 										<Grow
 											key={item.id}
 											in={checked}
 											style={{ transformOrigin: '0 0 0' }}
-											{...(checked && page.cur === 1
+											{...(checked && search.page === 1
 												? { timeout: 200 + (idx / 3) * 250 }
 												: {})}
 										>
@@ -586,7 +547,7 @@ const Home: TNextPageWithLayout = () => {
 												sm={6}
 												md={4}
 												ref={
-													contents.datas.length - 1 === idx
+													UIDatas.datas.length - 1 === idx
 														? setTarget
 														: null
 												}
@@ -606,7 +567,8 @@ const Home: TNextPageWithLayout = () => {
 														},
 													}}
 													onClick={async () => {
-														const contentsData = await getData(item.id);
+														const contentsData =
+															await UIDatasAPI.getUIdata(item.id);
 														setViewContent(contentsData);
 														handleDialogOpen();
 													}}
@@ -622,7 +584,7 @@ const Home: TNextPageWithLayout = () => {
 								})}
 							</Grid>
 						)}
-						<Box textAlign="center" mt={2} display={loading ? 'block' : 'none'}>
+						<Box textAlign="center" mt={2} display={isLoading ? 'block' : 'none'}>
 							<CircularProgress size={48} thickness={7} sx={{ color: '#F1F3F5' }} />
 						</Box>
 					</Box>
@@ -638,6 +600,25 @@ const Home: TNextPageWithLayout = () => {
 		</Fragment>
 	);
 };
+
+export async function getStaticProps() {
+	const queryClient = new QueryClient();
+
+	await queryClient.prefetchQuery('tags', () => UITagsAPI.getUITags());
+	await queryClient.prefetchQuery(
+		['ui-datas', UIDatasAPI.getQueryString(15, 1, '', '')],
+		({ queryKey }) => {
+			return UIDatasAPI.getUIDatas(queryKey[1]);
+		}
+	);
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+		revalidate: 30, // 30 seconds
+	};
+}
 
 Home.PageLayout = DefaultLayout;
 

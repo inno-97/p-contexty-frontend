@@ -9,6 +9,10 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+
+import { QueryClient, QueryClientProvider, Hydrate } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+
 import { createTheme } from 'src/themes';
 import createEmotionCache from 'src/createEmotionCache';
 
@@ -34,6 +38,18 @@ export default function MyApp(props: IMyAppPropsWithLayout) {
 
 	const PageLayout = Component.PageLayout ? Component.PageLayout : NoLayout;
 
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						refetchOnMount: false,
+						refetchOnReconnect: false,
+						refetchOnWindowFocus: false,
+					},
+				},
+			})
+	);
 	const [themeMode, setThemeMode] = useState('light');
 
 	useEffect(() => {
@@ -47,26 +63,30 @@ export default function MyApp(props: IMyAppPropsWithLayout) {
 		};
 	}, [router.events]);
 
-	// cosnt value
 	return (
 		<CacheProvider value={emotionCache}>
 			<Head>
 				<title>Contexty</title>
 				<meta name="viewport" content="initial-scale=1, width=device-width" />
 			</Head>
-			<ThemeConfigContext.Provider value={{ themeMode, setThemeMode }}>
-				<ThemeProvider
-					theme={createTheme({
-						themeMode,
-					})}
-				>
-					{/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-					<CssBaseline />
-					<PageLayout>
-						<Component {...pageProps} />
-					</PageLayout>
-				</ThemeProvider>
-			</ThemeConfigContext.Provider>
+			<QueryClientProvider client={queryClient}>
+				<Hydrate state={pageProps.dehydratedState}>
+					<ThemeConfigContext.Provider value={{ themeMode, setThemeMode }}>
+						<ThemeProvider
+							theme={createTheme({
+								themeMode,
+							})}
+						>
+							{/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+							<CssBaseline />
+							<PageLayout>
+								<Component {...pageProps} />
+							</PageLayout>
+						</ThemeProvider>
+						<ReactQueryDevtools initialIsOpen={false} />
+					</ThemeConfigContext.Provider>
+				</Hydrate>
+			</QueryClientProvider>
 		</CacheProvider>
 	);
 }
