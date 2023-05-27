@@ -63,7 +63,6 @@ export default function MyApp(props: IMyAppPropsWithLayout) {
 		};
 	}, [router.events]);
 
-	// cosnt value
 	return (
 		<CacheProvider value={emotionCache}>
 			<Head>
