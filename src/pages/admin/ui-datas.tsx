@@ -47,32 +47,6 @@ import filter_category from '/public/filter/category.svg';
 import filter_service from '/public/filter/service.svg';
 import filter_situation from '/public/filter/situation.svg';
 
-const imageUpload = async (file: File, service: string) => {
-	if (file === undefined) {
-		return [];
-	}
-
-	const imageData = new FormData();
-	const blob = file.slice(0, file.size, file.type);
-
-	const copyFile = new File([blob], encodeURIComponent(`${service}/${file.name}`), {
-		type: file.type,
-	});
-
-	imageData.append('file', copyFile);
-
-	return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/file-upload`, {
-		method: 'POST',
-		credentials: 'include',
-		body: imageData,
-	})
-		.then((rs) => rs.json())
-		.catch((err) => {
-			console.log(err);
-			return [];
-		});
-};
-
 const ContentsBox = styled(Box)({
 	backgroundColor: '#fcfcfc',
 	padding: '10px',
@@ -582,15 +556,21 @@ const UIDataList = () => {
 								onClick={async (e) => {
 									e.preventDefault();
 
-									const rs = await UIDatasAPI.createUIData(
-										newData.image,
-										newData.text,
-										newData.tags
-									);
+									if (newData?.File === undefined) {
+										alert('undefined image.');
+										return;
+									}
+
+									const rs = await UIDatasAPI.createUIData(newData);
 									const result = rs[0];
 
 									if (result.validation !== true) {
 										alert('Validation Faild: ' + result.validation);
+										return;
+									}
+
+									if (result.image === 'undefined') {
+										alert('Image undefined.');
 										return;
 									}
 
@@ -600,20 +580,7 @@ const UIDataList = () => {
 									}
 
 									if (result.create === true) {
-										if (!!newData.File && !!newData?.tags?.service?.name) {
-											const upload_rs = await imageUpload(
-												newData.File,
-												newData.tags.service.name
-											);
-
-											if (upload_rs?.length === 0) {
-												alert(
-													'데이터 생성은 성공하였으나, 이미지 업로드를 실패하였습니다.\n관리자에게 문의하세요.'
-												);
-											} else {
-												setNewData({ text: '' });
-											}
-										}
+										setNewData({ text: '' });
 									} else {
 										alert(
 											'데이터 생성에 실패하였습니다.\n관리자에게 문의하세요.'

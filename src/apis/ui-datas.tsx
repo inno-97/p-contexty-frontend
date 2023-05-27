@@ -46,14 +46,20 @@ export async function getUIdata(id: number | null = null) {
 	return res.json();
 }
 
-export async function createUIData(image?: string, text?: string, tags?: TUITgas) {
+export async function createUIData(data: IUITextData) {
+	const dataForm = new FormData();
+
+	if (data?.File === undefined) {
+		throw new Error(`createUIData Failed, undefined image`);
+	}
+
+	dataForm.append('file', data.File);
+	dataForm.append('datas', JSON.stringify([data]));
+
 	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ui/datas`, {
 		method: 'POST',
 		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ datas: [{ image, text, tags }] }),
+		body: dataForm,
 	});
 
 	if (!res.ok) {
