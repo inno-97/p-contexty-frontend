@@ -123,14 +123,14 @@ const initializePage = {
 };
 
 const UIDataList = () => {
-	const { data: tagsQuery } = useQuery(['tags'], UITagsAPI.getUITags, {
+	const { data: uiTagsQuery } = useQuery(['ui-tags'], UITagsAPI.getUITags, {
 		placeholderData: { categorys: [], services: [], events: [] },
 		onSuccess: (data) => {
 			setTags(data);
 		},
 	});
 
-	const [tags, setTags] = useState<IUITagComponents>(tagsQuery);
+	const [tags, setTags] = useState<IUITagComponents>(uiTagsQuery);
 
 	const [search, setSearch] = useState({
 		current: '',
