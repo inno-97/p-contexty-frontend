@@ -1,4 +1,4 @@
-import type { TUITgas, IUITextData } from 'src/types/ui-data';
+import type { IUITextData } from 'src/types/ui-data';
 
 export function getQueryString(
 	rowsPerPage = 15,
