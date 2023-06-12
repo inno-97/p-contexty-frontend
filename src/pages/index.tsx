@@ -378,7 +378,7 @@ const Home: TNextPageWithLayout = () => {
 			<Box>
 				{/* Search Box */}
 				<SearchBox elevation={0}>
-					<Box position="absolute" width={580} textAlign="center">
+					<Box position="absolute" maxWidth={580} textAlign="center">
 						<Box display="inline-block" position="relative" width={269} height={196}>
 							<Box
 								display="inline-block"
@@ -412,7 +412,7 @@ const Home: TNextPageWithLayout = () => {
 							</Typography>
 						</Box>
 					</Box>
-					<Box width={580} textAlign="center" mt="80px">
+					<Box width={8 / 9} maxWidth={580} textAlign="center" mt="80px">
 						<SearchTextField
 							value={search.current}
 							onKeyDown={(e) => {
