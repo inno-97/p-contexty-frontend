@@ -66,24 +66,20 @@ export const Nav: FC<TNavItem> = (props) => {
 		setAnchorEl(null);
 	};
 
-	const menu = (
-		<React.Fragment>
-			{navItems.map((item) => {
-				const color =
-					item.link === router.pathname
-						? theme.palette.grey[400]
-						: theme.palette.grey[200];
+	const menu = navItems.map((item) => {
+		const color =
+			item.link === router.pathname ? theme.palette.grey[400] : theme.palette.grey[200];
 
-				return (
-					<Link key={item.name} href={item.link}>
-						<MenuAnchorTag>
-							<MenuButton sx={{ color }}>{item.name}</MenuButton>
-						</MenuAnchorTag>
-					</Link>
-				);
-			})}
-		</React.Fragment>
-	);
+		return (
+			<Link key={item.name} href={item.link}>
+				<MenuAnchorTag>
+					<MenuButton sx={{ color }} onClick={handleClose}>
+						{item.name}
+					</MenuButton>
+				</MenuAnchorTag>
+			</Link>
+		);
+	});
 
 	return (
 		<AppBar elevation={0} component="nav">
