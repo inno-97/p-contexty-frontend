@@ -98,6 +98,16 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
+const FilterStack = styled(Stack)(({ theme }) => {
+	return {
+		'& > div': {
+			[theme.breakpoints.up('sm')]: {
+				width: '240px',
+			},
+		},
+	};
+});
+
 const initializePage = {
 	page: 1,
 	totalPage: 0,
@@ -449,7 +459,7 @@ const Home: TNextPageWithLayout = () => {
 						)}
 					</Box>
 					{/* Filters */}
-					<Stack direction="row" spacing={2}>
+					<FilterStack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
 						{/* SelectBox UI TAG */}
 						<SelectFilter
 							id="AppCategoryFilter"
@@ -499,7 +509,7 @@ const Home: TNextPageWithLayout = () => {
 							}
 							StartIcon={<FilterIcon alt="Situation Filter" {...filter_situation} />}
 						/>
-					</Stack>
+					</FilterStack>
 					{/* Display Current Filters */}
 					<Box marginTop="24px">
 						<SelectedTags

@@ -12,7 +12,7 @@ const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 		'& .Mui-disabled': {
 			background: '#F8F9FA',
 		},
-		width: '240px',
+		width: '100%',
 		input: {
 			'&::placeholder': {
 				color: theme.palette.grey[300],

@@ -69,7 +69,10 @@ const SearchTextField = styled(({ ...props }: TextFieldProps) => (
 ))(({ theme }) => {
 	return {
 		marginBottom: '10px',
-		width: '300px',
+		width: '100%',
+		[theme.breakpoints.up('md')]: {
+			width: '300px',
+		},
 		zIndex: 1,
 		'& .MuiOutlinedInput-root': {
 			borderRadius: '100px',
@@ -97,6 +100,16 @@ const SearchTextField = styled(({ ...props }: TextFieldProps) => (
 			'&::placeholder': {
 				color: theme.palette.grey[300],
 				opacity: 1,
+			},
+		},
+	};
+});
+
+const FilterStack = styled(Stack)(({ theme }) => {
+	return {
+		'& > div': {
+			[theme.breakpoints.up('md')]: {
+				width: '240px',
 			},
 		},
 	};
@@ -421,7 +434,7 @@ const UIDataList = () => {
 						} as Partial<OutlinedInputProps>
 					}
 				/>
-				<Stack direction="row" spacing={2}>
+				<FilterStack direction={{ sm: 'column', md: 'row' }} spacing={2}>
 					{/* SelectBox UI TAG */}
 					<SelectFilter
 						id="AppCategoryFilter"
@@ -465,7 +478,7 @@ const UIDataList = () => {
 						}
 						StartIcon={<FilterIcon alt="Situation Filter" {...filter_situation} />}
 					/>
-				</Stack>
+				</FilterStack>
 				{/* Display Current Filters */}
 				<Box>
 					<SelectedTags
