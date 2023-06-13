@@ -187,25 +187,31 @@ const Contact: TNextPageWithLayout = () => {
 					</Writing>
 					<Stack spacing={2} sx={{ mb: '40px' }}>
 						<TextField
-							fullWidth
+							autoComplete="off"
+							id="user-name"
 							name="name"
 							label="이름"
+							fullWidth
 							value={report.name}
 							onChange={handleChange}
 						/>
 						<TextField
-							fullWidth
+							autoComplete="off"
+							id="user-email"
 							name="email"
 							label="이메일"
+							fullWidth
 							value={report.email}
 							onChange={handleChange}
 						/>
 						<TextField
+							autoComplete="off"
+							id="user-content"
+							name="content"
+							label="내용"
 							fullWidth
 							multiline
 							rows={6}
-							name="content"
-							label="내용"
 							value={report.content}
 							onChange={handleChange}
 						/>
