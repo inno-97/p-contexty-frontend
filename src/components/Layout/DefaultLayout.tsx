@@ -21,13 +21,15 @@ const menuList: TNavItem['items'] = [
 function DefaultLayout(props: PropsWithChildren) {
 	return (
 		<MainLayout>
-			<Nav items={menuList} />
+			<header>
+				<Nav items={menuList} />
+			</header>
 
-			{/* Contents */}
-			{props.children}
+			<main>{props.children}</main>
 
-			{/* Footer */}
-			<Footer />
+			<footer>
+				<Footer />
+			</footer>
 		</MainLayout>
 	);
 }

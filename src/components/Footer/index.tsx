@@ -23,6 +23,7 @@ const ContributorsTitle = styled('span')(() => ({
 
 const Contributor = styled('span')({
 	marginRight: '16px',
+	display: 'inline-block',
 });
 
 const CopyrightBox = styled(Box)(({ theme }) => ({

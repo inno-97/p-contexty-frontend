@@ -388,7 +388,11 @@ const Home: TNextPageWithLayout = () => {
 								position="absolute"
 								left="-43px"
 							>
-								<Image alt="Banner Character" {...BannerCharacter} />
+								<Image
+									alt="Banner Character"
+									{...BannerCharacter}
+									priority={true}
+								/>
 							</Box>
 							<Typography
 								sx={{
@@ -472,7 +476,7 @@ const Home: TNextPageWithLayout = () => {
 							}
 						/>
 						<SelectFilter
-							id="AppCategoryFilter"
+							id="ServiceNameFilter"
 							disabled={search.noResult}
 							options={tags.services.filter(
 								(tag) => tag.selected === undefined || tag.selected === false
@@ -482,7 +486,7 @@ const Home: TNextPageWithLayout = () => {
 							StartIcon={<FilterIcon alt="Service Name Filter" {...filter_service} />}
 						/>
 						<SelectFilter
-							id="AppCategoryFilter"
+							id="SituationFilter"
 							disabled={search.noResult}
 							options={tags.events.filter(
 								(tag) => tag.selected === undefined || tag.selected === false

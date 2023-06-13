@@ -445,7 +445,7 @@ const UIDataList = () => {
 						StartIcon={<FilterIcon alt="App Category Filter" {...filter_category} />}
 					/>
 					<SelectFilter
-						id="AppCategoryFilter"
+						id="ServiceNameFilter"
 						disabled={search.noResult}
 						options={tags.services.filter(
 							(tag) => tag.selected === undefined || tag.selected === false
@@ -455,7 +455,7 @@ const UIDataList = () => {
 						StartIcon={<FilterIcon alt="Service Name Filter" {...filter_service} />}
 					/>
 					<SelectFilter
-						id="AppCategoryFilter"
+						id="SituationFilter"
 						disabled={search.noResult}
 						options={tags.events.filter(
 							(tag) => tag.selected === undefined || tag.selected === false
