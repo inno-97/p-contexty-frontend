@@ -14,16 +14,16 @@ import {
 } from '@mui/material';
 
 const DataTable: FC<IDataTable> = ({
-	onRowsPerPage = false,
-	rowsPerPageList = [15],
+	// onRowsPerPage = false,
+	// rowsPerPageList = [15],
 	rowsPerPage = 15,
-	onTotalCount = false,
+	// onTotalCount = false,
 	totalCount = 0,
 	page = 0,
 	changePage = null,
-	onTopPagination = false,
+	// onTopPagination = false,
 	onBottomPagination = true,
-	selecting = false,
+	// selecting = false,
 	headers = [],
 	rowOptions = undefined,
 	rows = [],
