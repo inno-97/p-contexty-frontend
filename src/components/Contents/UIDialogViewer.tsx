@@ -216,7 +216,7 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 					style={{
 						borderRadius: '8px',
 					}}
-					onError={() => {
+					onError={(e) => {
 						setNoImage(true);
 					}}
 					src={
@@ -264,7 +264,7 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 										style={{
 											borderRadius: '8px',
 										}}
-										onError={() => {
+										onError={(e) => {
 											setNoImage(true);
 										}}
 										src={
