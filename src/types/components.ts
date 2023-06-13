@@ -79,7 +79,7 @@ export interface ISelectFilter {
 	label?: string;
 	options: { label: string | number }[];
 	inputValue?: string | number | null;
-	onOptionClick?: (event: SyntheticEvent) => void;
+	onOptionClick?: (value: string | number | null) => void;
 }
 
 export interface IUIDialogViewer {

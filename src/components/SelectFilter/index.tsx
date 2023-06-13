@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { ISelectFilter } from 'src/types/components';
+import type { ISelectFilter, IUITagsItem } from 'src/types/components';
 
 import { useState } from 'react';
 import { styled } from '@mui/material/styles';
@@ -12,7 +12,7 @@ const CustomAutoComplete = styled(Autocomplete)(({ theme }) => {
 		'& .Mui-disabled': {
 			background: '#F8F9FA',
 		},
-		width: '240px',
+		width: '100%',
 		input: {
 			'&::placeholder': {
 				color: theme.palette.grey[300],
@@ -77,7 +77,15 @@ export const SelectFilter: FC<ISelectFilter> = ({
 			id={id}
 			disabled={disabled}
 			options={options}
+			value={null}
 			open={open}
+			onChange={(e, newValue) => {
+				if (hasTagItem(newValue)) {
+					if (onOptionClick !== undefined) {
+						onOptionClick(newValue.value);
+					}
+				}
+			}}
 			onOpen={() => {
 				setOpen(true);
 			}}
@@ -92,7 +100,7 @@ export const SelectFilter: FC<ISelectFilter> = ({
 							onClick={(e) => {
 								setOpen(false);
 								if (onOptionClick !== undefined) {
-									onOptionClick(e);
+									onOptionClick(e.currentTarget.getAttribute('value'));
 								}
 							}}
 							className={`ctt_text_14 ctt_regular ${props.className}`}

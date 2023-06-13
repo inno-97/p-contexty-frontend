@@ -94,18 +94,18 @@ const About = (profiles: IProfiles) => {
 						</Paragraph>
 					</Writing>
 					{/* Contributors */}
-					<Box height="77px">
+					<Box>
 						<Paragraph mb={24} className="ctt_text_14 ctt_bold">
 							만든 사람들
 						</Paragraph>
 						<Stack
-							alignItems="center"
-							direction="row"
-							spacing={4}
+							alignItems={{ sm: 'center' }}
+							direction={{ xs: 'column', sm: 'row' }}
+							spacing={{ xs: 2, md: 4 }}
 							divider={
-								<div>
+								<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
 									<Divider sx={{ height: 12 }} orientation="vertical" flexItem />
-								</div>
+								</Box>
 							}
 						>
 							{profiles.datas.map((item: IProfile) => {

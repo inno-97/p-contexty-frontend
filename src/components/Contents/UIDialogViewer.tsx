@@ -206,6 +206,36 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 		});
 	};
 
+	const NoWriteImage = (
+		<Fragment>
+			{noImage === false ? (
+				<Image
+					alt="Text UI Data Image"
+					width="270px"
+					height="586px"
+					style={{
+						borderRadius: '8px',
+					}}
+					onError={(e) => {
+						setNoImage(true);
+					}}
+					src={
+						data?.imageSrc ||
+						`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${data?.image}`
+					}
+				/>
+			) : (
+				<Image
+					style={{
+						borderRadius: '8px',
+					}}
+					alt="No Image"
+					{...NoImage}
+				/>
+			)}
+		</Fragment>
+	);
+
 	return (
 		<Fragment>
 			<Dialog open={open} onClose={onClose}>
@@ -353,35 +383,12 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 							</DetailLayout>
 						</Stack>
 					) : (
-						<Stack direction="row" spacing={4}>
-							<ImageLayout elevation={0}>
-								{/* 쓰기 모드가 아니고, 이미지가 없거나 로드중 에러가 발생한 경우 */}
-								{noImage === false ? (
-									<Image
-										alt="Text UI Data Image"
-										width="270px"
-										height="586px"
-										// loader={previewIamgeLoader}
-										style={{
-											borderRadius: '8px',
-										}}
-										onError={(e) => {
-											setNoImage(true);
-										}}
-										src={
-											data?.imageSrc ||
-											`${process.env.NEXT_PUBLIC_STORAGE_URL}/ui-data/${data?.image}`
-										}
-									/>
-								) : (
-									<Image
-										style={{
-											borderRadius: '8px',
-										}}
-										alt="No Image"
-										{...NoImage}
-									/>
-								)}
+						<Stack direction="row">
+							<ImageLayout
+								elevation={0}
+								sx={{ marginRight: '32px', display: { xs: 'none', sm: 'flex' } }}
+							>
+								{NoWriteImage}
 							</ImageLayout>
 							<DetailLayout spacing={3}>
 								<Stack alignItems="center" direction="row" spacing={1}>
@@ -436,6 +443,20 @@ export const UIDialogViewer: FC<IUIDialogViewer> = ({
 										'선택된 데이터가 없습니다.'
 									)}
 								</Card>
+								<Box
+									sx={{
+										display: { xs: 'flex', sm: 'none' },
+									}}
+								>
+									<ImageLayout
+										elevation={0}
+										sx={{
+											margin: '0 auto',
+										}}
+									>
+										{NoWriteImage}
+									</ImageLayout>
+								</Box>
 							</DetailLayout>
 						</Stack>
 					)}

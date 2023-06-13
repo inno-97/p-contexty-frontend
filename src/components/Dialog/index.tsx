@@ -7,7 +7,6 @@ import { styled } from '@mui/material/styles';
 
 const DialogBox = styled(Dialog)(({ theme }) => ({
 	'& .MuiDialog-paper': {
-		minWidth: 480,
 		padding: theme.spacing(0),
 	},
 }));
