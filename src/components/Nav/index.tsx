@@ -12,7 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { styled, useTheme } from '@mui/material/styles';
 
 import { ContentsLayer } from 'src/components/CustomLayer';
-import ToggleThemeMode from 'src/components/ToggleThemeMode';
+// import ToggleThemeMode from 'src/components/ToggleThemeMode';
 
 import SVGLogo from '/public/logo.svg';
 

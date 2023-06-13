@@ -5,12 +5,15 @@ import createEmotionCache from 'src/createEmotionCache';
 export default class MyDocument extends Document {
 	render() {
 		return (
-			<Html lang="en">
+			<Html lang="kr">
 				<Head>
+					<meta name="description" content="App UX Writing reference" />
 					<meta property="og:title" content="Contexty" />
+					<meta property="og:description" content="App UX Writing reference" />
 					<meta property="og:type" content="website" />
 					<meta property="og:url" content="https://contexty.kr" />
 					<meta property="og:image" content="https://cdn.contexty.kr/OpenGraph.png" />
+					<meta property="og:locale" content="ko_KR" />
 					<link rel="shortcut icon" href="/favicon/favicon.ico" />
 					<link
 						rel="apple-touch-icon"

@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { ISelectFilter, IUITagsItem } from 'src/types/components';
+import type { ISelectFilter } from 'src/types/components';
 
 import { useState } from 'react';
 import { styled } from '@mui/material/styles';
