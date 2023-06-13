@@ -7,8 +7,9 @@ export default class MyDocument extends Document {
 		return (
 			<Html lang="kr">
 				<Head>
+					<meta name="description" content="App UX Writing reference" />
 					<meta property="og:title" content="Contexty" />
-					<meta property="og:description" content="App UX Writing reference site" />
+					<meta property="og:description" content="App UX Writing reference" />
 					<meta property="og:type" content="website" />
 					<meta property="og:url" content="https://contexty.kr" />
 					<meta property="og:image" content="https://cdn.contexty.kr/OpenGraph.png" />
