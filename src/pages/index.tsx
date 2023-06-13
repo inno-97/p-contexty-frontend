@@ -466,13 +466,7 @@ const Home: TNextPageWithLayout = () => {
 							disabled={search.noResult}
 							options={tags.categorys.filter((tag) => tag.selected !== true)}
 							label="앱 카테고리"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'categorys',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'categorys', true)}
 							StartIcon={
 								<FilterIcon alt="App Category Filter" {...filter_category} />
 							}
@@ -484,13 +478,7 @@ const Home: TNextPageWithLayout = () => {
 								(tag) => tag.selected === undefined || tag.selected === false
 							)}
 							label="서비스 명"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'services',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'services', true)}
 							StartIcon={<FilterIcon alt="Service Name Filter" {...filter_service} />}
 						/>
 						<SelectFilter
@@ -500,13 +488,7 @@ const Home: TNextPageWithLayout = () => {
 								(tag) => tag.selected === undefined || tag.selected === false
 							)}
 							label="상황"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'events',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'events', true)}
 							StartIcon={<FilterIcon alt="Situation Filter" {...filter_situation} />}
 						/>
 					</FilterStack>
