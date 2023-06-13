@@ -5,8 +5,10 @@ import type { TNavItem } from 'src/types/components';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import React, { useState } from 'react';
 
-import { AppBar, Box, Toolbar, Button } from '@mui/material';
+import { AppBar, Box, Toolbar, IconButton, Button, Menu } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { styled, useTheme } from '@mui/material/styles';
 
 import { ContentsLayer } from 'src/components/CustomLayer';
@@ -28,9 +30,16 @@ const MenuButton = styled(({ ...props }: ButtonProps) => (
 });
 
 // Netx.js Link React.forwardRef issue
-const MenuAnchorTag = styled('a')`
-	text-decoration: none;
-`;
+const MenuAnchorTag = styled('a')(({ theme }) => {
+	return {
+		textDecoration: 'none',
+		[theme.breakpoints.down('sm')]: {
+			'& > a': {
+				display: 'none',
+			},
+		},
+	};
+});
 
 const Logo = styled(Image)(({ theme }) => {
 	const filter = theme.palette.mode === 'dark' ? 'invert(1)' : undefined;
@@ -48,6 +57,30 @@ export const Nav: FC<TNavItem> = (props) => {
 
 	const navItems = props.items;
 
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const open = Boolean(anchorEl);
+	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const menu = navItems.map((item) => {
+		const color =
+			item.link === router.pathname ? theme.palette.grey[400] : theme.palette.grey[200];
+
+		return (
+			<Link key={item.name} href={item.link}>
+				<MenuAnchorTag>
+					<MenuButton sx={{ color }} onClick={handleClose}>
+						{item.name}
+					</MenuButton>
+				</MenuAnchorTag>
+			</Link>
+		);
+	});
+
 	return (
 		<AppBar elevation={0} component="nav">
 			<ContentsLayer>
@@ -61,22 +94,37 @@ export const Nav: FC<TNavItem> = (props) => {
 							flexGrow: 1,
 						}}
 					></Box>
-					<Box>
-						{navItems.map((item) => {
-							const color =
-								item.link === router.pathname
-									? theme.palette.grey[400]
-									: theme.palette.grey[200];
-
-							return (
-								<Link key={item.name} href={item.link}>
-									<MenuAnchorTag>
-										<MenuButton sx={{ color }}>{item.name}</MenuButton>
-									</MenuAnchorTag>
-								</Link>
-							);
-						})}
-					</Box>
+					<Box sx={{ display: { xs: 'none', sm: 'block' } }}>{menu}</Box>
+					<IconButton
+						id="basic-button"
+						aria-controls={open ? 'basic-menu' : undefined}
+						aria-haspopup="true"
+						aria-expanded={open ? 'true' : undefined}
+						disableRipple
+						sx={{ pr: 0, display: { sm: 'none' } }}
+						onClick={handleClick}
+					>
+						<MenuIcon />
+					</IconButton>
+					<Menu
+						id="basic-menu"
+						anchorEl={anchorEl}
+						open={open}
+						onClose={handleClose}
+						MenuListProps={{
+							'aria-labelledby': 'basic-button',
+							sx: {
+								[theme.breakpoints.down('sm')]: {
+									'& > a': {
+										display: 'block',
+									},
+								},
+							},
+						}}
+						sx={{ display: { sm: 'none' } }}
+					>
+						{menu}
+					</Menu>
 					{/* 서비스 오픈 후 예정 */}
 					{/* <ToggleThemeMode /> */}
 				</Toolbar>

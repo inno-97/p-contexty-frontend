@@ -98,6 +98,16 @@ const FilterIcon = styled(Image)(({ theme }) => {
 	};
 });
 
+const FilterStack = styled(Stack)(({ theme }) => {
+	return {
+		'& > div': {
+			[theme.breakpoints.up('sm')]: {
+				width: '240px',
+			},
+		},
+	};
+});
+
 const initializePage = {
 	page: 1,
 	totalPage: 0,
@@ -368,7 +378,7 @@ const Home: TNextPageWithLayout = () => {
 			<Box>
 				{/* Search Box */}
 				<SearchBox elevation={0}>
-					<Box position="absolute" width={580} textAlign="center">
+					<Box position="absolute" maxWidth={580} textAlign="center">
 						<Box display="inline-block" position="relative" width={269} height={196}>
 							<Box
 								display="inline-block"
@@ -402,7 +412,7 @@ const Home: TNextPageWithLayout = () => {
 							</Typography>
 						</Box>
 					</Box>
-					<Box width={580} textAlign="center" mt="80px">
+					<Box width={8 / 9} maxWidth={580} textAlign="center" mt="80px">
 						<SearchTextField
 							value={search.current}
 							onKeyDown={(e) => {
@@ -449,20 +459,14 @@ const Home: TNextPageWithLayout = () => {
 						)}
 					</Box>
 					{/* Filters */}
-					<Stack direction="row" spacing={2}>
+					<FilterStack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
 						{/* SelectBox UI TAG */}
 						<SelectFilter
 							id="AppCategoryFilter"
 							disabled={search.noResult}
 							options={tags.categorys.filter((tag) => tag.selected !== true)}
 							label="앱 카테고리"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'categorys',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'categorys', true)}
 							StartIcon={
 								<FilterIcon alt="App Category Filter" {...filter_category} />
 							}
@@ -474,13 +478,7 @@ const Home: TNextPageWithLayout = () => {
 								(tag) => tag.selected === undefined || tag.selected === false
 							)}
 							label="서비스 명"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'services',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'services', true)}
 							StartIcon={<FilterIcon alt="Service Name Filter" {...filter_service} />}
 						/>
 						<SelectFilter
@@ -490,16 +488,10 @@ const Home: TNextPageWithLayout = () => {
 								(tag) => tag.selected === undefined || tag.selected === false
 							)}
 							label="상황"
-							onOptionClick={(event) =>
-								handleSetTag(
-									event.currentTarget.getAttribute('value'),
-									'events',
-									true
-								)
-							}
+							onOptionClick={(value) => handleSetTag(value, 'events', true)}
 							StartIcon={<FilterIcon alt="Situation Filter" {...filter_situation} />}
 						/>
-					</Stack>
+					</FilterStack>
 					{/* Display Current Filters */}
 					<Box marginTop="24px">
 						<SelectedTags
